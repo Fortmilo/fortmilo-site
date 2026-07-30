@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Architecture &amp; Security | FortMilo Security Observatory</title>
+  <meta name="description" content="Salesforce-native architecture, self-callout pattern, sanitised evidence model and release boundary for FortMilo Security Observatory.">
+  <link rel="canonical" href="https://fortmilo.co.uk/security-observatory/architecture.html">
+  <link rel="icon" type="image/svg+xml" href="../assets/fortmilo-logo.svg">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Architecture &amp; Security | FortMilo Security Observatory">
+  <meta property="og:description" content="Salesforce-native, read-only architecture with sanitised in-org evidence.">
+  <meta property="og:url" content="https://fortmilo.co.uk/security-observatory/architecture.html">
+  <meta property="og:locale" content="en_GB">
+  <meta name="twitter:card" content="summary">
+  <link rel="stylesheet" href="../styles.css?v=20260730-guide">
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header"><div class="container header-inner"><a class="brand" href="/" aria-label="FortMilo Lab home"><img src="../assets/fortmilo-logo.svg" alt="" width="980" height="240"></a><nav aria-label="Observatory pages"><a href="./">Overview</a><a href="findings.html">Findings</a><a href="evidence.html">SBS &amp; Evidence</a><a href="admin.html">Admin</a><a aria-current="page" href="architecture.html">Architecture</a></nav></div></header>
+
+  <main id="main">
+    <section class="page-hero"><div class="container hero-grid"><div><p class="eyebrow">Architecture and security</p><h1>Runs inside Salesforce with a narrow evidence boundary.</h1><p class="lead">FortMilo Security Observatory is a Salesforce-native architecture showcase built around LWC, Apex orchestration, scanner classes, safe platform reads and sanitised in-org evidence.</p></div><aside class="evidence-panel" aria-label="Architecture boundaries"><p>Architecture boundaries</p><ul class="fact-list"><li><strong>Salesforce-native</strong><span>LWC dashboard, Apex services and Salesforce data storage.</span></li><li><strong>Read-only scanning</strong><span>SOQL, Tooling API and safe metadata reads.</span></li><li><strong>Subscriber-owned authentication</strong><span>Manual self-callout configuration remains controlled by the installing organisation.</span></li><li><strong>Truthful degradation</strong><span>Missing Tooling access becomes Not assessed, never a false zero.</span></li></ul></aside></div></section>
+
+    <section class="section"><div class="container"><div class="section-heading"><p class="section-label">Execution path</p><h2>One Apex-owned scanner plan</h2></div><div class="flow" role="img" aria-label="LWC dashboard to Apex controller and scan service, scanner classes, safe Salesforce reads and sanitised evidence objects"><span>LWC dashboard</span><b>→</b><span>SecurityObservatoryController</span><b>→</b><span>SecurityScanService</span><b>→</b><span>Scanner classes</span><b>→</b><span>SOQL, Tooling API and safe metadata reads</span></div><div class="flow" style="margin-top:1rem" role="img" aria-label="Scanner output to scan evidence objects and safe user interface output"><span>Scanner output</span><b>→</b><span>Security_Scan__c</span><b>→</b><span>Findings, metrics, details and assets</span><b>→</b><span>LWC DTOs</span><b>→</b><span>Safe drill-down and export</span></div></div></section>
+
+    <section class="section section-alt"><div class="container"><div class="section-heading"><p class="section-label">Security boundaries</p><h2>What the application deliberately does not do</h2></div><div class="card-grid"><article class="card"><h3>No remediation</h3><p>No token revocation, API blocking, permission removal, endpoint change, certificate rotation or production security write-back.</p></article><article class="card"><h3>No secrets or raw credentials</h3><p>No access tokens, refresh tokens, session IDs, client secrets, certificate bodies, private keys, raw headers or raw IP values.</p></article><article class="card"><h3>No external evidence service</h3><p>Scanning and retained evidence remain in the subscriber Salesforce organisation. The self-callout targets the same organisation’s Tooling API.</p></article></div></div></section>
+
+    <section class="section"><div class="container split"><div><p class="section-label">Self-callout prerequisite</p><h2>Manual subscriber-owned authentication</h2></div><div class="prose"><p>Core SOQL-backed evidence works without the Tooling API self-callout. Tooling-backed scanner families require subscriber-specific authentication through an Auth Provider, External Client App, External Credential, Named Credential and principal.</p><p>The package does not own or overwrite subscriber OAuth configuration. A separate least-privilege permission extension may be deployed only after the named principal exists.</p><div class="callout warning"><strong>External Client App inventory is not claimed.</strong><br>The current External Client App references describe the subscriber-owned self-callout prerequisite and principal context only.</div></div></div></section>
+
+    <section class="section section-accent"><div class="container split"><div><p class="section-label">Release boundary</p><h2>Public source is curated, not mirrored</h2></div><div class="prose"><p>The private implementation and working history are not exposed directly. The future public application repository will contain selected sanitised source, architecture, setup guidance, synthetic evidence and contribution material.</p><p>Package distribution, clean-install proof and public availability are stated only when supporting evidence exists. The current position remains sandbox-first.</p></div></div></section>
+  </main>
+
+  <footer class="site-footer"><div class="container footer-grid"><div><p><strong>FortMilo Lab</strong> · FortMilo Security Observatory</p><p><a href="./">Product overview</a></p></div><div><p>Salesforce-native, read-only and sanitised by design.</p><p>© 2026 Luca Pacini trading as FortMilo Lab.</p></div></div></footer>
+</body>
+</html>
