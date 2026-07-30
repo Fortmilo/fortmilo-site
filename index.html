@@ -7,26 +7,21 @@
   <meta name="description" content="FortMilo Lab develops read-only, evidence-focused Salesforce security tooling, including the Salesforce Security Observatory.">
   <meta name="author" content="FortMilo Lab">
   <link rel="canonical" href="https://fortmilo.co.uk/">
-  <link rel="icon" type="image/webp" href="assets/fortmilo-logo.webp?v=20260730b">
   <meta property="og:type" content="website">
   <meta property="og:title" content="FortMilo Lab | Salesforce Security Engineering">
   <meta property="og:description" content="Independent Salesforce security engineering and the Salesforce Security Observatory.">
   <meta property="og:url" content="https://fortmilo.co.uk/">
-  <meta property="og:image" content="https://fortmilo.co.uk/assets/fortmilo-logo.webp?v=20260730b">
   <meta property="og:locale" content="en_GB">
-  <meta name="twitter:card" content="summary_large_image">
-  <link rel="stylesheet" href="styles.css?v=20260730b">
+  <meta name="twitter:card" content="summary">
+  <link rel="stylesheet" href="styles.css?v=20260730-reset">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="/" aria-label="FortMilo Lab home">
-        <img class="brand-logo" src="assets/fortmilo-logo.webp?v=20260730b" alt="" width="700" height="296">
-      </a>
+      <a class="brand" href="/">FortMilo Lab</a>
       <nav aria-label="Main navigation">
-        <a href="#about">About</a>
         <a href="#observatory">Security Observatory</a>
         <a href="#contact">Contact</a>
       </nav>
@@ -35,55 +30,31 @@
 
   <main id="main">
     <section class="hero">
-      <div class="container hero-grid hero-grid-compact">
-        <div class="hero-copy">
-          <p class="eyebrow">Independent Salesforce security engineering</p>
-          <h1>Evidence before assumptions.</h1>
-          <p class="lead">FortMilo Lab builds practical, read-only Salesforce security tooling that makes evidence easier to review without writing to the organisation.</p>
-          <div class="actions">
-            <a class="button button-primary" href="#observatory">Security Observatory</a>
-            <a class="button button-secondary" href="mailto:info@fortmilo.co.uk">Contact</a>
-          </div>
+      <div class="container hero-copy">
+        <p class="eyebrow">Independent Salesforce security engineering</p>
+        <h1>Evidence before assumptions.</h1>
+        <p class="lead">FortMilo Lab builds practical, read-only Salesforce security tooling for evidence-led review.</p>
+        <div class="actions">
+          <a class="button button-primary" href="#observatory">Security Observatory</a>
+          <a class="button button-secondary" href="mailto:info@fortmilo.co.uk">Contact</a>
         </div>
-        <figure class="hero-brand-image">
-          <img src="assets/fortmilo-logo.webp?v=20260730b" alt="FortMilo Lab shield and wordmark" width="700" height="296">
-        </figure>
       </div>
     </section>
 
-    <section class="section section-compact" id="about">
+    <section class="section section-alt" id="observatory">
       <div class="container split">
-        <div>
-          <p class="section-label">FortMilo Lab</p>
-          <h2>Salesforce architecture with a security-first boundary</h2>
-        </div>
-        <div class="prose">
-          <p>FortMilo Lab is an independent software and security engineering practice founded by Salesforce architect Luca Pacini.</p>
-          <p>The work focuses on Salesforce platform security, identity, permissions, OAuth governance, integrations and evidence quality.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section section-alt section-compact" id="observatory">
-      <div class="container product-feature">
         <div>
           <p class="section-label">Salesforce Security Observatory</p>
           <h2>Read-only Salesforce security evidence</h2>
-          <p class="section-intro">A Salesforce-native application using LWC, Apex, safe platform reads and sanitised in-org evidence. It supports security review without automated remediation.</p>
-          <div class="actions">
-            <a class="button button-primary" href="https://github.com/Fortmilo/security-observatory" target="_blank" rel="noopener">Application repository</a>
-            <a class="button button-secondary" href="https://www.youtube.com/channel/UCp2Nq6qLfpgeFH5-8aRlFSQ" target="_blank" rel="noopener">YouTube</a>
-          </div>
         </div>
-        <div class="feature-list">
-          <article><strong>Read-only</strong><span>No token revocation, permission removal, endpoint changes or production write-back.</span></article>
-          <article><strong>Evidence-focused</strong><span>Findings remain explainable and unavailable evidence is not presented as clean.</span></article>
-          <article><strong>Sandbox-first</strong><span>Public package and installation details will be stated only when release proof exists.</span></article>
+        <div class="prose">
+          <p>A Salesforce-native application using LWC, Apex and sanitised in-org evidence. It supports security review without remediation or production security write-back.</p>
+          <p><a href="https://github.com/Fortmilo/security-observatory" target="_blank" rel="noopener">View the application repository</a></p>
         </div>
       </div>
     </section>
 
-    <section class="section section-contact section-compact" id="contact">
+    <section class="section section-contact" id="contact">
       <div class="container split">
         <div>
           <p class="section-label">Contact</p>
