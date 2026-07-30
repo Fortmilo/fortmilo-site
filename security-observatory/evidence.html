@@ -1,0 +1,112 @@
+---
+layout: default
+title: SBS and Evidence
+description: Scanner-family status, Security Benchmark for Salesforce control-identifier mapping, coverage states, comparison and safe export.
+permalink: /security-observatory/evidence.html
+nav_key: evidence
+---
+<section class="page-hero">
+  <div class="container page-hero-grid">
+    <div class="page-hero-copy">
+      <p class="eyebrow">SBS &amp; Evidence</p>
+      <h1>Evidence usability before framework mapping.</h1>
+      <p class="lead">The Observatory separates whether scanner families returned usable evidence from how retained evidence supports a Security Benchmark for Salesforce control identifier.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section section-accent">
+  <div class="container">
+    <div class="callout callout-critical">
+      <p><strong>The Observatory references Security Benchmark for Salesforce control identifiers to organise supporting evidence. It does not determine SBS compliance and produces no SBS pass/fail result.</strong></p>
+      <p>SBS defines formal, auditable security requirements. Observatory output is bounded supporting evidence only: no certification, formal compliance assessment, security guarantee or compliance score is produced.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-heading">
+      <p class="section-label">Three different evidence questions</p>
+      <h2>State vocabularies are not interchangeable</h2>
+      <p>This page explains scanner-family status and SBS coverage. Finding-level evidence states are documented separately on the <a href="{{ '/security-observatory/findings.html' | relative_url }}">Findings page</a>.</p>
+    </div>
+
+    <div class="axis-block">
+      <p class="axis-question">Did this scanner family return usable output?</p>
+      <h3>Scanner-family status</h3>
+      <ul class="state-list">
+        <li><strong>Evidence returned</strong><span>The family returned usable non-empty evidence for the scan context.</span></li>
+        <li><strong>Zero observed</strong><span>The family completed and explicitly observed zero matching records. This is different from missing output.</span></li>
+        <li><strong>Scanner issue</strong><span>The family encountered an error, unavailable source or other condition that prevented reliable evidence.</span></li>
+        <li><strong>Not assessed</strong><span>The family was not assessed in the stated scan context and must not be interpreted as clean.</span></li>
+      </ul>
+    </div>
+
+    <div class="axis-block">
+      <p class="axis-question">How does the Observatory support this SBS control?</p>
+      <h3>SBS coverage state</h3>
+      <ul class="state-list">
+        <li><strong>Automated</strong><span>The Observatory can collect the approved supporting evidence directly.</span></li>
+        <li><strong>Partial Evidence</strong><span>Useful evidence exists, but it does not fully verify the SBS requirement.</span></li>
+        <li><strong>Manual Required</strong><span>The requirement needs human verification beyond Observatory evidence.</span></li>
+        <li><strong>Not Covered</strong><span>The current implementation does not assess the requirement.</span></li>
+        <li><strong>Extended Check</strong><span>Useful Observatory evidence exists outside direct SBS control coverage.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container split">
+    <div>
+      <p class="section-label">Mapping model</p>
+      <h2>Local, version-bound identifiers</h2>
+    </div>
+    <div class="prose">
+      <p>Where implementation is validated, scanner output is associated with local SBS metadata and stable control identifiers. The mapping supports traceability; it does not copy a compliance decision into the application.</p>
+      <p>When an SBS version is shown, the application uses the version stored inside the loaded SBS XML metadata. It does not infer the version from a repository release tag.</p>
+      <p>No SBS control prose is reproduced on this site.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-heading">
+      <p class="section-label">Supporting evidence operations</p>
+      <h2>Review, compare and export safely</h2>
+    </div>
+    <div class="card-grid">
+      <article class="card">
+        <h3>Level-aware comparison</h3>
+        <p>Completed scans are compared only when both retained the same effective evidence level. Mismatched or missing levels do not imply resolved or improved evidence.</p>
+      </article>
+      <article class="card">
+        <h3>Sanitised CSV</h3>
+        <p>Retained evidence and SBS traceability use shared formula-injection-safe CSV sanitisation.</p>
+      </article>
+      <article class="card">
+        <h3>Supporting native evidence</h3>
+        <p>Health Check, Package Licence Capacity and other native evidence remain supporting rows rather than headline scores.</p>
+      </article>
+      <article class="card">
+        <h3>Truthful availability</h3>
+        <p>Unavailable or blocked evidence carries a reason, limitation and safe verification action instead of a bare Unknown or Error badge.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section section-accent">
+  <div class="container split">
+    <div>
+      <p class="section-label">Attribution</p>
+      <h2>Independent framework</h2>
+    </div>
+    <div class="prose">
+      <p>Security Benchmark for Salesforce (SBS) control identifiers are referenced under <a href="https://creativecommons.org/licenses/by-sa/4.0/" target="_blank" rel="noopener">CC BY-SA 4.0</a>. SBS is an independent project; see <a href="https://docs.securitybenchmark.org/" target="_blank" rel="noopener">the SBS documentation</a>.</p>
+      <p>No SBS control prose is reproduced. FortMilo Lab is not affiliated with or endorsed by the SBS project.</p>
+    </div>
+  </div>
+</section>
