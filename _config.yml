@@ -1,0 +1,26 @@
+title: FortMilo Lab
+description: Independent Salesforce security engineering and the Salesforce Security Observatory.
+url: https://fortmilo.co.uk
+baseurl: ""
+lang: en-GB
+timezone: Europe/London
+version: "2026-07-30"
+
+plugins:
+  - jekyll-sitemap
+
+exclude:
+  - README.md
+  - node_modules
+  - package-lock.json
+  - package.json
+  - scripts
+  - vendor
+  - Gemfile
+  - Gemfile.lock
+
+include:
+  - CNAME
+
+sass:
+  style: compressed
