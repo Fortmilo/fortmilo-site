@@ -26,7 +26,7 @@ export function footer() {
   return `<footer class="site-footer"><div class="container footer-grid"><div><p><strong>FortMilo Lab is an independent personal project and brand operated by Luca Pacini.</strong></p><p>Harpenden, Hertfordshire, United Kingdom.</p><p>Independent of and not endorsed by Salesforce, Inc. Salesforce is a trademark of Salesforce, Inc.</p></div><div><div class="footer-links"><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div><p>© 2026 Luca Pacini. All rights reserved.</p></div></div></footer>`;
 }
 
-export function page({ title, description, canonical, corporateActive, productActive, bodyClass = "", body, cssFile, ogImage = "/assets/fortmilo-security-observatory-og.png", noindex = false }) {
+export function page({ title, description, canonical, corporateActive, productActive, bodyClass = "", body, cssFile, ogImage = "/assets/fortmilo-security-observatory-og-v2.png", noindex = false }) {
   const fullTitle = title.includes("FortMilo") ? title : `${title} | FortMilo`;
   return `<!doctype html>
 <html lang="en-GB">
