@@ -1,0 +1,102 @@
+---
+layout: default
+title: Architecture and Security
+description: Salesforce-native architecture, self-callout pattern, no-data-egress boundary and sanitised evidence model.
+permalink: /security-observatory/architecture.html
+nav_key: architecture
+---
+<section class="page-hero">
+  <div class="container page-hero-grid">
+    <div class="page-hero-copy">
+      <p class="eyebrow">Architecture and security</p>
+      <h1>Runs inside Salesforce with a narrow evidence boundary.</h1>
+      <p class="lead">The Observatory is built around Lightning Web Components, Apex orchestration, scanner classes, subscriber-controlled platform access and sanitised in-org evidence.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-heading">
+      <p class="section-label">Execution path</p>
+      <h2>One Apex-owned scanner plan</h2>
+    </div>
+    <div class="flow" role="img" aria-label="Lightning Web Components dashboard to Apex controller, scan service, scanner classes and Salesforce platform reads">
+      <span>LWC dashboard</span><b>→</b><span>SecurityObservatoryController</span><b>→</b><span>SecurityScanService</span><b>→</b><span>Scanner classes</span><b>→</b><span>SOQL, Tooling API and metadata reads</span>
+    </div>
+    <div class="flow" style="margin-top:1rem" role="img" aria-label="Scanner output to sanitised Salesforce evidence objects and safe user interfaces">
+      <span>Scanner output</span><b>→</b><span>Security_Scan__c</span><b>→</b><span>Findings, metrics, details and assets</span><b>→</b><span>Dashboard DTOs</span><b>→</b><span>Safe drill-down and export</span>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-heading">
+      <p class="section-label">How it stays safe</p>
+      <h2>Six deliberate controls</h2>
+    </div>
+    <div class="card-grid">
+      <article class="card">
+        <h3>Read-only by design</h3>
+        <p>No token revocation, API blocking, permission removal, endpoint change, certificate rotation or production security write-back.</p>
+      </article>
+      <article class="card">
+        <h3>Runs in your organisation</h3>
+        <p>Scanning executes as Apex inside the subscriber Salesforce organisation and retained evidence stays there.</p>
+      </article>
+      <article class="card">
+        <h3>No third-party evidence destination</h3>
+        <p>The only supported callout pattern is a subscriber-authenticated self-callout to that organisation's own Salesforce Tooling API.</p>
+      </article>
+      <article class="card">
+        <h3>No secrets stored</h3>
+        <p>No access tokens, refresh tokens, session IDs, client secrets, certificate bodies, private keys, raw headers or raw IP values.</p>
+      </article>
+      <article class="card">
+        <h3>Least-privilege access</h3>
+        <p>Tooling-backed evidence uses subscriber-owned authentication and separate least-privilege principal access rather than a hard-coded credential.</p>
+      </article>
+      <article class="card">
+        <h3>Documented kill switch</h3>
+        <p>The subscriber can revoke or remove the self-callout principal. Tooling-backed evidence then degrades to a visible non-assessed state rather than a false clean result.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section section-accent">
+  <div class="container">
+    <div class="callout callout-critical">
+      <p><strong>No data egress to FortMilo Lab.</strong></p>
+      <p>Evidence is queried, sanitised and stored inside the subscriber Salesforce organisation. FortMilo Lab does not receive scan evidence, credentials or organisation data.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container split">
+    <div>
+      <p class="section-label">Self-callout prerequisite</p>
+      <h2>Subscriber-owned authentication</h2>
+    </div>
+    <div class="prose">
+      <p>Core SOQL-backed evidence can run without Tooling API authentication. Tooling-backed families require subscriber-specific setup using an Auth Provider, External Client App, External Credential, Named Credential and principal.</p>
+      <p>The core package must not own or overwrite subscriber OAuth configuration. Principal access is granted separately after the subscriber creates and authenticates the principal.</p>
+      <p>Missing, unauthenticated or insufficient setup must remain visible as a bounded non-clean state with a safe next action.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container split">
+    <div>
+      <p class="section-label">Public source boundary</p>
+      <h2>Curated, not mirrored</h2>
+    </div>
+    <div class="prose">
+      <p>The private implementation and its working history are not exposed directly. The public application repository is intended for selected sanitised source, architecture, setup guidance, synthetic examples, validation evidence and contribution material.</p>
+      <p>Package creation, installation proof and public distribution are claimed only when the relevant evidence exists.</p>
+    </div>
+  </div>
+</section>
