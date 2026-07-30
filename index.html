@@ -14,53 +14,42 @@
   <meta property="og:url" content="https://fortmilo.co.uk/">
   <meta property="og:locale" content="en_GB">
   <meta name="twitter:card" content="summary">
-  <link rel="stylesheet" href="styles.css?v=20260730-compact-nav">
+  <link rel="stylesheet" href="styles.css?v=20260730-nav-fix">
 </head>
 <body class="home-page">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="/" aria-label="FortMilo Lab home">
-        <img src="assets/fortmilo-logo.svg" alt="" width="980" height="240">
-      </a>
-      <nav aria-label="Main navigation">
-        <a aria-current="page" href="/">Home</a>
-        <a href="security-observatory/">Security Observatory</a>
-        <a href="mailto:info@fortmilo.co.uk">Contact</a>
-      </nav>
+      <a class="brand" href="/" aria-label="FortMilo Lab home"><img src="assets/fortmilo-logo.svg" alt="" width="980" height="240"></a>
+      <nav class="corporate-nav" aria-label="Corporate navigation">
+          <a aria-current="page" href="/">Home</a>
+          <a href="/security-observatory/">Security Observatory</a>
+          <a href="/architecture-security.html">Architecture &amp; Security</a>
+          <a href="mailto:info@fortmilo.co.uk">Contact</a>
+        </nav>
     </div>
   </header>
-
   <main id="main">
     <section class="hero">
       <div class="container hero-grid">
         <div class="hero-copy">
           <p class="eyebrow">Independent Salesforce security engineering</p>
           <h1>Evidence before assumptions.</h1>
-          <p class="lead">FortMilo Lab builds FortMilo Security Observatory: a sandbox-first, read-only Salesforce application for sanitised security evidence, findings and safe drill-down.</p>
-          <p class="home-note"><strong>No data egress:</strong> scanning and retained evidence stay inside the subscriber Salesforce organisation. No remediation or production security write-back.</p>
+          <p class="lead">FortMilo Lab builds FortMilo Security Observatory: a sandbox-first, read-only Salesforce application for sanitised security evidence and safe review.</p>
+          <p class="home-note"><strong>No data egress:</strong> scanning and retained evidence stay inside the subscriber Salesforce organisation.</p>
           <div class="actions">
-            <a class="button button-primary" href="security-observatory/">View Security Observatory</a>
-            <a class="button button-secondary" href="mailto:info@fortmilo.co.uk">info@fortmilo.co.uk</a>
+            <a class="button button-primary" href="/security-observatory/">View Security Observatory</a>
+            <a class="button button-secondary" href="mailto:info@fortmilo.co.uk">Contact</a>
           </div>
         </div>
-        <figure class="hero-logo">
-          <img src="assets/fortmilo-logo.svg" alt="FortMilo Lab shield and wordmark" width="980" height="240">
-        </figure>
+        <figure class="hero-logo"><img src="assets/fortmilo-logo.svg" alt="FortMilo Lab shield and wordmark" width="980" height="240"></figure>
       </div>
     </section>
   </main>
-
   <footer class="site-footer">
     <div class="container footer-grid">
-      <div>
-        <p><strong>FortMilo Lab</strong> is a trading name of Luca Pacini.</p>
-        <p>Independent organisation. Not affiliated with, endorsed by or sponsored by Salesforce, Inc.</p>
-      </div>
-      <div>
-        <p>Salesforce is a trademark of Salesforce, Inc.</p>
-        <p>© 2026 Luca Pacini trading as FortMilo Lab. All rights reserved.</p>
-      </div>
+      <div><p><strong>FortMilo Lab</strong> is a trading name of Luca Pacini.</p><p>Independent organisation. Not affiliated with, endorsed by or sponsored by Salesforce, Inc.</p></div>
+      <div><p>Salesforce is a trademark of Salesforce, Inc.</p><p>© 2026 Luca Pacini trading as FortMilo Lab. All rights reserved.</p></div>
     </div>
   </footer>
 </body>
