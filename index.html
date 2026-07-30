@@ -10,7 +10,7 @@
   <link rel="icon" type="image/webp" href="assets/fortmilo-logo.webp">
   <meta property="og:type" content="website">
   <meta property="og:title" content="FortMilo Lab | Salesforce Security Engineering">
-  <meta property="og:description" content="Read-only, evidence-focused Salesforce security engineering and the Salesforce Security Observatory.">
+  <meta property="og:description" content="Independent Salesforce security engineering and the Salesforce Security Observatory.">
   <meta property="og:url" content="https://fortmilo.co.uk/">
   <meta property="og:image" content="https://fortmilo.co.uk/assets/fortmilo-logo.webp">
   <meta property="og:locale" content="en_GB">
@@ -22,26 +22,25 @@
 
   <header class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="#top" aria-label="FortMilo Lab home">
-        <span><strong>FortMilo</strong> Lab</span>
+      <a class="brand" href="/" aria-label="FortMilo Lab home">
+        <img class="brand-logo" src="assets/fortmilo-logo.webp" alt="FortMilo Lab">
       </a>
       <nav aria-label="Main navigation">
-        <a href="#observatory">Observatory</a>
-        <a href="#coverage">Coverage</a>
-        <a href="#sbs">SBS</a>
-        <a href="#security">Security</a>
+        <a href="#about">About</a>
+        <a href="#observatory">Security Observatory</a>
+        <a href="/security-observatory/">Product guide</a>
         <a href="#contact">Contact</a>
       </nav>
     </div>
   </header>
 
   <main id="main">
-    <section class="hero" id="top">
+    <section class="hero">
       <div class="container hero-grid">
         <div class="hero-copy">
           <p class="eyebrow">Independent Salesforce security engineering</p>
           <h1>Evidence before assumptions.</h1>
-          <p class="lead">FortMilo Lab develops practical, read-only tooling that helps organisations understand and govern Salesforce security posture without automatically changing the org.</p>
+          <p class="lead">FortMilo Lab builds practical, read-only Salesforce security tooling that makes evidence easier to review without automatically changing the organisation.</p>
           <div class="badges" aria-label="Product principles">
             <span>Sandbox-first</span>
             <span>Read-only</span>
@@ -49,12 +48,46 @@
             <span>Sanitised evidence</span>
           </div>
           <div class="actions">
-            <a class="button button-primary" href="https://github.com/Fortmilo/security-observatory" target="_blank" rel="noopener">Public repository</a>
-            <a class="button button-secondary" href="mailto:info@fortmilo.co.uk">Contact FortMilo Lab</a>
+            <a class="button button-primary" href="/security-observatory/">Explore the Observatory</a>
+            <a class="button button-secondary" href="https://github.com/Fortmilo/security-observatory" target="_blank" rel="noopener">Public repository</a>
           </div>
         </div>
-        <div class="hero-visual">
-          <img src="assets/fortmilo-logo.webp" alt="FortMilo Lab" width="700" height="296">
+
+        <div class="cockpit" aria-label="Illustrative Security Observatory interface">
+          <div class="cockpit-label">Illustrative interface</div>
+          <div class="trust-row">
+            <span><b>Scan</b> Completed</span>
+            <span><b>Evidence</b> Usable with caveats</span>
+            <span><b>Mode</b> Read-only</span>
+          </div>
+          <div class="tab-row" aria-hidden="true">
+            <span class="active">Overview</span>
+            <span>Findings</span>
+            <span>SBS &amp; Evidence</span>
+            <span>Admin</span>
+          </div>
+          <div class="cockpit-grid">
+            <article class="signal signal-primary">
+              <small>Primary review</small>
+              <strong>OAuth grants requiring review</strong>
+              <p>Users and applications retaining OAuth authorisations.</p>
+            </article>
+            <article class="signal">
+              <small>Supporting evidence</small>
+              <strong>Credentials &amp; principals</strong>
+              <p>Named and External Credential context.</p>
+            </article>
+            <article class="signal">
+              <small>External surface</small>
+              <strong>Sites &amp; endpoints</strong>
+              <p>Public and outbound exposure signals.</p>
+            </article>
+            <article class="signal">
+              <small>Fourth-pinned evidence</small>
+              <strong>Privileged Access Evidence</strong>
+              <p>High-risk permission assignment context.</p>
+            </article>
+          </div>
         </div>
       </div>
     </section>
@@ -67,175 +100,46 @@
         </div>
         <div class="prose">
           <p>FortMilo Lab is an independent software and security engineering practice founded by Salesforce architect Luca Pacini.</p>
-          <p>Its work focuses on Salesforce platform security, identity, permissions, OAuth governance, integrations, evidence quality and secure delivery patterns.</p>
+          <p>The work focuses on Salesforce platform security, identity, permissions, OAuth governance, integrations, evidence quality and secure delivery patterns.</p>
         </div>
       </div>
     </section>
 
     <section class="section section-alt" id="observatory">
-      <div class="container">
-        <div class="section-heading">
+      <div class="container product-feature">
+        <div>
           <p class="section-label">Salesforce Security Observatory</p>
-          <h2>A Salesforce-native evidence layer for security review</h2>
-          <p>The Observatory combines an LWC dashboard, Apex orchestration, scanner classes, safe SOQL and Tooling API reads, and in-org storage of sanitised evidence.</p>
-        </div>
-
-        <div class="feature-grid feature-grid-three">
-          <article class="card">
-            <h3>Connected App Evidence Passport</h3>
-            <p>Per-application review of observed Connected App shells, retained OAuth grants requiring review, safe user associations, governance context and explicit source limitations.</p>
-          </article>
-          <article class="card">
-            <h3>Evidence and coverage</h3>
-            <p>Every source explains what was assessed, what was unavailable and the safe next verification step. Unknown or failed checks are never presented as a pass.</p>
-          </article>
-          <article class="card">
-            <h3>Retained review</h3>
-            <p>Bounded in-org scan retention, findings, safe drill-downs, source details, formula-injection-safe CSV export and like-for-like comparison where evidence levels match.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="coverage">
-      <div class="container">
-        <div class="section-heading">
-          <p class="section-label">Current evidence areas</p>
-          <h2>What the current implementation reviews</h2>
-          <p>Coverage depends on Salesforce edition, permissions, metadata availability and completion of the documented self-callout prerequisite.</p>
-        </div>
-
-        <div class="feature-grid">
-          <article class="card compact">
-            <h3>Identity and login posture</h3>
-            <p>Active, frozen, administrative, inactive and stale-login users; current sessions; failed logins; delegated administration; login access and identity-policy evidence where available.</p>
-          </article>
-          <article class="card compact">
-            <h3>OAuth and application exposure</h3>
-            <p>Connected Apps, retained OAuth authorisations, inactive or frozen-user associations and safe application-level evidence without testing credentials.</p>
-          </article>
-          <article class="card compact">
-            <h3>API and privilege exposure</h3>
-            <p>API Enabled access, high-risk permission evidence, assigned-user context and Data Exposure Permissions such as broad data access and export-style risk.</p>
-          </article>
-          <article class="card compact">
-            <h3>Credentials and endpoints</h3>
-            <p>Named Credentials, External Credentials, certificate inventory and expiry, outbound endpoint governance and principal context where safe evidence is available.</p>
-          </article>
-          <article class="card compact">
-            <h3>Sites and external surfaces</h3>
-            <p>Baseline Salesforce Site and Experience exposure evidence, external endpoints and public-facing configuration signals. Deep guest-user exposure is not claimed.</p>
-          </article>
-          <article class="card compact">
-            <h3>Licence capacity</h3>
-            <p>Package Licence Capacity, Permission Set Licence and Salesforce User Licence visibility, including totals, use and remaining capacity where the platform exposes it.</p>
-          </article>
-          <article class="card compact">
-            <h3>Administrative change evidence</h3>
-            <p>Setup Audit Trail evidence for sensitive administrative changes, with sanitised findings and links back to the appropriate Salesforce verification path.</p>
-          </article>
-          <article class="card compact">
-            <h3>Supporting Salesforce evidence</h3>
-            <p>Health Check and other native security evidence remain supporting sources rather than headline scores. The Observatory complements Salesforce-native products instead of cloning them.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section section-accent" id="sbs">
-      <div class="container split">
-        <div>
-          <p class="section-label">Security Benchmark for Salesforce</p>
-          <h2>SBS-aligned evidence without a compliance claim</h2>
-        </div>
-        <div class="prose">
-          <p>Scanner output is mapped to local, version-bound Security Benchmark for Salesforce metadata where implementation is validated.</p>
-          <ul class="check-list">
-            <li><strong>Automated</strong> — the Observatory can collect the approved evidence directly.</li>
-            <li><strong>Partial Evidence</strong> — useful evidence exists, but it does not fully verify the control.</li>
-            <li><strong>Manual Required</strong> — the control requires human verification.</li>
-            <li><strong>Not Covered</strong> — the current implementation does not assess it.</li>
-            <li><strong>Extended Check</strong> — useful Observatory evidence exists outside direct SBS control coverage.</li>
-          </ul>
-          <p class="note">SBS alignment is evidence support, not certification, formal compliance scoring or a pass/fail audit result.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="difference">
-      <div class="container split">
-        <div>
-          <p class="section-label">Product position</p>
-          <h2>Designed to complement Salesforce security products</h2>
-        </div>
-        <div class="prose">
-          <p>Security Center Essentials is Salesforce's native starting point for key security metrics. The Observatory adds a different evidence workflow: OAuth-focused review, retained explainable evidence, explicit coverage states, safe drill-downs, comparison and sanitised export.</p>
-          <p>It does not replace Security Center Essentials, Security Center, Shield, Event Monitoring, Transaction Security, specialist security products or professional review.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section section-alt" id="architecture">
-      <div class="container">
-        <div class="section-heading">
-          <p class="section-label">Architecture</p>
-          <h2>Runs inside Salesforce</h2>
-        </div>
-        <div class="architecture" role="img" aria-label="LWC dashboard to Apex controller and scan service, scanner classes, safe Salesforce queries, and sanitised evidence objects">
-          <span>LWC dashboard</span>
-          <b>→</b>
-          <span>Apex controller and scan service</span>
-          <b>→</b>
-          <span>Scanner classes</span>
-          <b>→</b>
-          <span>SOQL, Tooling API and safe metadata reads</span>
-          <b>→</b>
-          <span>Sanitised in-org evidence</span>
-        </div>
-      </div>
-    </section>
-
-    <section class="section" id="security">
-      <div class="container">
-        <div class="section-heading">
-          <p class="section-label">Security boundaries</p>
-          <h2>Read-only first, with explicit limits</h2>
-        </div>
-        <div class="feature-grid feature-grid-three">
-          <article class="card">
-            <h3>No automated remediation</h3>
-            <p>No token revocation, API blocking, permission removal, endpoint changes, certificate rotation or production write-back.</p>
-          </article>
-          <article class="card">
-            <h3>No attacker-useful evidence</h3>
-            <p>No access tokens, refresh tokens, session IDs, client secrets, certificate bodies, private keys, raw IP values or raw sensitive headers.</p>
-          </article>
-          <article class="card">
-            <h3>Safe degradation</h3>
-            <p>Tooling-backed scanners use a Named Credential self-callout. Missing or insufficient setup produces a clear “Not assessed” state rather than a false clean result.</p>
-          </article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section section-status" id="status">
-      <div class="container split">
-        <div>
-          <p class="section-label">Release status</p>
-          <h2>Active development and private validation</h2>
-        </div>
-        <div class="prose">
-          <p>The private implementation is being hardened for a curated public release. The public repository is a sanitised documentation, validation and contribution surface; it is not a mirror of the private repository or its Git history.</p>
-          <p>A generally available package and AppExchange listing are not yet claimed. Installation should remain sandbox-first until release readiness and clean-org proof are complete.</p>
+          <h2>A native evidence layer for security review</h2>
+          <p class="section-intro">The Observatory uses Lightning Web Components, Apex, safe SOQL and Tooling API reads, and in-org storage of sanitised evidence. It is designed to help operators answer what needs attention, what evidence supports it and where to verify it in Salesforce.</p>
           <div class="actions">
-            <a class="button button-primary" href="https://github.com/Fortmilo/security-observatory" target="_blank" rel="noopener">View the public repository</a>
-            <a class="button button-secondary" href="https://www.youtube.com/@FortMiloLab" target="_blank" rel="noopener">Follow on YouTube</a>
+            <a class="button button-primary" href="/security-observatory/">Open the product guide</a>
+            <a class="button button-secondary" href="https://www.youtube.com/channel/UCp2Nq6qLfpgeFH5-8aRlFSQ" target="_blank" rel="noopener">YouTube</a>
           </div>
         </div>
+        <div class="feature-list">
+          <article><strong>Overview cockpit</strong><span>Trust, prioritisation and OAuth-first evidence.</span></article>
+          <article><strong>Findings</strong><span>Filterable triage with safe drill-down and review context.</span></article>
+          <article><strong>SBS &amp; Evidence</strong><span>Coverage states, scanner usability, comparison and export.</span></article>
+          <article><strong>Admin</strong><span>Evidence level, retention, schedules and safe recovery.</span></article>
+        </div>
       </div>
     </section>
 
-    <section class="section" id="contact">
+    <section class="section" id="principles">
+      <div class="container">
+        <div class="section-heading">
+          <p class="section-label">Operating principles</p>
+          <h2>Bounded by evidence and least privilege</h2>
+        </div>
+        <div class="feature-grid feature-grid-three">
+          <article class="card"><h3>No automated remediation</h3><p>No token revocation, API blocking, permission removal, endpoint changes or production security write-back.</p></article>
+          <article class="card"><h3>No attacker-useful evidence</h3><p>No access tokens, session IDs, client secrets, certificate bodies, private keys or raw sensitive values.</p></article>
+          <article class="card"><h3>No false clean</h3><p>Unavailable or blocked evidence is shown as not assessed with a reason and safe next action.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-contact" id="contact">
       <div class="container split">
         <div>
           <p class="section-label">Contact</p>
@@ -243,7 +147,7 @@
         </div>
         <div class="prose">
           <p><a class="contact-email" href="mailto:info@fortmilo.co.uk">info@fortmilo.co.uk</a></p>
-          <p class="note">This site does not use contact forms, user accounts or payment processing. Information sent by email is used to respond to the enquiry and maintain relevant business records. It is not sold or used for unrelated marketing.</p>
+          <p class="note">The site does not use contact forms, user accounts or payment processing. Information sent by email is used to respond to the enquiry and maintain relevant business records.</p>
         </div>
       </div>
     </section>
@@ -256,7 +160,7 @@
         <p>Independent organisation. Not affiliated with, endorsed by or sponsored by Salesforce, Inc.</p>
       </div>
       <div>
-        <p>Security Benchmark for Salesforce control references remain the work of the independent SBS project and are used under its applicable licence.</p>
+        <p>Security Benchmark for Salesforce references remain the work of the independent SBS project.</p>
         <p>© 2026 Luca Pacini trading as FortMilo Lab. All rights reserved.</p>
       </div>
     </div>
