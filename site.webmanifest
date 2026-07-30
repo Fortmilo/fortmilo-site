@@ -2,19 +2,11 @@
   "name": "FortMilo",
   "short_name": "FortMilo",
   "start_url": "/",
-  "display": "browser",
+  "display": "standalone",
   "background_color": "#07101d",
   "theme_color": "#07101d",
   "icons": [
-    {
-      "src": "/assets/android-chrome-192x192.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "/assets/android-chrome-512x512.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
+    {"src": "/assets/favicon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "/assets/favicon-512.png", "sizes": "512x512", "type": "image/png"}
   ]
 }

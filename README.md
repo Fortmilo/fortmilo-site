@@ -2,29 +2,36 @@
 
 Source for [fortmilo.co.uk](https://fortmilo.co.uk), published from the `main` branch through GitHub Pages.
 
+FortMilo Lab is an independent personal project and brand operated by Luca Pacini in Harpenden, Hertfordshire, United Kingdom.
+
 ## Build
 
-The site uses a local Node.js generator with no external dependencies.
+The site uses a local Node.js static generator with no external dependencies.
 
 ```bash
 npm run build
+npm run validate
 npm run check
 ```
 
-- `build.mjs` owns the shared layout, metadata, sitemap generation and validation.
-- Page-specific `<main>` content stays in the committed HTML so the site remains deployable without a build service.
-- Generated HTML, sitemap and manifest files are committed.
-- The stylesheet query token is generated from the SHA-256 hash of `styles.css`.
+- Page content stays in the generated HTML; shared layout is applied from one template source.
+- `site-src/templates.mjs` owns the shared header, product navigation, metadata and footer.
+- `site-src/site-map.mjs` owns routes and active navigation.
+- `scripts/build-site.mjs` applies shared layout, generates the stylesheet asset, sitemap and static hosting files.
+- `scripts/validate-site.mjs` checks routes, metadata, shared navigation, product wording and public-safety constraints.
 - No GitHub Actions workflow is required.
 
 ## Boundaries
 
-- Corporate and product guide only.
+- Corporate site and Security Observatory product guide only.
 - No customer data, org evidence, credentials, tokens, session IDs, secrets, certificate bodies, private keys, raw IP addresses or production screenshots.
-- Product screenshots must come from a sanitised clean-org evidence set.
+- Product screenshots must come from a sanitised evidence set.
 - Security Observatory remains read-only, sandbox-first and advisory.
 - The public product repository is a curated release surface, not a mirror of private implementation history.
 
 ## Contact
 
-[info@fortmilo.co.uk](mailto:info@fortmilo.co.uk)
+- Luca Pacini
+- Individual applicant and operator of FortMilo Lab
+- Harpenden, Hertfordshire, United Kingdom
+- [info@fortmilo.co.uk](mailto:info@fortmilo.co.uk)

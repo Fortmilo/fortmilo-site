@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node build.mjs",
-    "check": "node build.mjs --check"
+    "build": "node scripts/build-site.mjs",
+    "validate": "node scripts/validate-site.mjs",
+    "check": "npm run build && npm run validate"
   }
 }
