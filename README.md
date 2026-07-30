@@ -6,7 +6,7 @@ FortMilo Lab is an independent personal project and brand operated by Luca Pacin
 
 ## Build
 
-The site uses a local Node.js static generator with no external dependencies.
+The site uses a local Node.js static generator with no external dependencies. Generated HTML and static assets are committed to `main`; GitHub Pages does not run a custom build workflow.
 
 ```bash
 npm run build
