@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>FortMilo Lab | Salesforce Security Engineering</title>
-  <meta name="description" content="FortMilo Lab develops read-only, evidence-focused Salesforce security tooling, including FortMilo Security Observatory.">
+  <meta name="description" content="FortMilo Lab develops FortMilo Security Observatory, a read-only Salesforce security evidence application.">
   <meta name="author" content="FortMilo Lab">
   <link rel="canonical" href="https://fortmilo.co.uk/">
   <link rel="icon" type="image/svg+xml" href="assets/fortmilo-logo.svg">
@@ -14,9 +14,9 @@
   <meta property="og:url" content="https://fortmilo.co.uk/">
   <meta property="og:locale" content="en_GB">
   <meta name="twitter:card" content="summary">
-  <link rel="stylesheet" href="styles.css?v=20260730-guide">
+  <link rel="stylesheet" href="styles.css?v=20260730-compact-nav">
 </head>
-<body>
+<body class="home-page">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <div class="container header-inner">
@@ -26,7 +26,7 @@
       <nav aria-label="Main navigation">
         <a aria-current="page" href="/">Home</a>
         <a href="security-observatory/">Security Observatory</a>
-        <a href="#contact">Contact</a>
+        <a href="mailto:info@fortmilo.co.uk">Contact</a>
       </nav>
     </div>
   </header>
@@ -37,45 +37,16 @@
         <div class="hero-copy">
           <p class="eyebrow">Independent Salesforce security engineering</p>
           <h1>Evidence before assumptions.</h1>
-          <p class="lead">FortMilo Lab builds practical, read-only Salesforce security tooling for evidence-led review.</p>
+          <p class="lead">FortMilo Lab builds FortMilo Security Observatory: a sandbox-first, read-only Salesforce application for sanitised security evidence, findings and safe drill-down.</p>
+          <p class="home-note"><strong>No data egress:</strong> scanning and retained evidence stay inside the subscriber Salesforce organisation. No remediation or production security write-back.</p>
           <div class="actions">
-            <a class="button button-primary" href="security-observatory/">View the product guide</a>
-            <a class="button button-secondary" href="mailto:info@fortmilo.co.uk">Contact</a>
+            <a class="button button-primary" href="security-observatory/">View Security Observatory</a>
+            <a class="button button-secondary" href="mailto:info@fortmilo.co.uk">info@fortmilo.co.uk</a>
           </div>
         </div>
         <figure class="hero-logo">
           <img src="assets/fortmilo-logo.svg" alt="FortMilo Lab shield and wordmark" width="980" height="240">
         </figure>
-      </div>
-    </section>
-
-    <section class="section section-alt" id="observatory">
-      <div class="container split">
-        <div>
-          <p class="section-label">FortMilo Security Observatory</p>
-          <h2>Read-only Salesforce security evidence</h2>
-        </div>
-        <div class="prose">
-          <p>A Salesforce-native application using LWC, Apex and sanitised in-org evidence. It supports security review without remediation or production security write-back.</p>
-          <p><strong>No data egress:</strong> scanning and retained evidence stay inside the subscriber Salesforce organisation. Evidence is not transmitted to FortMilo Lab.</p>
-          <p>The product remains sandbox-first while public package distribution and clean-install evidence are completed.</p>
-          <div class="actions">
-            <a class="button button-primary" href="security-observatory/">Read the product guide</a>
-            <a class="button button-secondary" href="https://github.com/Fortmilo/security-observatory" target="_blank" rel="noopener">Public application repository</a>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section section-contact" id="contact">
-      <div class="container split">
-        <div>
-          <p class="section-label">Contact</p>
-          <h2>FortMilo Lab enquiries</h2>
-        </div>
-        <div class="prose">
-          <p><a class="contact-email" href="mailto:info@fortmilo.co.uk">info@fortmilo.co.uk</a></p>
-        </div>
       </div>
     </section>
   </main>
