@@ -1,0 +1,15 @@
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand" href="{{ '/' | relative_url }}" aria-label="FortMilo Lab home">
+      <img src="{{ '/assets/fortmilo-logo.svg' | relative_url }}" alt="" width="980" height="240">
+    </a>
+    <nav class="site-nav" aria-label="Primary navigation">
+      <a href="{{ '/' | relative_url }}"{% if page.nav_key == 'home' %} aria-current="page"{% endif %}>Home</a>
+      <a href="{{ '/security-observatory/' | relative_url }}"{% if page.nav_key == 'observatory' %} aria-current="page"{% endif %}>Observatory</a>
+      <a href="{{ '/security-observatory/findings.html' | relative_url }}"{% if page.nav_key == 'findings' %} aria-current="page"{% endif %}>Findings</a>
+      <a href="{{ '/security-observatory/evidence.html' | relative_url }}"{% if page.nav_key == 'evidence' %} aria-current="page"{% endif %}>SBS &amp; Evidence</a>
+      <a href="{{ '/security-observatory/admin.html' | relative_url }}"{% if page.nav_key == 'admin' %} aria-current="page"{% endif %}>Admin</a>
+      <a href="{{ '/security-observatory/architecture.html' | relative_url }}"{% if page.nav_key == 'architecture' %} aria-current="page"{% endif %}>Architecture</a>
+    </nav>
+  </div>
+</header>
