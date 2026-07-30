@@ -1,0 +1,14 @@
+{
+  "name": "fortmilo-site",
+  "version": "1.0.0",
+  "private": true,
+  "description": "FortMilo Lab corporate and Salesforce Security Observatory public site",
+  "type": "module",
+  "scripts": {
+    "check:source": "node scripts/check-site.mjs source",
+    "check:built": "node scripts/check-site.mjs built _site"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

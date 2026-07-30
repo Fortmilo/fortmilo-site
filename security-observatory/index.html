@@ -1,0 +1,147 @@
+---
+layout: default
+title: Salesforce Security Observatory
+description: Read-only Salesforce security evidence, findings, SBS control-identifier mapping and safe operational review.
+permalink: /security-observatory/
+nav_key: observatory
+---
+<section class="page-hero">
+  <div class="container page-hero-grid">
+    <div class="page-hero-copy">
+      <p class="eyebrow">Salesforce Security Observatory</p>
+      <h1>A security cockpit, not an evidence dump.</h1>
+      <p class="lead">The Observatory organises read-only Salesforce security evidence by operator intent: establish whether the scan is trustworthy, prioritise findings, inspect supporting evidence and manage safe scan controls.</p>
+      <div class="actions">
+        <a class="button button-primary" href="{{ '/security-observatory/findings.html' | relative_url }}">Explore Findings</a>
+        <a class="button button-secondary" href="https://github.com/Fortmilo/security-observatory" target="_blank" rel="noopener">Public application repository</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container split">
+    <div>
+      <p class="section-label">What it is</p>
+      <h2>An in-org evidence layer</h2>
+    </div>
+    <div class="prose">
+      <p>The Observatory combines a Lightning Web Components dashboard, Apex orchestration, scanner classes, Salesforce platform reads and sanitised evidence objects.</p>
+      <p>Its purpose is to make security review easier to explain and repeat. It does not remediate the organisation, verify credentials by attempting to use them or move evidence to a FortMilo-hosted service.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-heading">
+      <p class="section-label">What the current implementation adds</p>
+      <h2>Evidence that remains bounded by what Salesforce exposes</h2>
+      <p>The product is deliberately positioned around evidence quality and safe review rather than a broad security score.</p>
+    </div>
+    <div class="card-grid">
+      <article class="card">
+        <span class="card-kicker">OAuth-first review</span>
+        <h3>OAuth grants requiring review</h3>
+        <p>Retained authorisation records are associated with users and applications without being described as live or usable credentials.</p>
+      </article>
+      <article class="card">
+        <span class="card-kicker">Application evidence</span>
+        <h3>Connected App Evidence Passport</h3>
+        <p>Application identity, authorisation context, safe user associations, governance context and source limitations are brought into one bounded view.</p>
+      </article>
+      <article class="card">
+        <span class="card-kicker">Coverage honesty</span>
+        <h3>Explicit non-assessed states</h3>
+        <p>Blocked, unavailable or unretained evidence is not converted into zero, clean, passed or low-risk output.</p>
+      </article>
+      <article class="card">
+        <span class="card-kicker">Supporting framework</span>
+        <h3>SBS control-identifier mapping</h3>
+        <p>Validated evidence can be mapped to Security Benchmark for Salesforce control identifiers without asserting compliance or producing a pass/fail result.</p>
+      </article>
+      <article class="card">
+        <span class="card-kicker">Operational evidence</span>
+        <h3>Comparison and safe export</h3>
+        <p>Like-for-like retained scans can be compared at the same evidence level, and CSV output uses formula-injection-safe sanitisation.</p>
+      </article>
+      <article class="card">
+        <span class="card-kicker">Trust boundary</span>
+        <h3>No data egress</h3>
+        <p>Scanning and evidence storage remain inside the subscriber Salesforce organisation.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-heading">
+      <p class="section-label">Application structure</p>
+      <h2>Four operator sessions</h2>
+      <p>The public guide follows the same intent-based structure as the application.</p>
+    </div>
+    <div class="session-grid">
+      <article class="card">
+        <h3>Findings</h3>
+        <p>Triage, safe detail, evidence states, verification paths and advisory review status.</p>
+        <a class="card-link" href="{{ '/security-observatory/findings.html' | relative_url }}">Open Findings →</a>
+      </article>
+      <article class="card">
+        <h3>SBS &amp; Evidence</h3>
+        <p>Scanner-family status, SBS coverage, comparison, export and explicit non-compliance framing.</p>
+        <a class="card-link" href="{{ '/security-observatory/evidence.html' | relative_url }}">Open SBS &amp; Evidence →</a>
+      </article>
+      <article class="card">
+        <h3>Admin</h3>
+        <p>Evidence levels, retention, scheduled execution, stale-lock recovery and SBS registry controls.</p>
+        <a class="card-link" href="{{ '/security-observatory/admin.html' | relative_url }}">Open Admin →</a>
+      </article>
+      <article class="card">
+        <h3>Architecture</h3>
+        <p>Apex-owned execution, subscriber-controlled self-callout, sanitised storage and security boundaries.</p>
+        <a class="card-link" href="{{ '/security-observatory/architecture.html' | relative_url }}">Open Architecture →</a>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container split">
+    <div>
+      <p class="section-label">How it works</p>
+      <h2>One complete scanner plan</h2>
+    </div>
+    <div class="prose">
+      <ol class="steps">
+        <li>An authorised operator starts a manual scan or an enabled admin-managed schedule invokes the same scan path.</li>
+        <li>Apex orchestration runs the configured scanner plan and records sanitised status, metrics, findings and safe detail.</li>
+        <li>The selected evidence level controls retained and displayed depth; it does not select a different scanner list.</li>
+        <li>Operators review findings, supporting evidence, limitations, comparison and safe exports in Salesforce.</li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<section class="section section-accent" id="release-status">
+  <div class="container">
+    <div class="section-heading">
+      <p class="section-label">Release status</p>
+      <h2>Built privately; public release still curated</h2>
+    </div>
+    <div class="release-grid">
+      <article class="card">
+        <span class="status-tag status-implemented">Current implementation</span>
+        <p>The application, its package source and its private validation history exist. The public site describes only bounded, reviewed behaviour.</p>
+      </article>
+      <article class="card">
+        <span class="status-tag status-hardening">Public-release hardening</span>
+        <p>Curated source, clean-org installation proof, setup guidance and publication checks remain part of the release boundary.</p>
+      </article>
+      <article class="card">
+        <span class="status-tag status-not-implemented">Excluded from v1</span>
+        <p>No automatic remediation, token replay, formal compliance result, external evidence warehouse or production security write-back.</p>
+      </article>
+    </div>
+  </div>
+</section>

@@ -1,91 +1,81 @@
-<!doctype html>
-<html lang="en-GB">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FortMilo Lab | Salesforce Security Engineering</title>
-  <meta name="description" content="FortMilo Lab develops read-only, evidence-focused Salesforce security tooling, including the Salesforce Security Observatory.">
-  <meta name="author" content="FortMilo Lab">
-  <link rel="canonical" href="https://fortmilo.co.uk/">
-  <link rel="icon" type="image/svg+xml" href="assets/fortmilo-logo.svg">
-  <meta property="og:type" content="website">
-  <meta property="og:title" content="FortMilo Lab | Salesforce Security Engineering">
-  <meta property="og:description" content="Independent Salesforce security engineering and the Salesforce Security Observatory.">
-  <meta property="og:url" content="https://fortmilo.co.uk/">
-  <meta property="og:locale" content="en_GB">
-  <meta name="twitter:card" content="summary">
-  <link rel="stylesheet" href="styles.css?v=20260730-logo">
-</head>
-<body>
-  <a class="skip-link" href="#main">Skip to content</a>
-
-  <header class="site-header">
-    <div class="container header-inner">
-      <a class="brand" href="/" aria-label="FortMilo Lab home">
-        <img src="assets/fortmilo-logo.svg" alt="" width="980" height="240">
-      </a>
-      <nav aria-label="Main navigation">
-        <a href="#observatory">Security Observatory</a>
-        <a href="#contact">Contact</a>
-      </nav>
-    </div>
-  </header>
-
-  <main id="main">
-    <section class="hero">
-      <div class="container hero-grid">
-        <div class="hero-copy">
-          <p class="eyebrow">Independent Salesforce security engineering</p>
-          <h1>Evidence before assumptions.</h1>
-          <p class="lead">FortMilo Lab builds practical, read-only Salesforce security tooling for evidence-led review.</p>
-          <div class="actions">
-            <a class="button button-primary" href="#observatory">Security Observatory</a>
-            <a class="button button-secondary" href="mailto:info@fortmilo.co.uk">Contact</a>
-          </div>
-        </div>
-        <figure class="hero-logo">
-          <img src="assets/fortmilo-logo.svg" alt="FortMilo Lab shield and wordmark" width="980" height="240">
-        </figure>
-      </div>
-    </section>
-
-    <section class="section section-alt" id="observatory">
-      <div class="container split">
-        <div>
-          <p class="section-label">Salesforce Security Observatory</p>
-          <h2>Read-only Salesforce security evidence</h2>
-        </div>
-        <div class="prose">
-          <p>A Salesforce-native application using LWC, Apex and sanitised in-org evidence. It supports security review without remediation or production security write-back.</p>
-          <p><strong>No data egress:</strong> evidence is queried and stored inside the Salesforce organisation and is not transmitted to FortMilo Lab.</p>
-          <p><a href="https://github.com/Fortmilo/security-observatory" target="_blank" rel="noopener">View the application repository</a></p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section section-contact" id="contact">
-      <div class="container split">
-        <div>
-          <p class="section-label">Contact</p>
-          <h2>FortMilo Lab enquiries</h2>
-        </div>
-        <div class="prose">
-          <p><a class="contact-email" href="mailto:info@fortmilo.co.uk">info@fortmilo.co.uk</a></p>
-        </div>
-      </div>
-    </section>
-  </main>
-
-  <footer class="site-footer">
-    <div class="container footer-grid">
-      <div>
-        <p><strong>FortMilo Lab</strong> is a trading name of Luca Pacini.</p>
-        <p>Independent organisation. Not affiliated with, endorsed by or sponsored by Salesforce, Inc.</p>
-      </div>
-      <div>
-        <p>© 2026 Luca Pacini trading as FortMilo Lab. All rights reserved.</p>
+---
+layout: default
+title: FortMilo Lab
+description: Independent Salesforce security engineering and the Salesforce Security Observatory.
+permalink: /
+nav_key: home
+---
+<section class="hero">
+  <div class="container hero-grid">
+    <div class="hero-copy">
+      <p class="eyebrow">Independent Salesforce security engineering</p>
+      <h1>Evidence before assumptions.</h1>
+      <p class="lead">FortMilo Lab develops practical Salesforce security tooling that keeps evidence inside the organisation and leaves security decisions with the people accountable for them.</p>
+      <div class="actions">
+        <a class="button button-primary" href="{{ '/security-observatory/' | relative_url }}">Explore the Observatory</a>
+        <a class="button button-secondary" href="mailto:info@fortmilo.co.uk">Contact FortMilo Lab</a>
       </div>
     </div>
-  </footer>
-</body>
-</html>
+    <figure class="hero-logo">
+      <img src="{{ '/assets/fortmilo-logo.svg' | relative_url }}" alt="FortMilo Lab shield and wordmark" width="980" height="240">
+    </figure>
+  </div>
+</section>
+
+<section class="section section-compact" id="principles">
+  <div class="container">
+    <div class="section-heading">
+      <p class="section-label">Operating principles</p>
+      <h2>A narrow security boundary</h2>
+    </div>
+    <div class="principle-grid">
+      <article class="card">
+        <span class="card-kicker">Read-only</span>
+        <h3>No security write-back</h3>
+        <p>No token revocation, permission removal, API blocking, endpoint change or automatic remediation.</p>
+      </article>
+      <article class="card">
+        <span class="card-kicker">No data egress</span>
+        <h3>Evidence remains in Salesforce</h3>
+        <p>Scanning and retained evidence stay inside the subscriber organisation. Nothing is transmitted to FortMilo Lab.</p>
+      </article>
+      <article class="card">
+        <span class="card-kicker">Sanitised evidence</span>
+        <h3>No attacker-useful values</h3>
+        <p>No access tokens, session IDs, client secrets, certificate bodies, private keys or raw sensitive values.</p>
+      </article>
+      <article class="card">
+        <span class="card-kicker">Sandbox-first</span>
+        <h3>Proof before release claims</h3>
+        <p>Public installation and package support are stated only after the required clean-org and release evidence exists.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt" id="observatory">
+  <div class="container split">
+    <div>
+      <p class="section-label">Salesforce Security Observatory</p>
+      <h2>Read-only Salesforce security evidence</h2>
+    </div>
+    <div class="prose">
+      <p>The Observatory is a Salesforce-native application built with Lightning Web Components, Apex orchestration, scanner classes, platform reads and sanitised in-org evidence.</p>
+      <p>It supports OAuth and integration review, findings triage, Security Benchmark for Salesforce control-identifier mapping, evidence coverage, safe export and bounded operational review without presenting itself as a compliance engine.</p>
+      <p><a href="{{ '/security-observatory/' | relative_url }}">Read the product overview</a> · <a href="https://github.com/Fortmilo/security-observatory" target="_blank" rel="noopener">View the public application repository</a></p>
+    </div>
+  </div>
+</section>
+
+<section class="section section-contact" id="contact">
+  <div class="container split">
+    <div>
+      <p class="section-label">Contact</p>
+      <h2>FortMilo Lab enquiries</h2>
+    </div>
+    <div class="prose">
+      <p><a class="contact-email" href="mailto:info@fortmilo.co.uk">info@fortmilo.co.uk</a></p>
+      <p>Use this address for product, security, privacy or collaboration enquiries.</p>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,108 @@
+---
+layout: default
+title: Admin
+description: Evidence levels, scan execution, retention, scheduled scans, stale-lock recovery and SBS registry controls.
+permalink: /security-observatory/admin.html
+nav_key: admin
+---
+<section class="page-hero">
+  <div class="container page-hero-grid">
+    <div class="page-hero-copy">
+      <p class="eyebrow">Admin</p>
+      <h1>Safe controls around one complete scan plan.</h1>
+      <p class="lead">The Admin session manages evidence depth, bounded retention, scheduled execution and recovery of stale Observatory scan state. It does not manage Salesforce security remediation.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container split">
+    <div>
+      <p class="section-label">Evidence levels</p>
+      <h2>Depth, not scanner selection</h2>
+    </div>
+    <div class="prose">
+      <p>Every manual, scheduled and supported API-triggered scan uses the same Apex-owned scanner plan. Evidence level changes what is retained, displayed, compared and exported.</p>
+      <ul class="state-list">
+        <li><strong>Top Issues</strong><span>Retains and displays the highest-value evidence.</span></li>
+        <li><strong>Balanced</strong><span>Adds safe drill-down evidence to the top-issue view.</span></li>
+        <li><strong>Everything</strong><span>Retains full-detail evidence and therefore uses the most storage.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-heading">
+      <p class="section-label">Scan operations</p>
+      <h2>Manual and scheduled execution share the same path</h2>
+    </div>
+    <div class="card-grid">
+      <article class="card">
+        <h3>One Scan action</h3>
+        <p>Client code does not own a second scanner list. Normal supported triggers invoke the same Apex-owned scan plan.</p>
+      </article>
+      <article class="card">
+        <h3>Scheduled scans</h3>
+        <p>Admin-managed scheduling is disabled by default, uses fixed Weekly or Monthly presets and prevents overlapping scans. No free-form CRON input is exposed.</p>
+      </article>
+      <article class="card">
+        <h3>Visible execution status</h3>
+        <p>The Admin surface shows schedule state, next run, last run and last result using bounded sanitised status.</p>
+      </article>
+    </div>
+    <div class="callout" style="margin-top:1rem">
+      <strong>Public-install qualification.</strong>
+      Admin-managed scheduled scans are implemented in the current package source. Support through the public installation path remains subject to clean-org installation proof.
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container split">
+    <div>
+      <p class="section-label">Retention</p>
+      <h2>Bounded completed-scan history</h2>
+    </div>
+    <div class="prose">
+      <p>Administrators can select a completed-scan retention limit from 1 to 10, with bounded defaults and a tighter Developer Edition rule for Everything evidence.</p>
+      <p>Old detail, metric and finding evidence is removed before the parent scan record. Failed, queued or running scans are not treated as completed clean baselines.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-heading">
+      <p class="section-label">Recovery and registry</p>
+      <h2>Operational recovery without remediation</h2>
+    </div>
+    <div class="card-grid">
+      <article class="card">
+        <h3>Stale scan-lock recovery</h3>
+        <p>An authorised administrator can close a confirmed orphan Queued or Running scan to a bounded Failed state when no active scan-lifecycle job remains.</p>
+      </article>
+      <article class="card">
+        <h3>No active-job cancellation</h3>
+        <p>Recent, active or ambiguous scan locks remain protected. The UI does not expose raw scan IDs or AsyncApexJob IDs.</p>
+      </article>
+      <article class="card">
+        <h3>SBS registry controls</h3>
+        <p>Bundled local SBS metadata can be managed through controlled administrator upload without internet update checks or automatic remapping.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section section-accent">
+  <div class="container split">
+    <div>
+      <p class="section-label">Permission boundary</p>
+      <h2>Admin-only and still read-only</h2>
+    </div>
+    <div class="prose">
+      <p>Configuration and recovery controls are permission gated. They govern Observatory execution and evidence storage only; they do not revoke tokens, remove permissions, block APIs or alter endpoints.</p>
+    </div>
+  </div>
+</section>

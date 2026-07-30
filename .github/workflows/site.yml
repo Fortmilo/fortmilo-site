@@ -1,0 +1,102 @@
+name: Build, validate and deploy FortMilo site
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "24"
+
+      - name: Validate source contract
+        run: npm run check:source
+
+      - name: Configure GitHub Pages
+        id: pages
+        uses: actions/configure-pages@v5
+
+      - name: Build with Jekyll
+        uses: actions/jekyll-build-pages@v1
+        with:
+          source: ./
+          destination: ./_site
+
+      - name: Validate built site
+        run: npm run check:built
+
+      - name: Upload GitHub Pages artifact
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: ./_site
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  smoke-test:
+    if: github.event_name != 'pull_request'
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify published routes
+        shell: bash
+        run: |
+          set -euo pipefail
+          routes=(
+            "/"
+            "/security-observatory/"
+            "/security-observatory/findings.html"
+            "/security-observatory/evidence.html"
+            "/security-observatory/admin.html"
+            "/security-observatory/architecture.html"
+            "/privacy.html"
+            "/terms.html"
+            "/robots.txt"
+            "/sitemap.xml"
+          )
+
+          for route in "${routes[@]}"; do
+            url="https://fortmilo.co.uk${route}"
+            success=false
+            for attempt in {1..18}; do
+              status="$(curl --location --silent --show-error --output /dev/null --write-out '%{http_code}' "$url" || true)"
+              if [[ "$status" == "200" ]]; then
+                success=true
+                break
+              fi
+              sleep 10
+            done
+
+            if [[ "$success" != "true" ]]; then
+              echo "Published route failed: $url"
+              exit 1
+            fi
+          done
