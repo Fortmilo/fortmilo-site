@@ -1,0 +1,106 @@
+---
+layout: default
+title: Findings
+description: Finding triage, safe drill-down, evidence states and advisory review in the Salesforce Security Observatory.
+permalink: /security-observatory/findings.html
+nav_key: findings
+---
+<section class="page-hero">
+  <div class="container page-hero-grid">
+    <div class="page-hero-copy">
+      <p class="eyebrow">Findings</p>
+      <h1>Triage first. Detail on demand.</h1>
+      <p class="lead">The Findings session groups retained evidence for operator review, supports filtering and opens bounded detail without rendering every retained row in the main flow.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-heading">
+      <p class="section-label">Finding workflow</p>
+      <h2>What an operator can do</h2>
+    </div>
+    <div class="card-grid">
+      <article class="card">
+        <span class="status-tag status-implemented">Implemented</span>
+        <h3>Filter and prioritise</h3>
+        <p>Focus retained findings by severity, finding area, review state and supporting SBS or Extended Check context.</p>
+      </article>
+      <article class="card">
+        <span class="status-tag status-implemented">Implemented</span>
+        <h3>Open safe detail</h3>
+        <p>Review evidence summary, source, limitation, verification route and bounded supporting rows in a detail surface.</p>
+      </article>
+      <article class="card">
+        <span class="status-tag status-implemented">Implemented</span>
+        <h3>Record advisory review</h3>
+        <p>Review status supports operational follow-up without changing Salesforce permissions, sessions, applications or endpoints.</p>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container split">
+    <div>
+      <p class="section-label">Finding evidence states</p>
+      <h2>What evidence applies to this finding?</h2>
+    </div>
+    <div class="prose">
+      <p>These labels describe finding or detail evidence. They are not scanner-family status labels and they are not SBS coverage states.</p>
+      <ul class="state-list">
+        <li><strong>None found</strong><span>The relevant check completed and no matching evidence was observed.</span></li>
+        <li><strong>Not assessed</strong><span>The evidence could not be assessed for the stated reason.</span></li>
+        <li><strong>Not assessed at this evidence level</strong><span>The configured evidence depth did not assess or retain the detail required for this view.</span></li>
+        <li><strong>Not captured</strong><span>The source did not capture the evidence required to support the finding detail.</span></li>
+        <li><strong>Unavailable</strong><span>The source or query could not be accessed reliably at the time of assessment.</span></li>
+        <li><strong>Not applicable</strong><span>The evidence question does not apply in the stated context.</span></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-heading">
+      <p class="section-label">Implementation boundary</p>
+      <h2>Only two public implementation states</h2>
+      <p>Public capability wording uses a binary state. Nuance belongs in the supporting explanation, not in a vague “partial” badge.</p>
+    </div>
+    <div class="card-grid">
+      <article class="card">
+        <span class="status-tag status-implemented">Implemented</span>
+        <h3>Evidence-led finding review</h3>
+        <p>Findings can carry source, limitation, verification help, review status and safe retained detail where the scan produced usable evidence.</p>
+      </article>
+      <article class="card">
+        <span class="status-tag status-not-implemented">Not implemented</span>
+        <h3>Automatic security changes</h3>
+        <p>The Findings session does not revoke tokens, remove permissions, block APIs, change endpoints or attempt remediation.</p>
+      </article>
+      <article class="card">
+        <span class="status-tag status-not-implemented">Not implemented</span>
+        <h3>Credential replay or token testing</h3>
+        <p>The Observatory does not test whether a retained authorisation works by attempting to use the credential.</p>
+      </article>
+    </div>
+    <div class="callout" style="margin-top:1rem">
+      <strong>Domain catalogue intentionally withheld.</strong>
+      A public domain-by-domain implementation catalogue will be published only after current scanner validation supports a truthful binary status for every listed domain.
+    </div>
+  </div>
+</section>
+
+<section class="section section-accent">
+  <div class="container split">
+    <div>
+      <p class="section-label">Evidence boundary</p>
+      <h2>Missing evidence never becomes a clean result</h2>
+    </div>
+    <div class="prose">
+      <p>A blocked source, unavailable query or unassessed detail remains visible as a bounded non-clean state with a reason and a safe next action.</p>
+      <p>A retained OAuth authorisation record is not described as a live or usable token unless separate retained platform evidence proves that narrower statement.</p>
+    </div>
+  </div>
+</section>
