@@ -3,68 +3,82 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>FortMilo Security Observatory | Product Guide</title>
-  <meta name="description" content="Product guide for FortMilo Security Observatory, organised around five Salesforce security review areas.">
+  <title>Security Observatory by FortMilo | Overview</title>
+  <meta name="description" content="Overview of Security Observatory by FortMilo: read-only Salesforce security evidence across findings, identity, external connections, entitlements and coverage.">
+  <meta name="author" content="FortMilo">
+  <meta name="theme-color" content="#07101d">
   <link rel="canonical" href="https://fortmilo.co.uk/security-observatory/">
-  <link rel="icon" type="image/svg+xml" href="../assets/fortmilo-logo.svg">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/svg+xml" href="/assets/fortmilo-mark.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="FortMilo Security Observatory | Product Guide">
-  <meta property="og:description" content="Read-only Salesforce security evidence across five focused review areas.">
+  <meta property="og:title" content="Security Observatory by FortMilo | Overview">
+  <meta property="og:description" content="Overview of Security Observatory by FortMilo: read-only Salesforce security evidence across findings, identity, external connections, entitlements and coverage.">
   <meta property="og:url" content="https://fortmilo.co.uk/security-observatory/">
   <meta property="og:locale" content="en_GB">
-  <meta name="twitter:card" content="summary">
-  <link rel="stylesheet" href="../styles.css?v=20260730-nav-fix">
+  <meta property="og:image" content="https://fortmilo.co.uk/assets/fortmilo-social.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="FortMilo logo and Security Observatory title">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="/styles.css?v=3751571a5205">
 </head>
 <body class="product-page">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="/" aria-label="FortMilo Lab home"><img src="../assets/fortmilo-logo.svg" alt="" width="980" height="240"></a>
-      <nav class="corporate-nav" aria-label="Corporate navigation">
-          <a href="/">Home</a>
-          <a aria-current="page" href="/security-observatory/">Security Observatory</a>
-          <a href="/architecture-security.html">Architecture &amp; Security</a>
-          <a href="mailto:info@fortmilo.co.uk">Contact</a>
-        </nav>
+      <a class="brand" href="/" aria-label="FortMilo home"><img src="/assets/fortmilo-logo.svg" alt="FortMilo" width="860" height="240"></a>
+      <nav class="corporate-nav" aria-label="Corporate navigation"><a href="/">Home</a><a aria-current="page" href="/security-observatory/">Security Observatory</a><a href="/architecture-security.html">Architecture &amp; Security</a><a href="/contact.html">Contact</a></nav>
     </div>
-    <div class="product-nav-wrap"><nav class="product-nav container" aria-label="Security Observatory sections"><a href="findings.html">Findings</a><a href="identity-access.html">Identity &amp; Access</a><a href="external-connections.html">External Connections</a><a href="entitlements-assets.html">Entitlements &amp; Assets</a><a href="evidence.html">Evidence &amp; Coverage</a></nav></div>
+    <div class="product-nav-wrap"><nav class="product-nav container" aria-label="Security Observatory sections"><a aria-current="page" href="/security-observatory/">Overview</a><a href="/security-observatory/findings.html">Findings</a><a href="/security-observatory/identity-access.html">Identity &amp; Access</a><a href="/security-observatory/external-connections.html">External Connections</a><a href="/security-observatory/entitlements-assets.html">Entitlements &amp; Assets</a><a href="/security-observatory/evidence.html">Evidence &amp; Coverage</a></nav></div>
   </header>
-  <main id="main">
-    <section class="page-hero">
-      <div class="container hero-grid">
-        <div>
-          <p class="eyebrow">FortMilo Security Observatory</p>
-          <h1>Salesforce security evidence organised for review.</h1>
-          <p class="lead">Read-only evidence, safe drill-down and transparent limitations across five focused review areas.</p>
-        </div>
-        <aside class="evidence-panel" aria-label="Product boundaries">
-          <p>Product boundaries</p>
-          <ul class="fact-list">
-            <li><strong>Runs inside Salesforce</strong><span>LWC, Apex, safe Salesforce reads and in-org evidence objects.</span></li>
-            <li><strong>Read-only and advisory</strong><span>No token revocation, permission removal, API blocking or endpoint changes.</span></li>
-            <li><strong>Sanitised evidence</strong><span>No tokens, session IDs, secrets, certificate bodies or raw IP values.</span></li>
-            <li><strong>Sandbox-first</strong><span>Public package distribution is not yet claimed.</span></li>
-          </ul>
-        </aside>
+  <main id="main"><section class="page-hero">
+    <div class="container hero-grid">
+      <div>
+        <p class="eyebrow">Security Observatory by FortMilo</p>
+        <h1>Salesforce security evidence organised for review.</h1>
+        <p class="lead">A sandbox-first, read-only application for posture evidence, safe drill-down and transparent limits across five focused areas.</p>
       </div>
-    </section>
-    <section class="section">
-      <div class="container">
-        <div class="section-heading">
-          <p class="section-label">Product areas</p>
-          <h2>Five focused review areas</h2>
-          <p>Each area answers a different Salesforce security question.</p>
-        </div>
-        <div class="card-grid five-area-grid">
-          <article class="card"><span class="step">1</span><h3>Findings</h3><p>Filter and prioritise retained findings. Open safe detail showing evidence, source, limitation, affected context, verification guidance and advisory review state.</p><a class="card-link" href="findings.html">Open Findings →</a></article>
-          <article class="card"><span class="step">2</span><h3>Identity &amp; Access</h3><p>Review active, inactive, frozen, administrative and stale-login users; sessions, failed logins, delegated administration, login access and broad API access evidence.</p><a class="card-link" href="identity-access.html">Open Identity &amp; Access →</a></article>
-          <article class="card"><span class="step">3</span><h3>External Connections</h3><p>Inspect OAuth grants, Connected App Evidence Passports, Named and External Credentials, certificates, Salesforce Sites, Experience Cloud and outbound endpoints.</p><a class="card-link" href="external-connections.html">Open External Connections →</a></article>
-          <article class="card"><span class="step">4</span><h3>Entitlements &amp; Assets</h3><p>Review package, Permission Set and Salesforce User Licence capacity; privileged access, Data Exposure Permissions, assignment source and governed asset context.</p><a class="card-link" href="entitlements-assets.html">Open Entitlements &amp; Assets →</a></article>
-          <article class="card"><span class="step">5</span><h3>Evidence &amp; Coverage</h3><p>Understand scanner availability, SBS coverage and latest result; manual or uncovered controls, like-for-like comparison and sanitised CSV export.</p><a class="card-link" href="evidence.html">Open Evidence &amp; Coverage →</a></article>
-        </div>
+      <aside class="evidence-panel" aria-label="Product boundaries">
+        <p>Product boundaries</p>
+        <ul class="fact-list"><li><strong>Runs inside Salesforce</strong><span>LWC, Apex, bounded SOQL and Tooling API reads, and in-org evidence objects.</span></li><li><strong>Read-only and advisory</strong><span>No token revocation, permission removal, API blocking or endpoint changes.</span></li><li><strong>Sanitised evidence only</strong><span>No raw credentials, session values, certificate bodies or raw IP values.</span></li><li><strong>Truthful availability</strong><span>Unavailable evidence is shown as Not assessed — reason.</span></li></ul>
+      </aside>
+    </div>
+  </section>
+  <section class="section">
+    <div class="container">
+      <div class="section-heading"><p class="section-label">Product areas</p><h2>Five questions, one evidence model</h2><p>The public structure mirrors the application and keeps operational review separate from technical architecture.</p></div>
+      <div class="card-grid area-grid">
+        <article class="card"><span class="step">1</span><h3>Findings</h3><p>Prioritise Critical, High and Moderate findings, then open source, limitation and verification detail.</p><a class="card-link" href="/security-observatory/findings.html">Open Findings →</a></article>
+        <article class="card"><span class="step">2</span><h3>Identity &amp; Access</h3><p>Review user lifecycle, sessions, login evidence, delegated administration and broad API access signals.</p><a class="card-link" href="/security-observatory/identity-access.html">Open Identity &amp; Access →</a></article>
+        <article class="card"><span class="step">3</span><h3>External Connections</h3><p>Inspect OAuth grants, Connected App Evidence Passports, credentials, certificates, sites and endpoints.</p><a class="card-link" href="/security-observatory/external-connections.html">Open External Connections →</a></article>
+        <article class="card"><span class="step">4</span><h3>Entitlements &amp; Assets</h3><p>Review licence capacity, privileged access, assignment source and governed asset context.</p><a class="card-link" href="/security-observatory/entitlements-assets.html">Open Entitlements &amp; Assets →</a></article>
+        <article class="card"><span class="step">5</span><h3>Evidence &amp; Coverage</h3><p>Separate scanner availability, check outcome and coverage type, then compare or export safely.</p><a class="card-link" href="/security-observatory/evidence.html">Open Evidence &amp; Coverage →</a></article>
       </div>
-    </section>
-  </main>
-  <footer class="site-footer"><div class="container footer-grid"><div><p><strong>FortMilo Lab</strong> · FortMilo Security Observatory</p><p><a href="/">Home</a> · <a href="mailto:info@fortmilo.co.uk">info@fortmilo.co.uk</a></p></div><div><p>Read-only, advisory and evidence-focused.</p><p>© 2026 Luca Pacini trading as FortMilo Lab.</p></div></div></footer>
+    </div>
+  </section>
+  <section class="section section-alt">
+    <div class="container split">
+      <div><p class="section-label">Public evidence boundary</p><h2>Real screenshots only</h2></div>
+      <div class="prose"><p>Product screenshots are published only when they come from a sanitised clean-org evidence set. Private-org, production and fabricated interface images are not used.</p><div class="disclosure"><span class="disclosure-icon">i</span><p>Clean-org installation proof remains separate from this public product guide. The site does not claim a public package release or completed clean-install evidence.</p></div></div>
+    </div>
+  </section></main>
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <p><strong>FortMilo</strong> is the public brand of Luca Pacini trading as FortMilo Lab.</p>
+        <p>Independent organisation. Not affiliated with, endorsed by or sponsored by Salesforce, Inc.</p>
+        <p>Salesforce is a trademark of Salesforce, Inc.</p>
+      </div>
+      <nav class="footer-links" aria-label="Footer navigation">
+        <a href="/contact.html">Contact</a>
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+        <span>© 2026 FortMilo</span>
+      </nav>
+    </div>
+  </footer>
 </body>
 </html>

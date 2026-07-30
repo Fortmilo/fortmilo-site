@@ -1,7 +1,7 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="860" height="240" viewBox="0 0 860 240" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" viewBox="0 0 216 240" role="img" aria-labelledby="title desc">
   <title id="title">FortMilo</title>
-  <desc id="desc">Coral-red fort gate shield with a white FortMilo wordmark.</desc>
-  <g transform="translate(8 4)">
+  <desc id="desc">Coral-red fort gate shield.</desc>
+  <g transform="translate(0 4)">
     <path fill="#ff4b38" d="M108 4 206 35v84c0 56-39 91-98 117C49 210 10 175 10 119V35L108 4Z"/>
     <path fill="#0a1b2f" d="M108 18 191 45v73c0 45-30 75-83 100-53-25-83-55-83-100V45l83-27Z"/>
     <path fill="#ff4b38" d="M45 65h22V49h22v16h19V41h20v24h20V49h22v16h22v25H45V65Z"/>
@@ -13,5 +13,4 @@
     </g>
     <path fill="#07111f" d="M66 171h84l-15 18H81l-15-18Z"/>
   </g>
-  <text x="245" y="148" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="92" font-weight="700" letter-spacing="-3">FortMilo</text>
 </svg>

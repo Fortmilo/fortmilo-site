@@ -3,32 +3,66 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Identity &amp; Access | FortMilo Security Observatory</title>
-  <meta name="description" content="User lifecycle, session, login, delegated administration and API access evidence in FortMilo Security Observatory.">
+  <title>Identity &amp; Access | Security Observatory by FortMilo</title>
+  <meta name="description" content="User lifecycle, session, login, delegated administration and API access evidence in Security Observatory by FortMilo.">
+  <meta name="author" content="FortMilo">
+  <meta name="theme-color" content="#07101d">
   <link rel="canonical" href="https://fortmilo.co.uk/security-observatory/identity-access.html">
-  <link rel="icon" type="image/svg+xml" href="../assets/fortmilo-logo.svg">
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/svg+xml" href="/assets/fortmilo-mark.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32x32.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="/assets/apple-touch-icon.png">
+  <link rel="manifest" href="/site.webmanifest">
   <meta property="og:type" content="article">
-  <meta property="og:title" content="Identity &amp; Access | FortMilo Security Observatory">
-  <meta property="og:description" content="User posture, sessions, login evidence and broad access signals without raw sensitive values.">
+  <meta property="og:title" content="Identity &amp; Access | Security Observatory by FortMilo">
+  <meta property="og:description" content="User lifecycle, session, login, delegated administration and API access evidence in Security Observatory by FortMilo.">
   <meta property="og:url" content="https://fortmilo.co.uk/security-observatory/identity-access.html">
   <meta property="og:locale" content="en_GB">
-  <meta name="twitter:card" content="summary">
-  <link rel="stylesheet" href="../styles.css?v=20260730-nav-fix">
+  <meta property="og:image" content="https://fortmilo.co.uk/assets/fortmilo-social.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="FortMilo logo and Security Observatory title">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="stylesheet" href="/styles.css?v=3751571a5205">
 </head>
 <body class="product-page">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <div class="container header-inner">
-      <a class="brand" href="/" aria-label="FortMilo Lab home"><img src="../assets/fortmilo-logo.svg" alt="" width="980" height="240"></a>
-      <nav class="corporate-nav" aria-label="Corporate navigation"><a href="/">Home</a><a aria-current="page" href="/security-observatory/">Security Observatory</a><a href="/architecture-security.html">Architecture &amp; Security</a><a href="mailto:info@fortmilo.co.uk">Contact</a></nav>
+      <a class="brand" href="/" aria-label="FortMilo home"><img src="/assets/fortmilo-logo.svg" alt="FortMilo" width="860" height="240"></a>
+      <nav class="corporate-nav" aria-label="Corporate navigation"><a href="/">Home</a><a aria-current="page" href="/security-observatory/">Security Observatory</a><a href="/architecture-security.html">Architecture &amp; Security</a><a href="/contact.html">Contact</a></nav>
     </div>
-    <div class="product-nav-wrap"><nav class="product-nav container" aria-label="Security Observatory sections"><a href="findings.html">Findings</a><a aria-current="page" href="identity-access.html">Identity &amp; Access</a><a href="external-connections.html">External Connections</a><a href="entitlements-assets.html">Entitlements &amp; Assets</a><a href="evidence.html">Evidence &amp; Coverage</a></nav></div>
+    <div class="product-nav-wrap"><nav class="product-nav container" aria-label="Security Observatory sections"><a href="/security-observatory/">Overview</a><a href="/security-observatory/findings.html">Findings</a><a aria-current="page" href="/security-observatory/identity-access.html">Identity &amp; Access</a><a href="/security-observatory/external-connections.html">External Connections</a><a href="/security-observatory/entitlements-assets.html">Entitlements &amp; Assets</a><a href="/security-observatory/evidence.html">Evidence &amp; Coverage</a></nav></div>
   </header>
-  <main id="main">
-    <section class="page-hero"><div class="container hero-grid"><div><p class="eyebrow">Identity &amp; Access</p><h1>User and session exposure in one review area.</h1><p class="lead">Inspect identity posture, login evidence and broad access signals without exposing raw session values or changing user access.</p></div><aside class="evidence-panel" aria-label="Identity evidence"><p>Identity evidence</p><ul class="fact-list"><li><strong>User posture</strong><span>Active, inactive, frozen, administrative and stale-login users.</span></li><li><strong>Session posture</strong><span>Active-session summaries and inactive-user session exposure.</span></li><li><strong>Login evidence</strong><span>Failed-login summaries and safe detail.</span></li><li><strong>Access visibility</strong><span>API Enabled, delegated administration and login-access evidence.</span></li></ul></aside></div></section>
-    <section class="section"><div class="container"><div class="section-heading"><p class="section-label">User posture</p><h2>Who can access the organisation?</h2></div><div class="card-grid"><article class="card"><h3>User lifecycle</h3><p>Active, inactive, frozen, administrative and stale-login user evidence with safe drill-down.</p></article><article class="card"><h3>Sessions and logins</h3><p>Active-session summaries, inactive-user session exposure and failed-login evidence.</p></article><article class="card"><h3>Access signals</h3><p>API Enabled, delegated administration and login-access evidence with available assignment context.</p></article></div></div></section>
-    <section class="section section-alt"><div class="container split"><div><p class="section-label">Sensitive-data boundary</p><h2>Useful identity context without raw credentials</h2></div><div class="prose"><p>The application does not display session IDs, authentication headers, raw OAuth responses or raw IP values.</p><p>Identity evidence supports review only. It does not deactivate, freeze or change user access.</p></div></div></section>
-  </main>
-  <footer class="site-footer"><div class="container footer-grid"><div><p><strong>FortMilo Lab</strong> · FortMilo Security Observatory</p><p><a href="/">Home</a> · <a href="mailto:info@fortmilo.co.uk">info@fortmilo.co.uk</a></p></div><div><p>Identity evidence without access remediation.</p><p>© 2026 Luca Pacini trading as FortMilo Lab.</p></div></div></footer>
+  <main id="main"><section class="page-hero">
+    <div class="container hero-grid">
+      <div>
+        <p class="eyebrow">Identity &amp; Access</p>
+        <h1>User and session exposure in one review area.</h1>
+        <p class="lead">Inspect identity posture, login evidence and broad access signals without exposing raw session values or changing user access.</p>
+      </div>
+      <aside class="evidence-panel" aria-label="Identity evidence">
+        <p>Identity evidence</p>
+        <ul class="fact-list"><li><strong>User posture</strong><span>Active, inactive, frozen, administrative and stale-login users.</span></li><li><strong>Session posture</strong><span>Active-session summaries and inactive-user session exposure.</span></li><li><strong>Login evidence</strong><span>Failed-login summaries and safe detail.</span></li><li><strong>Access visibility</strong><span>API Enabled, delegated administration and login-access evidence.</span></li></ul>
+      </aside>
+    </div>
+  </section>
+  <section class="section"><div class="container"><div class="section-heading"><p class="section-label">User posture</p><h2>Who can access the organisation?</h2></div><div class="card-grid"><article class="card"><h3>User lifecycle</h3><p>Active, inactive, frozen, administrative and stale-login evidence with safe drill-down.</p></article><article class="card"><h3>Sessions and logins</h3><p>Active-session summaries, inactive-user session exposure and failed-login evidence.</p></article><article class="card"><h3>Access signals</h3><p>API Enabled, delegated administration and login-access evidence with available assignment context.</p></article></div></div></section>
+  <section class="section section-alt"><div class="container split"><div><p class="section-label">Sensitive-data boundary</p><h2>Useful context without raw credentials</h2></div><div class="prose"><p>The application does not display session IDs, authentication headers, raw OAuth responses or raw IP values.</p><p>Identity evidence supports review only. It does not deactivate, freeze or alter user access.</p></div></div></section></main>
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div>
+        <p><strong>FortMilo</strong> is the public brand of Luca Pacini trading as FortMilo Lab.</p>
+        <p>Independent organisation. Not affiliated with, endorsed by or sponsored by Salesforce, Inc.</p>
+        <p>Salesforce is a trademark of Salesforce, Inc.</p>
+      </div>
+      <nav class="footer-links" aria-label="Footer navigation">
+        <a href="/contact.html">Contact</a>
+        <a href="/privacy.html">Privacy</a>
+        <a href="/terms.html">Terms</a>
+        <span>© 2026 FortMilo</span>
+      </nav>
+    </div>
+  </footer>
 </body>
 </html>
