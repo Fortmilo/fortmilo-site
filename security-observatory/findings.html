@@ -4,24 +4,30 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Findings | FortMilo Security Observatory</title>
-  <meta name="description" content="Finding triage, safe drill-down and advisory review in FortMilo Security Observatory.">
+  <meta name="description" content="Finding triage, safe drill-down, source limitations, verification guidance and advisory review in FortMilo Security Observatory.">
   <link rel="canonical" href="https://fortmilo.co.uk/security-observatory/findings.html">
   <link rel="icon" type="image/svg+xml" href="../assets/fortmilo-logo.svg">
   <meta property="og:type" content="article">
   <meta property="og:title" content="Findings | FortMilo Security Observatory">
-  <meta property="og:description" content="Finding triage, safe drill-down and advisory review for Salesforce security evidence.">
+  <meta property="og:description" content="Finding triage, safe detail and advisory review for Salesforce security evidence.">
   <meta property="og:url" content="https://fortmilo.co.uk/security-observatory/findings.html">
   <meta property="og:locale" content="en_GB">
   <meta name="twitter:card" content="summary">
-  <link rel="stylesheet" href="../styles.css?v=20260730-compact-nav">
+  <link rel="stylesheet" href="../styles.css?v=20260730-nav-fix">
 </head>
 <body class="product-page">
   <a class="skip-link" href="#main">Skip to content</a>
-  <header class="site-header"><div class="container header-inner"><a class="brand" href="/" aria-label="FortMilo Lab home"><img src="../assets/fortmilo-logo.svg" alt="" width="980" height="240"></a><nav aria-label="Product guide navigation"><a href="/">Home</a><a href="./">Overview</a><a aria-current="page" href="findings.html">Findings</a><a href="evidence.html">SBS &amp; Evidence</a><a href="identity-access.html">Identity &amp; Access</a><a href="integration-surface.html">Integration Surface</a><a href="entitlements-assets.html">Entitlements &amp; Assets</a><a href="admin.html">Admin</a><a href="architecture.html">Architecture</a></nav></div></header>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="FortMilo Lab home"><img src="../assets/fortmilo-logo.svg" alt="" width="980" height="240"></a>
+      <nav class="corporate-nav" aria-label="Corporate navigation"><a href="/">Home</a><a aria-current="page" href="/security-observatory/">Security Observatory</a><a href="/architecture-security.html">Architecture &amp; Security</a><a href="mailto:info@fortmilo.co.uk">Contact</a></nav>
+    </div>
+    <div class="product-nav-wrap"><nav class="product-nav container" aria-label="Security Observatory sections"><a aria-current="page" href="findings.html">Findings</a><a href="identity-access.html">Identity &amp; Access</a><a href="external-connections.html">External Connections</a><a href="entitlements-assets.html">Entitlements &amp; Assets</a><a href="evidence.html">Evidence &amp; Coverage</a></nav></div>
+  </header>
   <main id="main">
-    <section class="page-hero"><div class="container hero-grid"><div><p class="eyebrow">Findings</p><h1>Triage first. Detail on demand.</h1><p class="lead">Filter retained findings, inspect safe evidence and record advisory review without changing Salesforce security settings.</p></div><aside class="evidence-panel" aria-label="Finding detail boundaries"><p>Finding detail</p><ul class="fact-list"><li><strong>Evidence summary</strong><span>What was observed and why it requires review.</span></li><li><strong>Source and limitation</strong><span>Where the evidence came from and what it cannot prove.</span></li><li><strong>Safe verification</strong><span>A bounded route to verify the condition in Salesforce.</span></li><li><strong>Advisory review</strong><span>Review state only; no security setting is changed.</span></li></ul></aside></div></section>
-    <section class="section"><div class="container"><div class="section-heading"><p class="section-label">Workflow</p><h2>Prioritise, inspect, review</h2></div><div class="card-grid"><article class="card"><h3>Filter and prioritise</h3><p>Focus retained findings by severity, area, review state and SBS or Extended Check context.</p></article><article class="card"><h3>Open safe detail</h3><p>Inspect evidence, source, limitation, affected context and verification route.</p></article><article class="card"><h3>Record review</h3><p>Track follow-up without changing users, permissions, sessions, applications or endpoints.</p></article></div></div></section>
-    <section class="section section-alt"><div class="container split"><div><p class="section-label">Evidence boundary</p><h2>Only supported evidence becomes a finding</h2></div><div class="prose"><p>A missing source, blocked query or unavailable detail does not become a zero-risk result. It becomes a visible not-assessed or Unknown/Error state with cause, limitation and next action.</p><p>OAuth authorisation records do not prove credential usability, and the application never verifies credentials by replaying them.</p></div></div></section>
+    <section class="page-hero"><div class="container hero-grid"><div><p class="eyebrow">Findings</p><h1>Triage first. Detail on demand.</h1><p class="lead">Filter retained findings, then open only the evidence and verification context needed for review.</p></div><aside class="evidence-panel" aria-label="Finding detail"><p>Finding detail</p><ul class="fact-list"><li><strong>Evidence summary</strong><span>What was observed and why it requires review.</span></li><li><strong>Source and limitation</strong><span>Where the evidence came from and what it cannot prove.</span></li><li><strong>Safe verification</strong><span>A bounded route to verify the condition in Salesforce.</span></li><li><strong>Advisory review</strong><span>Review state only; no security setting is changed.</span></li></ul></aside></div></section>
+    <section class="section"><div class="container"><div class="section-heading"><p class="section-label">Finding workflow</p><h2>Prioritise and inspect</h2></div><div class="card-grid"><article class="card"><h3>Filter and prioritise</h3><p>Focus retained findings by severity, area, review state and supporting SBS or Extended Check context.</p></article><article class="card"><h3>Open safe detail</h3><p>Inspect the evidence summary, source, limitation, affected context and safe Salesforce verification route.</p></article><article class="card"><h3>Record advisory review</h3><p>Track operational follow-up without changing Salesforce permissions, sessions, applications or endpoints.</p></article></div></div></section>
+    <section class="section section-alt"><div class="container split"><div><p class="section-label">Evidence boundary</p><h2>Missing evidence is not a clean result</h2></div><div class="prose"><p>A blocked query, unavailable source or missing retained detail becomes a visible not-assessed or Unknown/Error state with cause, limitation and next action.</p><p>Credentials are never replayed, and retained OAuth authorisation records are not described as live or usable tokens.</p></div></div></section>
   </main>
   <footer class="site-footer"><div class="container footer-grid"><div><p><strong>FortMilo Lab</strong> · FortMilo Security Observatory</p><p><a href="/">Home</a> · <a href="mailto:info@fortmilo.co.uk">info@fortmilo.co.uk</a></p></div><div><p>Advisory evidence only. No automated remediation.</p><p>© 2026 Luca Pacini trading as FortMilo Lab.</p></div></div></footer>
 </body>
