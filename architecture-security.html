@@ -4,26 +4,235 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Architecture &amp; Security | FortMilo Lab</title>
-  <meta name="description" content="Salesforce-native architecture, sanitised evidence boundaries and subscriber-owned authentication for FortMilo Security Observatory.">
+  <meta name="description" content="Salesforce-native runtime architecture, security boundaries, AI-assisted engineering controls and future advisory design for FortMilo Security Observatory.">
   <link rel="canonical" href="https://fortmilo.co.uk/architecture-security.html">
   <link rel="icon" type="image/svg+xml" href="assets/fortmilo-logo.svg">
   <meta property="og:type" content="article">
   <meta property="og:title" content="Architecture &amp; Security | FortMilo Lab">
-  <meta property="og:description" content="Salesforce-native, read-only architecture with sanitised in-org evidence.">
+  <meta property="og:description" content="A layered Salesforce-native architecture with sanitised in-org evidence, controlled self-callouts and AI kept outside the runtime data path.">
   <meta property="og:url" content="https://fortmilo.co.uk/architecture-security.html">
   <meta property="og:locale" content="en_GB">
   <meta name="twitter:card" content="summary">
-  <link rel="stylesheet" href="styles.css?v=20260730-nav-fix">
+  <link rel="stylesheet" href="styles.css?v=20260730-architecture-v2">
 </head>
-<body>
+<body class="architecture-page">
   <a class="skip-link" href="#main">Skip to content</a>
-  <header class="site-header"><div class="container header-inner"><a class="brand" href="/" aria-label="FortMilo Lab home"><img src="assets/fortmilo-logo.svg" alt="" width="980" height="240"></a><nav class="corporate-nav" aria-label="Corporate navigation"><a href="/">Home</a><a href="/security-observatory/">Security Observatory</a><a aria-current="page" href="/architecture-security.html">Architecture &amp; Security</a><a href="mailto:info@fortmilo.co.uk">Contact</a></nav></div></header>
+  <header class="site-header">
+    <div class="container header-inner">
+      <a class="brand" href="/" aria-label="FortMilo Lab home"><img src="assets/fortmilo-logo.svg" alt="" width="980" height="240"></a>
+      <nav class="corporate-nav" aria-label="Corporate navigation">
+        <a href="/">Home</a>
+        <a href="/security-observatory/">Security Observatory</a>
+        <a aria-current="page" href="/architecture-security.html">Architecture &amp; Security</a>
+        <a href="mailto:info@fortmilo.co.uk">Contact</a>
+      </nav>
+    </div>
+  </header>
+
   <main id="main">
-    <section class="page-hero"><div class="container hero-grid"><div><p class="eyebrow">Architecture &amp; Security</p><h1>Runs inside Salesforce with a narrow evidence boundary.</h1><p class="lead">FortMilo Security Observatory uses LWC, Apex orchestration, scanner classes, safe platform reads and sanitised in-org evidence.</p></div><aside class="evidence-panel" aria-label="Architecture boundaries"><p>Architecture boundaries</p><ul class="fact-list"><li><strong>Salesforce-native</strong><span>LWC dashboard, Apex services and Salesforce data storage.</span></li><li><strong>Read-only scanning</strong><span>SOQL, Tooling API and safe metadata reads.</span></li><li><strong>Subscriber-owned authentication</strong><span>Manual self-callout configuration remains controlled by the installing organisation.</span></li><li><strong>Truthful degradation</strong><span>Missing Tooling access becomes Not assessed, never a false zero.</span></li></ul></aside></div></section>
-    <section class="section"><div class="container"><div class="section-heading"><p class="section-label">Execution path</p><h2>One Apex-owned scanner plan</h2></div><div class="flow" role="img" aria-label="LWC dashboard to Apex controller, scan service, scanners, Salesforce reads and sanitised evidence"><span>LWC dashboard</span><b>→</b><span>SecurityObservatoryController</span><b>→</b><span>SecurityScanService</span><b>→</b><span>Scanner classes</span><b>→</b><span>Safe Salesforce reads</span></div></div></section>
-    <section class="section section-alt"><div class="container"><div class="section-heading"><p class="section-label">Security boundaries</p><h2>What the application deliberately does not do</h2></div><div class="card-grid"><article class="card"><h3>No remediation</h3><p>No token revocation, API blocking, permission removal, endpoint change, certificate rotation or production security write-back.</p></article><article class="card"><h3>No secrets or raw credentials</h3><p>No access tokens, refresh tokens, session IDs, client secrets, certificate bodies, private keys, raw headers or raw IP values.</p></article><article class="card"><h3>No external evidence service</h3><p>Scanning and retained evidence remain inside the subscriber Salesforce organisation.</p></article></div></div></section>
-    <section class="section"><div class="container split"><div><p class="section-label">Self-callout prerequisite</p><h2>Manual subscriber-owned authentication</h2></div><div class="prose"><p>Core SOQL-backed evidence works without the Tooling API self-callout. Tooling-backed scanner families require subscriber-specific Auth Provider, External Client App, External Credential, Named Credential and principal setup.</p><p>The package does not own or overwrite subscriber OAuth configuration.</p></div></div></section>
+    <section class="page-hero architecture-hero">
+      <div class="container hero-grid">
+        <div>
+          <p class="eyebrow">Architecture &amp; Security</p>
+          <h1>Salesforce-native. Evidence stays in the organisation.</h1>
+          <p class="lead">FortMilo Security Observatory combines LWC, Apex orchestration, bounded scanners, Tooling API self-callouts and sanitised evidence. It is read-only, advisory and designed to fail visibly rather than report a false clean state.</p>
+        </div>
+        <aside class="evidence-panel" aria-label="Architecture principles">
+          <p>Architecture principles</p>
+          <ul class="fact-list">
+            <li><strong>In-org runtime</strong><span>Scanning, evidence and review stay inside Salesforce.</span></li>
+            <li><strong>Read-only first</strong><span>No security remediation or production write-back.</span></li>
+            <li><strong>Least privilege</strong><span>Subscriber-owned authentication and permission-gated controls.</span></li>
+            <li><strong>Truthful failure</strong><span>Unavailable evidence becomes Not assessed, never zero risk.</span></li>
+          </ul>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-heading">
+          <p class="section-label">Runtime architecture</p>
+          <h2>Five layers, one controlled evidence path</h2>
+          <p>The application separates operator experience, orchestration, scanning, retained evidence and governance so each boundary is clear and testable.</p>
+        </div>
+
+        <div class="architecture-stack" aria-label="FortMilo Security Observatory layered runtime architecture">
+          <article class="arch-layer">
+            <div class="arch-label"><span>01</span><strong>Experience</strong></div>
+            <div class="arch-content">
+              <h3>LWC security review interface</h3>
+              <p>Five focused areas present retained evidence without exposing sensitive raw values.</p>
+              <div class="arch-components">
+                <span>Findings</span><span>Identity &amp; Access</span><span>External Connections</span><span>Entitlements &amp; Assets</span><span>Evidence &amp; Coverage</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="arch-layer">
+            <div class="arch-label"><span>02</span><strong>Orchestration</strong></div>
+            <div class="arch-content">
+              <h3>Apex-owned execution plan</h3>
+              <p>Controllers expose bounded operations while services own scan execution, scheduling, recovery, retention and comparison rules.</p>
+              <div class="arch-components">
+                <span>SecurityObservatoryController</span><span>SecurityScanService</span><span>Queueable execution</span><span>Scheduled scans</span><span>Stale-lock recovery</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="arch-layer">
+            <div class="arch-label"><span>03</span><strong>Collection</strong></div>
+            <div class="arch-content">
+              <h3>Read-only scanner families</h3>
+              <p>Scanner classes use bounded SOQL, safe metadata queries and Tooling API reads. Missing access degrades to a sanitised availability state.</p>
+              <div class="arch-components">
+                <span>SOQL scanners</span><span>Tooling API scanners</span><span>Named Credential self-callout</span><span>Safe metadata reads</span><span>Limit-aware queries</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="arch-layer">
+            <div class="arch-label"><span>04</span><strong>Evidence</strong></div>
+            <div class="arch-content">
+              <h3>Sanitised in-org evidence model</h3>
+              <p>Observed evidence is normalised before retention, drill-down, comparison and formula-injection-safe CSV export.</p>
+              <div class="arch-components">
+                <span>Security_Scan__c</span><span>Security_Finding__c</span><span>Security_Scan_Detail__c</span><span>Security_Asset__c</span><span>Dashboard DTOs</span>
+              </div>
+            </div>
+          </article>
+
+          <article class="arch-layer">
+            <div class="arch-label"><span>05</span><strong>Governance</strong></div>
+            <div class="arch-content">
+              <h3>Security and release controls</h3>
+              <p>CRUD/FLS, sharing, least privilege, bounded retention, package separation and automated tests constrain every user-facing path.</p>
+              <div class="arch-components">
+                <span>CRUD/FLS enforcement</span><span>Inherited sharing</span><span>Data minimisation</span><span>Retention caps</span><span>Unlocked package boundary</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-alt">
+      <div class="container">
+        <div class="section-heading">
+          <p class="section-label">Subscriber authentication boundary</p>
+          <h2>Core evidence works without surrendering OAuth ownership</h2>
+          <p>Subscriber-specific authentication remains outside the packaged core and under the installing organisation’s control.</p>
+        </div>
+        <div class="boundary-grid">
+          <article class="boundary-card">
+            <span class="boundary-tag">Core path</span>
+            <h3>SOQL-backed evidence</h3>
+            <p>Runs through normal Apex data access and the assigned Observatory permissions. No self-callout is required.</p>
+          </article>
+          <article class="boundary-card">
+            <span class="boundary-tag">Tooling path</span>
+            <h3>Subscriber-owned self-callout</h3>
+            <p>Tooling-backed scanners use an Auth Provider, External Client App, External Credential, Named Credential and named principal configured by the subscriber.</p>
+          </article>
+          <article class="boundary-card">
+            <span class="boundary-tag">Failure path</span>
+            <h3>Fail closed and explain why</h3>
+            <p>Missing, unauthorised or insufficient setup produces Not assessed with a safe next action. It never produces a fabricated zero or pass.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-heading">
+          <p class="section-label">AI-assisted engineering</p>
+          <h2>AI supports development and review — not the customer runtime</h2>
+          <p>The current product has no runtime AI integration. GPT/Codex and Claude are used as controlled engineering assistants around the repository, with deterministic validation and human approval remaining authoritative.</p>
+        </div>
+        <div class="ai-grid">
+          <article class="ai-card">
+            <div class="ai-heading"><span class="ai-mark">GPT</span><h3>OpenAI GPT / Codex</h3></div>
+            <p>Used for controlled source changes, refactoring, test generation, documentation and implementation planning on isolated branches or worktrees.</p>
+          </article>
+          <article class="ai-card">
+            <div class="ai-heading"><span class="ai-mark">C</span><h3>Claude</h3></div>
+            <p>Used as an independent challenger for architecture, security boundaries, evidence wording and regression-risk review.</p>
+          </article>
+          <article class="ai-card">
+            <div class="ai-heading"><span class="ai-mark">CI</span><h3>Deterministic assurance</h3></div>
+            <p>Apex tests, Jest, ESLint, Prettier, sensitive-data scans and package-boundary checks decide whether a change is acceptable.</p>
+          </article>
+          <article class="ai-card">
+            <div class="ai-heading"><span class="ai-mark">H</span><h3>Human release control</h3></div>
+            <p>Deployment, commit, push, package and release decisions remain manual and explicitly approved. AI output is never treated as deployment evidence.</p>
+          </article>
+        </div>
+        <div class="runtime-boundary">
+          <strong>Runtime boundary:</strong>
+          <span>GPT, Claude and other models do not query subscriber Salesforce organisations, receive retained scan evidence at runtime or perform remediation.</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-alt">
+      <div class="container split">
+        <div>
+          <p class="section-label">Future advisory extension</p>
+          <h2>Model-agnostic, sanitised and explicitly outside v1</h2>
+        </div>
+        <div class="prose">
+          <p>A future advisory service could send an approved model endpoint — GPT, Claude or another enterprise model — a sanitised summary rather than raw Salesforce evidence.</p>
+          <div class="future-flow" aria-label="Future advisory AI boundary">
+            <span>Sanitised summary</span><b>→</b><span>Approved model endpoint</span><b>→</b><span>Strict structured response</span><b>→</b><span>Advisory display only</span>
+          </div>
+          <ul class="guardrail-list">
+            <li>No tokens, sessions, secrets, certificate bodies or raw IP values.</li>
+            <li>No direct Salesforce query access.</li>
+            <li>No remediation, permission changes or production write-back.</li>
+            <li>Not implemented or claimed as part of the current v1 product.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        <div class="section-heading">
+          <p class="section-label">Packaging and release boundary</p>
+          <h2>Package the core; leave subscriber secrets with the subscriber</h2>
+        </div>
+        <div class="release-grid">
+          <article class="card"><h3>Namespaceless unlocked core</h3><p>Salesforce metadata and application logic are organised for a namespaceless unlocked package boundary.</p></article>
+          <article class="card"><h3>Separate authentication setup</h3><p>Subscriber-specific OAuth settings, credentials and principal authentication remain outside the packaged core.</p></article>
+          <article class="card"><h3>Sandbox-first release</h3><p>Public package distribution and clean-install evidence are stated only when the required proof is complete.</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section section-alt">
+      <div class="container">
+        <div class="section-heading">
+          <p class="section-label">Non-negotiable controls</p>
+          <h2>Security boundaries are part of the architecture</h2>
+        </div>
+        <div class="control-grid">
+          <article class="control-item"><strong>No remediation</strong><span>No token revocation, API blocking, permission removal, endpoint changes or security-setting write-back.</span></article>
+          <article class="control-item"><strong>No raw secrets</strong><span>No access tokens, refresh tokens, session IDs, client secrets, private keys or certificate bodies.</span></article>
+          <article class="control-item"><strong>No false clean</strong><span>Unknown, error and unavailable evidence remain visible and never count as pass.</span></article>
+          <article class="control-item"><strong>Bounded storage</strong><span>Retention and comparison use explicit caps and like-for-like evidence levels.</span></article>
+          <article class="control-item"><strong>Safe exports</strong><span>CSV output uses shared formula-injection-safe sanitisation.</span></article>
+          <article class="control-item"><strong>Evidence provenance</strong><span>Source, limitation, verification path and coverage state remain visible to the operator.</span></article>
+        </div>
+      </div>
+    </section>
   </main>
-  <footer class="site-footer"><div class="container footer-grid"><div><p><strong>FortMilo Lab</strong></p><p><a href="/">Home</a> · <a href="/security-observatory/">Security Observatory</a></p></div><div><p>Salesforce-native, read-only and sanitised by design.</p><p>© 2026 Luca Pacini trading as FortMilo Lab.</p></div></div></footer>
+
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div><p><strong>FortMilo Lab</strong></p><p><a href="/">Home</a> · <a href="/security-observatory/">Security Observatory</a></p></div>
+      <div><p>Salesforce-native, read-only and sanitised by design.</p><p>© 2026 Luca Pacini trading as FortMilo Lab.</p></div>
+    </div>
+  </footer>
 </body>
 </html>
