@@ -7,38 +7,31 @@
   <meta name="description" content="Product guide for FortMilo Security Observatory, a read-only Salesforce security evidence application.">
   <link rel="canonical" href="https://fortmilo.co.uk/security-observatory/">
   <link rel="icon" type="image/svg+xml" href="../assets/fortmilo-logo.svg">
-  <meta property="og:type" content="website">
+  <meta property="og:type" content="article">
   <meta property="og:title" content="FortMilo Security Observatory | Product Guide">
-  <meta property="og:description" content="Read-only Salesforce security evidence, safe drill-down and benchmark-aligned review.">
+  <meta property="og:description" content="Read-only Salesforce security evidence organised in the same order as the application.">
   <meta property="og:url" content="https://fortmilo.co.uk/security-observatory/">
   <meta property="og:locale" content="en_GB">
   <meta name="twitter:card" content="summary">
-  <link rel="stylesheet" href="../styles.css?v=20260730-guide">
+  <link rel="stylesheet" href="../styles.css?v=20260730-compact-nav">
 </head>
-<body>
+<body class="product-page">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="/" aria-label="FortMilo Lab home"><img src="../assets/fortmilo-logo.svg" alt="" width="980" height="240"></a>
-      <nav aria-label="Observatory pages">
-        <a aria-current="page" href="./">Overview</a>
-        <a href="findings.html">Findings</a>
-        <a href="evidence.html">SBS &amp; Evidence</a>
-        <a href="admin.html">Admin</a>
-        <a href="architecture.html">Architecture</a>
-      </nav>
+      <nav aria-label="Product guide navigation"><a href="/">Home</a><a aria-current="page" href="./">Overview</a><a href="findings.html">Findings</a><a href="evidence.html">SBS &amp; Evidence</a><a href="identity-access.html">Identity &amp; Access</a><a href="integration-surface.html">Integration Surface</a><a href="entitlements-assets.html">Entitlements &amp; Assets</a><a href="admin.html">Admin</a><a href="architecture.html">Architecture</a></nav>
     </div>
   </header>
-
   <main id="main">
     <section class="page-hero">
       <div class="container hero-grid">
         <div>
           <p class="eyebrow">FortMilo Security Observatory</p>
           <h1>Salesforce security evidence organised for review.</h1>
-          <p class="lead">The Observatory establishes whether evidence is usable, prioritises findings, provides safe drill-down and keeps scan controls read-only and bounded.</p>
+          <p class="lead">The guide mirrors the application: establish evidence quality, prioritise findings, then inspect identity, integrations, entitlements and administration.</p>
           <div class="actions">
-            <a class="button button-primary" href="findings.html">Explore the product guide</a>
+            <a class="button button-primary" href="findings.html">Start with Findings</a>
             <a class="button button-secondary" href="https://github.com/Fortmilo/security-observatory" target="_blank" rel="noopener">Public application repository</a>
           </div>
         </div>
@@ -57,55 +50,37 @@
     <section class="section">
       <div class="container">
         <div class="section-heading">
-          <p class="section-label">Product structure</p>
-          <h2>Four operator sessions and one architecture guide</h2>
-          <p>The guide follows the application’s operator intent rather than presenting every scanner as an undifferentiated list.</p>
+          <p class="section-label">Application order</p>
+          <h2>Seven operator tabs</h2>
+          <p>The public guide follows the same order as the Salesforce application.</p>
         </div>
-        <div class="card-grid card-grid-four">
-          <article class="card"><h3>Overview</h3><p>OAuth-first prioritisation, evidence visibility and supporting security signals.</p><a class="card-link" href="./">Current page →</a></article>
-          <article class="card"><h3>Findings</h3><p>Filterable triage, safe detail, assignment context and advisory review state.</p><a class="card-link" href="findings.html">Open Findings →</a></article>
-          <article class="card"><h3>SBS &amp; Evidence</h3><p>Scanner availability, SBS coverage, latest result, comparison and safe export.</p><a class="card-link" href="evidence.html">Open SBS &amp; Evidence →</a></article>
-          <article class="card"><h3>Admin</h3><p>Evidence levels, retention, scheduled scans, recovery and SBS registry controls.</p><a class="card-link" href="admin.html">Open Admin →</a></article>
+        <div class="card-grid app-order-grid">
+          <article class="card"><span class="step">1</span><h3>Overview</h3><p>OAuth-first prioritisation and evidence visibility.</p></article>
+          <article class="card"><span class="step">2</span><h3>Findings</h3><p>Filterable triage and safe detail.</p><a class="card-link" href="findings.html">Open →</a></article>
+          <article class="card"><span class="step">3</span><h3>SBS &amp; Evidence</h3><p>Availability, coverage, result, comparison and export.</p><a class="card-link" href="evidence.html">Open →</a></article>
+          <article class="card"><span class="step">4</span><h3>Identity &amp; Access</h3><p>User, session and identity exposure evidence.</p><a class="card-link" href="identity-access.html">Open →</a></article>
+          <article class="card"><span class="step">5</span><h3>Integration Surface</h3><p>OAuth, credentials, sites and endpoint evidence.</p><a class="card-link" href="integration-surface.html">Open →</a></article>
+          <article class="card"><span class="step">6</span><h3>Entitlements &amp; Assets</h3><p>Licence capacity, privileged access and asset context.</p><a class="card-link" href="entitlements-assets.html">Open →</a></article>
+          <article class="card"><span class="step">7</span><h3>Admin</h3><p>Scan depth, retention, schedules, recovery and SBS controls.</p><a class="card-link" href="admin.html">Open →</a></article>
         </div>
       </div>
     </section>
 
     <section class="section section-alt">
       <div class="container split">
-        <div><p class="section-label">Overview hierarchy</p><h2>OAuth-first by design</h2></div>
+        <div><p class="section-label">Product focus</p><h2>OAuth-first, evidence-bounded</h2></div>
         <div class="prose">
-          <p>The Overview leads with <strong>OAuth grants requiring review</strong>. A retained authorisation record is not described as a live or usable credential, and the Observatory never tests a credential by attempting to use it.</p>
-          <div class="detail-list">
-            <div class="detail-row"><strong>Primary</strong><span>OAuth authorisation evidence and inactive or frozen-user association where retained evidence supports it.</span></div>
-            <div class="detail-row"><strong>Supporting order</strong><span>Subscriber-owned External Client App principal context, Named and External Credentials, Sites and external surfaces, then Privileged Access Evidence.</span></div>
-            <div class="detail-row"><strong>Supporting evidence</strong><span>Health Check remains scoreless under SBS &amp; Evidence. Package evidence is labelled Package Licence Capacity.</span></div>
-            <div class="detail-row"><strong>Truthful gaps</strong><span>Unavailable scanner evidence is shown as “Not assessed — reason” with a safe next action.</span></div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="section">
-      <div class="container split">
-        <div><p class="section-label">Native complement</p><h2>Add evidence value rather than copy native views</h2></div>
-        <div class="prose">
-          <p>Salesforce provides Security Center Essentials in Enterprise, Unlimited and Performance Editions for baseline configuration monitoring.</p>
-          <p>FortMilo Security Observatory is positioned around OAuth evidence passports, compound context, safe drill-down, benchmark coverage and like-for-like retained comparison rather than duplicating native headline views.</p>
-        </div>
-      </div>
-    </section>
-
-    <section class="section section-accent">
-      <div class="container split">
-        <div><p class="section-label">Current status</p><h2>Private implementation; curated public release</h2></div>
-        <div class="prose">
-          <p>The implementation and detailed validation history remain private while a sanitised public source and installation path are prepared.</p>
-          <p>No generally available package, AppExchange listing, compliance certification or security certification is claimed.</p>
+          <p>The Overview leads with <strong>OAuth grants requiring review</strong>. A retained authorisation record is not described as a live or usable credential, and credentials are never tested by attempting use.</p>
+          <p>Unavailable evidence is shown as <strong>Not assessed — reason</strong> with a safe next action. Health Check remains scoreless supporting evidence rather than a product headline.</p>
         </div>
       </div>
     </section>
   </main>
-
-  <footer class="site-footer"><div class="container footer-grid"><div><p><strong>FortMilo Lab</strong> · FortMilo Security Observatory</p><p><a href="/">fortmilo.co.uk</a> · <a href="mailto:info@fortmilo.co.uk">info@fortmilo.co.uk</a></p></div><div><p>Read-only, advisory and evidence-focused.</p><p>© 2026 Luca Pacini trading as FortMilo Lab.</p></div></div></footer>
+  <footer class="site-footer">
+    <div class="container footer-grid">
+      <div><p><strong>FortMilo Lab</strong> · FortMilo Security Observatory</p><p><a href="/">Home</a> · <a href="mailto:info@fortmilo.co.uk">info@fortmilo.co.uk</a></p></div>
+      <div><p>Read-only, advisory and evidence-focused.</p><p>© 2026 Luca Pacini trading as FortMilo Lab.</p></div>
+    </div>
+  </footer>
 </body>
 </html>
