@@ -4,28 +4,28 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>FortMilo Lab | Salesforce Security Engineering</title>
-  <meta name="description" content="FortMilo Lab develops read-only, evidence-focused Salesforce security tooling, including the Salesforce Security Observatory.">
+  <meta name="description" content="FortMilo Lab develops read-only, evidence-focused Salesforce security tooling, including FortMilo Security Observatory.">
   <meta name="author" content="FortMilo Lab">
   <link rel="canonical" href="https://fortmilo.co.uk/">
   <link rel="icon" type="image/svg+xml" href="assets/fortmilo-logo.svg">
   <meta property="og:type" content="website">
   <meta property="og:title" content="FortMilo Lab | Salesforce Security Engineering">
-  <meta property="og:description" content="Independent Salesforce security engineering and the Salesforce Security Observatory.">
+  <meta property="og:description" content="Independent Salesforce security engineering and FortMilo Security Observatory.">
   <meta property="og:url" content="https://fortmilo.co.uk/">
   <meta property="og:locale" content="en_GB">
   <meta name="twitter:card" content="summary">
-  <link rel="stylesheet" href="styles.css?v=20260730-logo">
+  <link rel="stylesheet" href="styles.css?v=20260730-guide">
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
-
   <header class="site-header">
     <div class="container header-inner">
       <a class="brand" href="/" aria-label="FortMilo Lab home">
         <img src="assets/fortmilo-logo.svg" alt="" width="980" height="240">
       </a>
       <nav aria-label="Main navigation">
-        <a href="#observatory">Security Observatory</a>
+        <a aria-current="page" href="/">Home</a>
+        <a href="security-observatory/">Security Observatory</a>
         <a href="#contact">Contact</a>
       </nav>
     </div>
@@ -39,7 +39,7 @@
           <h1>Evidence before assumptions.</h1>
           <p class="lead">FortMilo Lab builds practical, read-only Salesforce security tooling for evidence-led review.</p>
           <div class="actions">
-            <a class="button button-primary" href="#observatory">Security Observatory</a>
+            <a class="button button-primary" href="security-observatory/">View the product guide</a>
             <a class="button button-secondary" href="mailto:info@fortmilo.co.uk">Contact</a>
           </div>
         </div>
@@ -52,13 +52,17 @@
     <section class="section section-alt" id="observatory">
       <div class="container split">
         <div>
-          <p class="section-label">Salesforce Security Observatory</p>
+          <p class="section-label">FortMilo Security Observatory</p>
           <h2>Read-only Salesforce security evidence</h2>
         </div>
         <div class="prose">
           <p>A Salesforce-native application using LWC, Apex and sanitised in-org evidence. It supports security review without remediation or production security write-back.</p>
-          <p><strong>No data egress:</strong> evidence is queried and stored inside the Salesforce organisation and is not transmitted to FortMilo Lab.</p>
-          <p><a href="https://github.com/Fortmilo/security-observatory" target="_blank" rel="noopener">View the application repository</a></p>
+          <p><strong>No data egress:</strong> scanning and retained evidence stay inside the subscriber Salesforce organisation. Evidence is not transmitted to FortMilo Lab.</p>
+          <p>The product remains sandbox-first while public package distribution and clean-install evidence are completed.</p>
+          <div class="actions">
+            <a class="button button-primary" href="security-observatory/">Read the product guide</a>
+            <a class="button button-secondary" href="https://github.com/Fortmilo/security-observatory" target="_blank" rel="noopener">Public application repository</a>
+          </div>
         </div>
       </div>
     </section>
@@ -83,6 +87,7 @@
         <p>Independent organisation. Not affiliated with, endorsed by or sponsored by Salesforce, Inc.</p>
       </div>
       <div>
+        <p>Salesforce is a trademark of Salesforce, Inc.</p>
         <p>© 2026 Luca Pacini trading as FortMilo Lab. All rights reserved.</p>
       </div>
     </div>
