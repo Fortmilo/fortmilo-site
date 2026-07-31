@@ -17,7 +17,6 @@ const productItems = [
 export const previewImagePath = "/assets/fortmilo-security-observatory-og-20260730.jpg";
 export const previewImageUrl = `https://fortmilo.co.uk${previewImagePath}`;
 export const previewImageAlt = "FortMilo Lab — Security Observatory";
-export const brandBannerPath = "/assets/fortmilo-lab-brand-banner-master.png";
 
 export function iconLinks() {
   return `  <link rel="icon" href="/favicon.ico" sizes="any">
@@ -43,7 +42,7 @@ function nav(items, active, className, label) {
 }
 
 export function header({ corporateActive, productActive }) {
-  return `<header class="site-header"><div class="container header-inner"><a class="brand" href="/" aria-label="FortMilo home"><img src="${brandBannerPath}" alt="" width="1536" height="1024"></a>${nav(corporateItems, corporateActive, "corporate-nav", "Corporate navigation")}</div>${productActive ? `<div class="product-nav-wrap">${nav(productItems, productActive, "product-nav container", "Security Observatory sections")}</div>` : ""}</header>`;
+  return `<header class="site-header"><div class="container header-inner"><a class="brand" href="/" aria-label="FortMilo home"><img src="/assets/fortmilo-logo.svg" alt="" width="860" height="240"></a>${nav(corporateItems, corporateActive, "corporate-nav", "Corporate navigation")}</div>${productActive ? `<div class="product-nav-wrap">${nav(productItems, productActive, "product-nav container", "Security Observatory sections")}</div>` : ""}</header>`;
 }
 
 export function footer() {

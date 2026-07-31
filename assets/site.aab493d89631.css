@@ -40,7 +40,13 @@ a:hover { color: #fff; }
 }
 .header-inner { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 2rem; }
 .brand { display: inline-flex; align-items: center; flex: 0 0 auto; text-decoration: none; }
-.brand img { width: 205px; height: 70px; object-fit: cover; object-position: center; }
+.brand img {
+  width: 205px;
+  height: auto;
+  max-height: 70px;
+  object-fit: contain;
+  object-position: left center;
+}
 .corporate-nav { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .25rem; }
 .corporate-nav a, .product-nav a {
   padding: .54rem .68rem;
@@ -69,8 +75,20 @@ a:hover { color: #fff; }
 .home-page .hero { min-height: calc(100vh - 76px); display: flex; align-items: center; }
 .home-page .hero > .container { width: min(calc(100% - 2rem), var(--max)); }
 .hero-copy { max-width: 690px; }
-.hero-logo { margin: 0; }
-.hero-logo img { width: 100%; aspect-ratio: 12 / 5; object-fit: cover; object-position: center; }
+.hero-logo {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.hero-logo img {
+  width: 100%;
+  height: auto;
+  max-height: 420px;
+  aspect-ratio: auto;
+  object-fit: contain;
+  object-position: center;
+}
 .eyebrow, .section-label { margin: 0 0 .75rem; color: var(--accent-soft); font-size: .76rem; font-weight: 800; letter-spacing: .14em; text-transform: uppercase; }
 h1 { margin: 0; font-size: clamp(2.65rem, 5.4vw, 5rem); line-height: .98; letter-spacing: -.05em; }
 h2 { margin: 0; font-size: clamp(1.9rem, 3.6vw, 3.1rem); line-height: 1.08; letter-spacing: -.035em; }
@@ -162,11 +180,11 @@ h3 { margin: 0 0 .5rem; font-size: 1.14rem; line-height: 1.28; }
 }
 @media (max-width: 900px) {
   .site-header { position: static; }
-  .header-inner { align-items: flex-start; flex-direction: column; gap: .5rem; paddin-block: .75rem; }
+  .header-inner { align-items: flex-start; flex-direction: column; gap: .5rem; padding-block: .75rem; }
   .corporate-nav { justify-content: flex-start; }
   .product-nav { display: flex; overflow-x: auto; padding-bottom: .65rem; }
   .product-nav a { flex: 0 0 auto; }
-  .hero-grid { grid-template-columns: 1fr; gap: 2.2rem; paddin-block: 3rem; }
+  .hero-grid { grid-template-columns: 1fr; gap: 2.2rem; padding-block: 3rem; }
   .home-page .hero { min-height: auto; }
   .hero-logo { max-width: 440px; }
   .split, .footer-grid { grid-template-columns: 1fr; gap: 1.4rem; }
@@ -174,7 +192,11 @@ h3 { margin: 0 0 .5rem; font-size: 1.14rem; line-height: 1.28; }
   .diagram-callouts { grid-template-columns: 1fr; }
 }
 @media (max-width: 620px) {
-  .brand img { width: 175px; height: 60px; }
+  .brand img {
+    width: 175px;
+    height: auto;
+    max-height: 60px;
+  }
   .corporate-nav { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
   .corporate-nav a { text-align: center; }
   h1 { font-size: clamp(2.35rem, 12vw, 3.4rem); }

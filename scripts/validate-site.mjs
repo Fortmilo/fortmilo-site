@@ -1,15 +1,15 @@
-import { createHash } from "node:crypto";
 import { access, readFile, readdir, stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { routes } from "../site-src/site-map.mjs";
-import { brandBannerPath, previewImageAlt, previewImagePath, previewImageUrl } from "../site-src/templates.mjs";
+import { previewImageAlt, previewImagePath, previewImageUrl } from "../site-src/templates.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const htmlFiles = [];
 const errors = [];
-const approvedBrandBannerSha256 = "aa2f49d9416ee2feea13305e00c33e1db4855793771cd5a88943a9c987a04948";
 const routeByOutput = new Map(routes.map((route) => [route.output, route]));
+const visibleLogoPath = "/assets/fortmilo-logo.svg";
+const directMasterReference = ["fortmilo-lab-brand-banner", "-master.png"].join("");
 const staleReferences = [
   ["fortmilo-security-observatory-og", "-v2.png"].join(""),
   ["/assets/apple-touch-", "icon.png"].join(""),
@@ -168,12 +168,18 @@ for (const file of htmlFiles) {
     if (!html.includes(required)) errors.push(`${rel}: missing ${required}`);
   }
   if (html.includes('rel="icon" type="image/svg+xml"')) errors.push(`${rel}: obsolete SVG favicon link`);
-  const brandReferences = (html.match(new RegExp(brandBannerPath, "gu")) || []).length;
-  const expectedBrandReferences = rel === "index.html" ? 2 : 1;
-  if (brandReferences !== expectedBrandReferences) {
-    errors.push(`${rel}: expected ${expectedBrandReferences} approved brand artwork reference(s)`);
+  if (html.includes(directMasterReference)) errors.push(`${rel}: direct governance master reference`);
+  const logoReferences = (html.match(new RegExp(visibleLogoPath.replace(".", "\\."), "gu")) || []).length;
+  const expectedLogoReferences = rel === "index.html" ? 2 : 1;
+  if (logoReferences !== expectedLogoReferences) {
+    errors.push(`${rel}: expected ${expectedLogoReferences} visible FortMilo logo reference(s)`);
   }
-  if (html.includes(["/assets/fortmilo-logo", ".svg"].join(""))) errors.push(`${rel}: obsolete logo artwork reference`);
+  if (!html.includes(`<img src="${visibleLogoPath}" alt="" width="860" height="240">`)) {
+    errors.push(`${rel}: incorrect shared header logo`);
+  }
+  if (rel === "index.html" && !html.includes(`<img src="${visibleLogoPath}" alt="FortMilo shield and wordmark" width="860" height="240">`)) {
+    errors.push(`${rel}: incorrect homepage hero logo`);
+  }
   for (const required of requiredSocialMetadata) {
     if (!html.includes(required)) errors.push(`${rel}: missing ${required}`);
   }
@@ -214,6 +220,11 @@ if (previewReferences.size !== 1 || !previewReferences.has(previewImageUrl)) {
   errors.push(`generated pages do not use one consistent preview image: ${[...previewReferences].join(", ")}`);
 }
 
+for (const sourcePath of ["site-src/templates.mjs", "site-src/styles.css"]) {
+  const source = await readFile(path.join(root, sourcePath), "utf8");
+  if (source.includes(directMasterReference)) errors.push(`${sourcePath}: direct governance master reference`);
+}
+
 const contact = await readFile(path.join(root, "contact.html"), "utf8");
 for (const text of ["Luca Pacini", "Individual applicant and operator of FortMilo Lab", "Harpenden, Hertfordshire, United Kingdom", "info@fortmilo.co.uk", "FortMilo Lab is an independent personal project and brand operated by Luca Pacini."]) {
   if (!contact.includes(text)) errors.push(`contact.html: missing ${text}`);
@@ -243,7 +254,6 @@ const pngExpectations = new Map([
   ["apple-touch-icon.png", [180, 180]],
   ["favicon-16x16.png", [16, 16]],
   ["favicon-32x32.png", [32, 32]],
-  ["assets/fortmilo-lab-brand-banner-master.png", [1536, 1024]],
   ["assets/favicon-192.png", [192, 192]],
   ["assets/favicon-512.png", [512, 512]]
 ]);
@@ -258,11 +268,6 @@ for (const [relativePath, [expectedWidth, expectedHeight]] of pngExpectations) {
   } catch (error) {
     errors.push(error.message);
   }
-}
-
-const brandBanner = await readRequired(brandBannerPath.slice(1));
-if (brandBanner && createHash("sha256").update(brandBanner).digest("hex") !== approvedBrandBannerSha256) {
-  errors.push(`${brandBannerPath}: does not match the approved governance master`);
 }
 
 const icoBuffer = await readRequired("favicon.ico");
@@ -326,4 +331,4 @@ if (errors.length) {
   console.error(errors.join("\n"));
   process.exit(1);
 }
-console.log(`Validated ${htmlFiles.length} HTML files, approved brand artwork, social metadata, icons and manifest with no errors.`);
+console.log(`Validated ${htmlFiles.length} HTML files, visible artwork, social metadata, icons and manifest with no errors.`);
