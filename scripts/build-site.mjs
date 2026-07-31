@@ -27,14 +27,23 @@ function replaceHeadAssetMetadata(html, output) {
     /^\s*<link rel="icon"[^>]*>\r?\n/gmu,
     /^\s*<link rel="apple-touch-icon"[^>]*>\r?\n/gmu,
     /^\s*<link rel="manifest"[^>]*>\r?\n/gmu,
+    /^\s*<meta name="msapplication-(?:TileColor|TileImage)"[^>]*>\r?\n/gmu,
     /^\s*<meta property="og:image(?::(?:type|width|height|alt))?"[^>]*>\r?\n/gmu,
     /^\s*<meta name="twitter:(?:card|image|image:alt)"[^>]*>\r?\n/gmu
   ];
   for (const pattern of sharedLines) html = html.replace(pattern, "");
 
   const canonicalPattern = /^(\s*<link rel="canonical"[^>]*>)$/mu;
-  if (!canonicalPattern.test(html)) throw new Error(`${output}: missing canonical link`);
-  html = html.replace(canonicalPattern, `$1\n${iconLinks()}`);
+  const isNotFound = output === "404.html";
+  if (isNotFound) {
+    html = html.replace(/^\s*<link rel="canonical"[^>]*>\r?\n/gmu, "");
+    const noindexPattern = /^(\s*<meta name="robots" content="noindex">)$/mu;
+    if (!noindexPattern.test(html)) throw new Error(`${output}: missing noindex metadata`);
+    html = html.replace(noindexPattern, `$1\n${iconLinks()}`);
+  } else {
+    if (!canonicalPattern.test(html)) throw new Error(`${output}: missing canonical link`);
+    html = html.replace(canonicalPattern, `$1\n${iconLinks()}`);
+  }
 
   const ogUrlPattern = /^(\s*<meta property="og:url"[^>]*>)$/mu;
   if (!ogUrlPattern.test(html)) throw new Error(`${output}: missing og:url`);
@@ -56,7 +65,7 @@ for (const route of routes) {
   await writeFile(output, html, "utf8");
 }
 
-const lastmod = "2026-07-30";
+const lastmod = "2026-07-31";
 const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${routes.filter((route) => !route.noindex).map((route) => `  <url><loc>${route.canonical}</loc><lastmod>${lastmod}</lastmod></url>`).join("\n")}\n</urlset>\n`;
 await writeFile(path.join(root, "sitemap.xml"), sitemap);
 await writeFile(path.join(root, "robots.txt"), "User-agent: *\nAllow: /\nSitemap: https://fortmilo.co.uk/sitemap.xml\n");

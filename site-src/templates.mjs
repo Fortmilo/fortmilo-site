@@ -14,16 +14,19 @@ const productItems = [
   ["evidence", "Evidence & Coverage", "/security-observatory/evidence.html"]
 ];
 
-export const previewImagePath = "/assets/fortmilo-security-observatory-og-20260730.jpg";
+export const previewImagePath = "/assets/fortmilo-security-observatory-og-20260731.jpg";
 export const previewImageUrl = `https://fortmilo.co.uk${previewImagePath}`;
-export const previewImageAlt = "FortMilo Lab — Security Observatory";
+export const previewImageAlt = "FortMilo — Security Observatory";
 
 export function iconLinks() {
   return `  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
   <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png" sizes="180x180">
-  <link rel="manifest" href="/site.webmanifest">`;
+  <link rel="manifest" href="/site.webmanifest">
+  <meta name="msapplication-TileColor" content="#07101d">
+  <meta name="msapplication-TileImage" content="/mstile-150x150.png">`;
 }
 
 export function socialImageMetadata() {
@@ -42,11 +45,11 @@ function nav(items, active, className, label) {
 }
 
 export function header({ corporateActive, productActive }) {
-  return `<header class="site-header"><div class="container header-inner"><a class="brand" href="/" aria-label="FortMilo home"><img src="/assets/fortmilo-logo.svg" alt="" width="860" height="240"></a>${nav(corporateItems, corporateActive, "corporate-nav", "Corporate navigation")}</div>${productActive ? `<div class="product-nav-wrap">${nav(productItems, productActive, "product-nav container", "Security Observatory sections")}</div>` : ""}</header>`;
+  return `<header class="site-header"><div class="container header-inner"><a class="brand" href="/" aria-label="FortMilo home"><img src="/assets/fortmilo-shield-512.png" alt="" width="512" height="512"><span>FortMilo</span></a>${nav(corporateItems, corporateActive, "corporate-nav", "Corporate navigation")}</div>${productActive ? `<div class="product-nav-wrap">${nav(productItems, productActive, "product-nav container", "Security Observatory sections")}</div>` : ""}</header>`;
 }
 
 export function footer() {
-  return `<footer class="site-footer"><div class="container footer-grid"><div><p><strong>FortMilo Lab is an independent personal project and brand operated by Luca Pacini.</strong></p><p>Harpenden, Hertfordshire, United Kingdom.</p><p>Independent of and not endorsed by Salesforce, Inc. Salesforce is a trademark of Salesforce, Inc.</p></div><div><div class="footer-links"><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a></div><p>© 2026 Luca Pacini. All rights reserved.</p></div></div></footer>`;
+  return `<footer class="site-footer"><div class="container footer-grid"><div><p><strong>Luca Pacini, trading as FortMilo.</strong></p><p>Harpenden, Hertfordshire, United Kingdom.</p><p>Independent of and not endorsed by Salesforce, Inc. Salesforce is a trademark of Salesforce, Inc.</p></div><div><div class="footer-links"><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/.well-known/security.txt">Security</a></div><p>© 2026 Luca Pacini. All rights reserved.</p></div></div></footer>`;
 }
 
 export function page({ title, description, canonical, corporateActive, productActive, bodyClass = "", body, cssFile, noindex = false }) {
@@ -59,7 +62,7 @@ export function page({ title, description, canonical, corporateActive, productAc
   <title>${fullTitle}</title>
   <meta name="description" content="${description}">
   ${noindex ? '<meta name="robots" content="noindex">' : ""}
-  <link rel="canonical" href="${canonical}">
+  ${noindex ? "" : `<link rel="canonical" href="${canonical}">`}
 ${iconLinks()}
   <meta property="og:type" content="website">
   <meta property="og:title" content="${fullTitle}">

@@ -2,7 +2,7 @@
 
 Source for [fortmilo.co.uk](https://fortmilo.co.uk), published from the `main` branch through GitHub Pages.
 
-FortMilo Lab is an independent personal project and brand operated by Luca Pacini in Harpenden, Hertfordshire, United Kingdom.
+The site is operated by Luca Pacini, trading as FortMilo, in Harpenden, Hertfordshire, United Kingdom.
 
 ## Build
 
@@ -19,7 +19,15 @@ npm run check
 - `site-src/site-map.mjs` owns routes and active navigation.
 - `scripts/build-site.mjs` applies shared layout, generates the stylesheet asset, sitemap and static hosting files.
 - `scripts/validate-site.mjs` checks routes, metadata, shared navigation, product wording and public-safety constraints.
+- `scripts/generate-brand-assets.ps1` reproduces the social JPEG from the approved public banner export.
 - No GitHub Actions workflow is required.
+
+## Approved public artwork
+
+- `/assets/fortmilo-brand-banner-1200x675.png`: approved homepage banner export and social-preview source.
+- `/assets/fortmilo-shield-512.png`: approved compact header mark.
+- `/assets/fortmilo-security-observatory-og-20260731.jpg`: derived 1200×630 social preview.
+- Root favicon, Apple and Microsoft tile files plus `/assets/android-chrome-192x192.png` and `/assets/android-chrome-512x512.png`: approved platform-specific icon exports.
 
 ## Boundaries
 
@@ -32,6 +40,6 @@ npm run check
 ## Contact
 
 - Luca Pacini
-- Individual applicant and operator of FortMilo Lab
+- Luca Pacini, trading as FortMilo
 - Harpenden, Hertfordshire, United Kingdom
 - [info@fortmilo.co.uk](mailto:info@fortmilo.co.uk)
