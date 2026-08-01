@@ -146,6 +146,11 @@ h3 { margin: 0 0 .5rem; font-size: 1.14rem; line-height: 1.28; }
 .term-card ul { margin: .6rem 0 0; padding-left: 1.1rem; color: var(--muted); }
 .term-card li + li { margin-top: .25rem; }
 
+.stat-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
+.stat-card { padding: 1.2rem; border: 1px solid var(--border); border-radius: 13px; background: rgba(11, 23, 40, .82); text-align: center; }
+.stat-card strong { display: block; font-size: 2.1rem; font-weight: 850; color: #fff; letter-spacing: -.02em; }
+.stat-card span { display: block; margin-top: .35rem; color: var(--muted); font-size: .84rem; }
+
 .contact-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; align-items: stretch; }
 .contact-card { min-width: 0; padding: 1.5rem; border: 1px solid var(--border); border-radius: 16px; background: linear-gradient(180deg, rgba(23,38,60,.98), rgba(15,27,45,.98)); }
 .contact-card h2 { margin: 0 0 1.2rem; font-size: 1.45rem; }
@@ -202,7 +207,7 @@ h3 { margin: 0 0 .5rem; font-size: 1.14rem; line-height: 1.28; }
   .home-page .hero { min-height: auto; }
   .hero-brand-art { max-width: 560px; }
   .split, .footer-grid, .contact-grid { grid-template-columns: 1fr; gap: 1.4rem; }
-  .card-grid, .term-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .card-grid, .term-grid, .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .diagram-callouts { grid-template-columns: 1fr; }
 }
 @media (max-width: 620px) {
@@ -214,7 +219,7 @@ h3 { margin: 0 0 .5rem; font-size: 1.14rem; line-height: 1.28; }
   .corporate-nav { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
   .corporate-nav a { text-align: center; }
   h1 { font-size: clamp(2.35rem, 12vw, 3.4rem); }
-  .proof-strip, .card-grid, .card-grid-five, .term-grid { grid-template-columns: 1fr; }
+  .proof-strip, .card-grid, .card-grid-five, .term-grid, .stat-grid { grid-template-columns: 1fr; }
   .diagram-card { overflow-x: auto; }
   .arch-svg { min-width: 860px; }
   .section { padding: 3.3rem 0; }
