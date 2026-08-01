@@ -17,6 +17,7 @@ const expectedImages = new Map([
   ["favicon-32x32.png", "8ba07be74b5a7cfbf5f23467376c0078bd32f6eb3a59ce7b0e098ce4a5e90029"],
   ["favicon-48x48.png", "0a924eab674dbb5db3f65cd896603cee3aa917acb501b752a4ec40987b4550a8"],
   ["favicon.ico", "bd2f5e21de591691571aaa2bd8b71a251fdb4edb540c2ce27a3ad14a300e537c"],
+  ["favicon.svg", "2dbc5023b718e959c69d27a42558b002b704399fb42d8b6298020fa5df97215c"],
   ["mstile-150x150.png", "4417d9367cad3ab2e9949d1bca38646115ef9bea3db4c8976b48752963d5929f"],
   ["assets/android-chrome-192x192.png", "5af19460703089a8ff214413844aeafeb62920529b13ced37315dd56ccdf9661"],
   ["assets/android-chrome-512x512.png", "c194e9a1687190110b2bce2e2ceeefac97bb5c8ff050df53a9e0197c601502a8"],
@@ -39,6 +40,7 @@ const pngDimensions = new Map([
 
 const requiredIconMetadata = [
   '<link rel="icon" href="/favicon.ico" sizes="any">',
+  '<link rel="icon" type="image/svg+xml" href="/favicon.svg">',
   '<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">',
   '<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">',
   '<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">',
@@ -344,6 +346,11 @@ if (ico) {
   }
 }
 
+const svg = await readRequired("favicon.svg");
+if (svg && !/^(?:\uFEFF)?\s*(?:<\?xml\b[^?]*\?>\s*)?<svg(?:\s|>)/u.test(svg.toString("utf8"))) {
+  errors.push("favicon.svg: expected valid SVG/XML content at the start of the file");
+}
+
 const htmlByRoute = new Map();
 for (const route of routes) {
   const buffer = await readRequired(route.output);
@@ -361,6 +368,7 @@ for (const route of routes) {
     errors.push(`${route.output}: missing normal-page canonical`);
   }
   for (const metadata of [...requiredIconMetadata, ...requiredSocialMetadata]) if (!html.includes(metadata)) errors.push(`${route.output}: missing ${metadata}`);
+  if ((html.match(/\/favicon\.svg/gu) || []).length !== 1) errors.push(`${route.output}: expected exactly one /favicon.svg reference`);
   const headerLogo = '<img src="/assets/fortmilo-shield-512.png" alt="" width="512" height="512"><span>FortMilo</span>';
   if (!html.includes(headerLogo)) errors.push(`${route.output}: missing approved compact header logo or intrinsic dimensions`);
   if ((html.match(/\/assets\/fortmilo-shield-512\.png/gu) || []).length !== 1) errors.push(`${route.output}: expected one compact header-logo reference`);
