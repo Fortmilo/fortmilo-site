@@ -1,0 +1,59 @@
+name: Replace Observatory Markdown with PDF
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - .github/workflows/replace-observatory-md-with-pdf.yml
+
+permissions:
+  contents: write
+
+jobs:
+  replace-document:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PDF dependencies
+        run: python -m pip install --disable-pip-version-check reportlab pypdf
+
+      - name: Generate PDF
+        run: python scripts/build-evidence-pdf.py
+
+      - name: Validate PDF
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from pypdf import PdfReader
+
+          path = Path("public/documents/evidence-semantics-and-scanner-orchestration.pdf")
+          if not path.exists() or path.stat().st_size < 10000:
+              raise SystemExit("PDF missing or unexpectedly small")
+          if not path.read_bytes().startswith(b"%PDF-"):
+              raise SystemExit("Invalid PDF header")
+          reader = PdfReader(str(path))
+          if len(reader.pages) < 10:
+              raise SystemExit(f"Unexpected page count: {len(reader.pages)}")
+          print(f"Validated {len(reader.pages)} pages and {path.stat().st_size} bytes")
+          PY
+
+      - name: Replace Markdown with PDF
+        run: |
+          git rm public/documents/evidence-semantics-and-scanner-orchestration.md
+          git rm scripts/build-evidence-pdf.py
+          git rm .github/workflows/replace-observatory-md-with-pdf.yml
+          git add public/documents/evidence-semantics-and-scanner-orchestration.pdf
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "Replace Observatory Markdown document with PDF"
+          git push origin HEAD:main
