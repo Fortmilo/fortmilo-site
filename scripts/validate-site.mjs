@@ -17,7 +17,7 @@ const expectedImages = new Map([
   ["favicon-32x32.png", "8ba07be74b5a7cfbf5f23467376c0078bd32f6eb3a59ce7b0e098ce4a5e90029"],
   ["favicon-48x48.png", "0a924eab674dbb5db3f65cd896603cee3aa917acb501b752a4ec40987b4550a8"],
   ["favicon.ico", "bd2f5e21de591691571aaa2bd8b71a251fdb4edb540c2ce27a3ad14a300e537c"],
-  ["favicon.svg", "2dbc5023b718e959c69d27a42558b002b704399fb42d8b6298020fa5df97215c"],
+  ["favicon.svg", "24293f12640b0687bac3edb5e68289ab524a0ae344699244409ec58935bfd06c"],
   ["mstile-150x150.png", "4417d9367cad3ab2e9949d1bca38646115ef9bea3db4c8976b48752963d5929f"],
   ["assets/android-chrome-192x192.png", "5af19460703089a8ff214413844aeafeb62920529b13ced37315dd56ccdf9661"],
   ["assets/android-chrome-512x512.png", "c194e9a1687190110b2bce2e2ceeefac97bb5c8ff050df53a9e0197c601502a8"],
@@ -373,11 +373,7 @@ for (const route of routes) {
   if (!html.includes(headerLogo)) errors.push(`${route.output}: missing approved compact header logo or intrinsic dimensions`);
   if ((html.match(/\/assets\/fortmilo-shield-512\.png/gu) || []).length !== 1) errors.push(`${route.output}: expected one compact header-logo reference`);
   const bannerCount = (html.match(/\/assets\/fortmilo-brand-banner-1200x675\.png/gu) || []).length;
-  if (route.output === "index.html") {
-    if (bannerCount !== 1 || !html.includes('<img src="/assets/fortmilo-brand-banner-1200x675.png" alt="FortMilo shield and wordmark" width="1200" height="675">')) errors.push("index.html: missing approved primary banner or intrinsic dimensions");
-  } else if (bannerCount !== 0) {
-    errors.push(`${route.output}: primary banner must appear on the homepage only`);
-  }
+  if (bannerCount !== 0) errors.push(`${route.output}: obsolete primary banner found`);
   const ids = [...html.matchAll(/\bid="([^"]+)"/gu)].map((match) => match[1]);
   if (new Set(ids).size !== ids.length) errors.push(`${route.output}: duplicate id`);
   if (/<script\b/iu.test(html) || /gtag|google-analytics|plausible|matomo/iu.test(html)) errors.push(`${route.output}: analytics, tracking or executable script found`);
@@ -434,22 +430,42 @@ const contact = htmlByRoute.get("contact.html") || "";
 for (const required of ["Contact FortMilo.", "Luca Pacini", "Luca Pacini, trading as FortMilo", "Harpenden, Hertfordshire, United Kingdom", "info@fortmilo.co.uk", "https://fortmilo.co.uk/", "https://fortmilo.co.uk/security-observatory/", "/.well-known/security.txt"]) if (!contact.includes(required)) errors.push(`contact.html: missing ${required}`);
 if (!contact.includes("contact-grid") || (contact.match(/class="contact-card"/gu) || []).length !== 2) errors.push("contact.html: missing balanced two-column contact layout");
 
+const homepage = htmlByRoute.get("index.html") || "";
+const homepageDescription = "Security Observatory organises read-only Salesforce security evidence for OAuth grants, privileged access, external exposure and evidence gaps.";
+for (const required of [
+  "Salesforce security evidence collected and retained inside your org.",
+  "Bring OAuth grants, privileged access, external exposure and evidence gaps into one review surface, with reasons and safe next actions kept explicit.",
+  "Illustrative evidence state", "State", "Not assessed", "The evidence source was unavailable or incomplete.", "Next safe action",
+  "Review access to the required source, then rerun the scan.", "Illustrative example — no organisation data shown.",
+  "Evidence designed for Salesforce security review", "References control identifiers from the independent",
+  "Security Benchmark for Salesforce (SBS)", "CC BY-SA 4.0", homepageDescription,
+  "Read-only by design", "Reports evidence and limitations without revoking tokens, removing permissions, blocking APIs, changing endpoints or writing security changes back to Salesforce.",
+  "Evidence retained inside Salesforce", "Evidence collection, review and retained context remain within the subscriber organisation.",
+  "Unavailable evidence stays explicit", "Blocked or incomplete sources remain Not assessed, with a reason and a safe next action. Missing evidence is not converted into zero.",
+  "Sanitised evidence by design", "Evidence is presented without tokens, session identifiers, raw IP addresses, secrets, private keys, certificate bodies or credential values.",
+  "Prioritise access and exposure", "Focus review on OAuth grants, privileged access and externally exposed surfaces, with affected users, applications or assets shown where retained evidence supports it."
+]) if (!homepage.includes(required)) errors.push(`index.html: missing homepage contract text ${required}`);
+for (const forbidden of ["Read-only security evidence for Salesforce.", "Security Observatory by FortMilo", "hero-brand-art", "What happened"]) if (homepage.includes(forbidden)) errors.push(`index.html: obsolete homepage content ${forbidden}`);
+for (const chip of ["Read-only", "No automatic remediation", "Evidence retained in your org"]) if (!homepage.includes(`<li>${chip}</li>`)) errors.push(`index.html: missing approved chip ${chip}`);
+const heroChips = /<ul class="hero-chips"[^>]*>([\s\S]*?)<\/ul>/u.exec(homepage)?.[1] || "";
+if ((homepage.match(/class="hero-chips"/gu) || []).length !== 1 || (heroChips.match(/<li>/gu) || []).length !== 3 || (heroChips.match(/<li>(?:Read-only|No automatic remediation|Evidence retained in your org)<\/li>/gu) || []).length !== 3) errors.push("index.html: expected exactly three approved chips");
+if ((homepage.match(/class="card differentiator-card"/gu) || []).length !== 5) errors.push("index.html: expected exactly five differentiator cards");
+if (!homepage.includes('<aside class="illustrative-evidence"') || !homepage.includes("<dl>")) errors.push("index.html: evidence panel must use aside and dl semantics");
+if (!homepage.includes('href="https://www.securitybenchmark.org/"') || !homepage.includes('href="https://creativecommons.org/licenses/by-sa/4.0/"')) errors.push("index.html: missing SBS attribution links");
+if (!homepage.includes('<meta name="description" content="' + homepageDescription + '">') || !homepage.includes('<meta property="og:description" content="' + homepageDescription + '">')) errors.push("index.html: incorrect homepage descriptions");
+if (!homepage.includes("<title>FortMilo | Security Observatory</title>") || !homepage.includes('<a class="button button-primary" href="/security-observatory/">Explore Security Observatory</a>') || !homepage.includes('<a class="button button-secondary" href="/contact.html">Contact</a>')) errors.push("index.html: incorrect title or homepage actions");
+
 const terms = htmlByRoute.get("terms.html") || "";
 for (const required of [
-  "Last updated:</strong> 31 July 2026",
+  "Last updated:</strong> 1 August 2026",
   "Luca Pacini, trading as FortMilo",
   "Apache License 2.0",
   "Creative Commons Attribution-ShareAlike 4.0 International",
   "No Security Benchmark for Salesforce control prose is reproduced",
-  "indirect or consequential loss",
-  "loss of profit, revenue, business, goodwill or data",
-  "greater of £100 or the fees paid for that service during the preceding 12 months",
-  "death or personal injury caused by negligence",
-  "fraud or fraudulent misrepresentation",
-  "liability that cannot legally be excluded",
   "law of England and Wales",
   "courts of England and Wales have exclusive jurisdiction"
 ]) if (!terms.includes(required)) errors.push(`terms.html: missing required clause ${required}`);
+for (const forbidden of ["Limitation of liability", "£100", "fees paid", "aggregate liability", "relevant service", "monetary liability"]) if (terms.includes(forbidden)) errors.push(`terms.html: stale liability wording ${forbidden}`);
 
 const privacy = htmlByRoute.get("privacy.html") || "";
 for (const required of [
