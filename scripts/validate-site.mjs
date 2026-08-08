@@ -62,6 +62,18 @@ const requiredSocialMetadata = [
 ];
 
 const prohibitedMonetaryWording = /[£$€]|fees paid|aggregate liability|liability cap|relevant service/iu;
+const requiredPartnerStatus = "FortMilo is a Salesforce Partner.";
+const requiredProductIndependence = "Security Observatory is independently developed and is not endorsed by Salesforce, Inc.";
+const requiredSalesforceTrademark = "Salesforce is a trademark of Salesforce, Inc.";
+const prohibitedSalesforceClaims = [
+  ["Salesforce", "approved"].join(" "),
+  ["Salesforce", "certified"].join(" "),
+  ["Salesforce", "recommended"].join(" "),
+  ["Salesforce sponsored", "Security Observatory"].join(" "),
+  ["AppExchange", "approved"].join(" "),
+  ["AppExchange", "certified"].join(" "),
+  ["AppExchange", "listed"].join(" ")
+];
 
 const staleAssetTokens = [
   ["fortmilo-logo", ".svg"].join(""),
@@ -384,11 +396,12 @@ for (const route of routes) {
   if (new Set(ids).size !== ids.length) errors.push(`${route.output}: duplicate id`);
   if (/<script\b/iu.test(html) || /gtag|google-analytics|plausible|matomo/iu.test(html)) errors.push(`${route.output}: analytics, tracking or executable script found`);
   if (/\b(?:AI|GPT|Codex|Claude|Gemini)\b/iu.test(html)) errors.push(`${route.output}: AI reference found`);
-  if (/Salesforce Partner|AppExchange|approved by Salesforce|(?<!not )endorsed by Salesforce/iu.test(html)) errors.push(`${route.output}: prohibited Salesforce relationship claim`);
+  if (/AppExchange|approved by Salesforce|(?<!not )endorsed by Salesforce/iu.test(html)) errors.push(`${route.output}: prohibited Salesforce relationship claim`);
+  for (const claim of prohibitedSalesforceClaims) if (html.includes(claim)) errors.push(`${route.output}: prohibited Salesforce or AppExchange claim ${claim}`);
   if (/href="https:\/\/github\.com\/Fortmilo\//iu.test(html)) errors.push(`${route.output}: prohibited GitHub repository link`);
   if (/FortMilo Lab|individual applicant|pending-address|business-address confirmation|actual application terminology|where supported/iu.test(html)) errors.push(`${route.output}: stale identity, address or terminology wording`);
   if (prohibitedMonetaryWording.test(html)) errors.push(`${route.output}: prohibited monetary liability wording found`);
-  if (!html.includes("Luca Pacini, trading as FortMilo.") || !html.includes("Independent of and not endorsed by Salesforce, Inc. Salesforce is a trademark of Salesforce, Inc.")) errors.push(`${route.output}: incomplete approved footer identity or disclaimer`);
+  if (!html.includes("Luca Pacini, trading as FortMilo.") || !html.includes("Harpenden, Hertfordshire, United Kingdom.") || !html.includes(requiredPartnerStatus) || !html.includes(requiredProductIndependence) || !html.includes(requiredSalesforceTrademark)) errors.push(`${route.output}: incomplete approved footer identity, Partner status or product disclaimer`);
   const ogImages = [...html.matchAll(/<meta property="og:image" content="([^"]+)">/gu)].map((match) => match[1]);
   const twitterImages = [...html.matchAll(/<meta name="twitter:image" content="([^"]+)">/gu)].map((match) => match[1]);
   if (ogImages.length !== 1 || twitterImages.length !== 1 || ogImages[0] !== previewImageUrl || twitterImages[0] !== previewImageUrl) errors.push(`${route.output}: incomplete or mismatched social-image metadata`);
