@@ -508,6 +508,19 @@ if (!allFiles.includes(whitepaperPath.slice(1))) errors.push(`missing ${whitepap
 for (const required of ["Technical whitepaper", whitepaperTitle, `href="${whitepaperPath}"`, "Read the technical whitepaper"]) if (!documents.includes(required)) errors.push(`documents/index.html: missing ${required}`);
 if (!documents.includes('<link rel="canonical" href="https://fortmilo.co.uk/documents/">')) errors.push("documents/index.html: incorrect canonical");
 
+const acknowledgements = htmlByRoute.get("acknowledgements.html") || "";
+const acknowledgementSentence = "Special thanks to my wife and sons, and to my former team — Ali, Daniel, Lucas, Jakub, Gerry and John — for believing in me, supporting me and helping me bring this project to life.";
+const acknowledgementBoundary = "This acknowledges personal support and individual contributions. It does not imply endorsement of FortMilo or Security Observatory by those individuals or their employers.";
+if (!acknowledgements.includes("<h1>Acknowledgements</h1>")) errors.push("acknowledgements.html: missing exact h1");
+for (const required of [acknowledgementSentence, "my wife and sons", "Ali", "Daniel", "Lucas", "Jakub", "Gerry", "John", acknowledgementBoundary]) if (!acknowledgements.includes(required)) errors.push(`acknowledgements.html: missing required acknowledgement content ${required}`);
+const acknowledgementMain = /<main id="main">([\s\S]*?)<\/main>/u.exec(acknowledgements)?.[1] || "";
+if (/<img\b|<script\b|linkedin|social link|job title|biograph/iu.test(acknowledgementMain)) errors.push("acknowledgements.html: prohibited photo, script, social, job-title or biography content");
+for (const [output, html] of htmlByRoute) {
+  if (!html.includes('<a href="/acknowledgements.html">Acknowledgements</a>')) errors.push(`${output}: missing Acknowledgements footer link`);
+  const corporateNav = /<nav class="corporate-nav"[\s\S]*?<\/nav>/u.exec(html)?.[0] || "";
+  if (!corporateNav || corporateNav.includes("Acknowledgements")) errors.push(`${output}: Acknowledgements must not appear in corporate navigation`);
+}
+
 const evidence = htmlByRoute.get("security-observatory/evidence.html") || "";
 for (const required of [
   "<h3>Severity</h3><ul><li>Critical</li><li>High</li><li>Moderate</li></ul>",
