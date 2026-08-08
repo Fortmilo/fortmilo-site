@@ -407,10 +407,12 @@ for (const route of routes) {
 }
 
 const textFiles = allFiles.filter((file) => [".html", ".css", ".mjs", ".js", ".json", ".xml", ".md", ".txt", ".ps1", ".webmanifest"].includes(path.extname(file).toLowerCase()) || path.basename(file) === "site.webmanifest");
+const obsoleteWhitepaperPath = ["/documents/evidence-semantics-and-scanner-orchestration", ".pdf"].join("");
 for (const relativePath of textFiles) {
   const text = await readFile(path.join(root, relativePath), "utf8");
   for (const token of staleAssetTokens) if (text.includes(token)) errors.push(`${relativePath}: stale asset reference ${token}`);
   if (text.includes(directGovernanceUnixPath) || text.includes(directGovernanceWindowsPath) || directMasterPattern.test(text)) errors.push(`${relativePath}: direct governance-master path`);
+  if (text.includes(obsoleteWhitepaperPath)) errors.push(`${relativePath}: obsolete unversioned whitepaper reference`);
 }
 
 const manifestBuffer = await readRequired("site.webmanifest");
@@ -476,16 +478,35 @@ if (securityText) {
 
 const architecture = htmlByRoute.get("architecture-security.html") || "";
 if ((architecture.match(/class="arch-svg"/gu) || []).length !== 4 || (architecture.match(/<title id=/gu) || []).length !== 4 || (architecture.match(/<desc id=/gu) || []).length !== 4) errors.push("architecture-security.html: expected four titled and described diagrams");
+if ((architecture.match(/<p class="section-label">Diagram [1-4]<\/p>/gu) || []).length !== 4) errors.push("architecture-security.html: expected all four numbered diagram sections");
 if (/class="diagram-card"[\s\S]*?<h3>/u.test(architecture)) errors.push("architecture-security.html: duplicate diagram panel heading");
 const svgPaths = [...architecture.matchAll(/<path\b[^>]*>/gu)].map((match) => match[0]);
 const markerPaths = svgPaths.filter((tag) => tag.includes('fill="#ff8c80"'));
 if (markerPaths.length !== 4) errors.push("architecture-security.html: expected four explicit marker geometries");
 for (const tag of svgPaths) if (!tag.includes('fill="#ff8c80"') && !tag.includes('fill="none"')) errors.push(`architecture-security.html: connector path lacks fill="none": ${tag}`);
-for (const required of ["user-initiated sanitised CSV generation", "Once downloaded, the sanitised file is outside the Salesforce trust boundary", "Unknown/Error · Not applicable", "Unknown/Error · Not assessed"]) if (!architecture.includes(required)) errors.push(`architecture-security.html: missing architecture boundary or terminology text ${required}`);
-const boundary = { x: 24, y: 38, width: 1112, height: 350 };
-const csvBox = { x: 760, y: 272, width: 330, height: 78 };
-const clearances = [csvBox.x - boundary.x, csvBox.y - boundary.y, (boundary.x + boundary.width) - (csvBox.x + csvBox.width), (boundary.y + boundary.height) - (csvBox.y + csvBox.height)];
-if (!architecture.includes('<rect x="24" y="38" width="1112" height="350"') || !architecture.includes('<rect x="760" y="272" width="330" height="78"') || clearances.some((clearance) => clearance < 24)) errors.push("architecture-security.html: Diagram 1 CSV box is not at least 24px inside the trust boundary");
+const whitepaperPath = "/documents/evidence-semantics-and-scanner-orchestration-v1.3.pdf";
+const whitepaperTitle = "Evidence Semantics and Scanner Orchestration v1.3";
+for (const required of ["Technical whitepaper", whitepaperTitle, "Read the technical whitepaper", "Notify me at launch", "Contact FortMilo"]) if (!architecture.includes(required)) errors.push(`architecture-security.html: missing ${required}`);
+if (!architecture.includes(`href="${whitepaperPath}"`)) errors.push("architecture-security.html: missing versioned technical whitepaper link");
+if (!architecture.includes('href="mailto:info@fortmilo.co.uk?subject=Security%20Observatory%20launch%20notification"')) errors.push("architecture-security.html: incorrect launch-notification recipient or subject");
+if (!architecture.includes('<a class="button button-secondary" href="/contact.html">Contact FortMilo</a>')) errors.push("architecture-security.html: incorrect Contact FortMilo action");
+for (const required of ["USER-INITIATED DOWNLOAD", "Downloaded</text><text", "Once downloaded, the sanitised file is outside the Salesforce trust boundary"]) if (!architecture.includes(required)) errors.push(`architecture-security.html: missing explicit CSV boundary crossing detail ${required}`);
+for (const required of ["PACKAGED CORE", "SUBSCRIBER-OWNED SETUP", "TRUST / OWNERSHIP BOUNDARY", 'data-boundary-orientation="vertical"', "TOOLING EVIDENCE UNAVAILABLE", "Not assessed with a bounded reason", "limitation and safe next action"]) if (!architecture.includes(required)) errors.push(`architecture-security.html: missing subscriber-authentication boundary detail ${required}`);
+for (const required of ["Can usable evidence", "USABLE", "EVIDENCE", "UNAVAILABLE OR", "INCOMPLETE EVIDENCE", "NOT ASSESSED", "Explicit reason", "SAFE NEXT", "ACTION"]) if (!architecture.includes(required)) errors.push(`architecture-security.html: missing usable/unavailable evidence branch detail ${required}`);
+const prohibitedArchitectureMarketing = [
+  ["Already on External Client", "Apps"].join(" "),
+  ["External Client App", "ready"].join(" "),
+  ["Future-proof External Client", "Apps"].join(" "),
+  ["Modern External Client App", "architecture"].join(" "),
+  ["AppExchange", "-ready authentication"].join(""),
+  ["Built for the May 2026", "requirement"].join(" ")
+];
+for (const wording of prohibitedArchitectureMarketing) if (architecture.includes(wording)) errors.push(`architecture-security.html: prohibited External Client App marketing ${wording}`);
+
+const documents = htmlByRoute.get("documents/index.html") || "";
+if (!allFiles.includes(whitepaperPath.slice(1))) errors.push(`missing ${whitepaperPath.slice(1)}`);
+for (const required of ["Technical whitepaper", whitepaperTitle, `href="${whitepaperPath}"`, "Read the technical whitepaper"]) if (!documents.includes(required)) errors.push(`documents/index.html: missing ${required}`);
+if (!documents.includes('<link rel="canonical" href="https://fortmilo.co.uk/documents/">')) errors.push("documents/index.html: incorrect canonical");
 
 const evidence = htmlByRoute.get("security-observatory/evidence.html") || "";
 for (const required of [

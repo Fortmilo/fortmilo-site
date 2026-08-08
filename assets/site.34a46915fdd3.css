@@ -173,10 +173,15 @@ h3 { margin: 0 0 .5rem; font-size: 1.14rem; line-height: 1.28; }
 .diagram-subtitle { margin: 0 0 .8rem; color: var(--accent-soft); font-size: .8rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
 .arch-svg { width: 100%; height: auto; }
 .arch-svg text { font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+.diagram-legend { margin: 0; padding: .75rem .9rem; border: 1px solid var(--border); border-radius: 10px; color: var(--muted); font-size: .84rem; }
+.diagram-legend strong { color: var(--text); }
 .diagram-callouts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: .75rem; }
 .diagram-callout { padding: .85rem; border: 1px solid var(--border); border-radius: 11px; background: rgba(7,16,29,.78); }
 .diagram-callout strong { display: block; color: #fff; font-size: .83rem; }
 .diagram-callout span { display: block; margin-top: .2rem; color: var(--muted); font-size: .82rem; }
+.technical-resource { padding: clamp(1.5rem, 4vw, 2.4rem); }
+.technical-resource .section-label { margin-bottom: .75rem; color: var(--accent-soft); }
+.technical-resource h2 { max-width: 880px; margin-bottom: 1rem; }
 
 .site-footer { padding: 2.2rem 0; background: #050b14; color: #93a0b2; font-size: .85rem; }
 .footer-grid { display: grid; grid-template-columns: 1.3fr .7fr; gap: 3rem; }

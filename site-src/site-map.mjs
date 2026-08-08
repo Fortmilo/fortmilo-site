@@ -7,6 +7,7 @@ export const routes = [
   { output: "security-observatory/entitlements-assets.html", canonical: "https://fortmilo.co.uk/security-observatory/entitlements-assets.html", corporateActive: "observatory", productActive: "entitlements" },
   { output: "security-observatory/evidence.html", canonical: "https://fortmilo.co.uk/security-observatory/evidence.html", corporateActive: "observatory", productActive: "evidence" },
   { output: "architecture-security.html", canonical: "https://fortmilo.co.uk/architecture-security.html", corporateActive: "architecture" },
+  { output: "documents/index.html", canonical: "https://fortmilo.co.uk/documents/" },
   { output: "contact.html", canonical: "https://fortmilo.co.uk/contact.html", corporateActive: "contact" },
   { output: "privacy.html", canonical: "https://fortmilo.co.uk/privacy.html" },
   { output: "terms.html", canonical: "https://fortmilo.co.uk/terms.html" },
