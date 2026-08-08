@@ -61,7 +61,14 @@ const requiredSocialMetadata = [
   `<meta name="twitter:image:alt" content="${previewImageAlt}">`
 ];
 
-const prohibitedMonetaryWording = /[£$€]|fees paid|aggregate liability|liability cap|relevant service/iu;
+const prohibitedMonetaryWording = new RegExp([
+  "[£$€]",
+  ["limitation", "of liability"].join(" "),
+  ["fees", "paid"].join(" "),
+  ["aggregate", "liability"].join(" "),
+  ["liability", "cap"].join(" "),
+  ["relevant", "service"].join(" ")
+].join("|"), "iu");
 const requiredPartnerStatus = "FortMilo is a Salesforce Partner.";
 const requiredProductIndependence = "Security Observatory is independently developed and is not endorsed by Salesforce, Inc.";
 const requiredSalesforceTrademark = "Salesforce is a trademark of Salesforce, Inc.";
@@ -454,27 +461,40 @@ if (!contact.includes("contact-grid") || (contact.match(/class="contact-card"/gu
 
 const terms = htmlByRoute.get("terms.html") || "";
 for (const required of [
-  "Last updated:</strong> 1 August 2026",
+  "Last updated:</strong> 8 August 2026",
   "Luca Pacini, trading as FortMilo",
+  "Any Security Observatory source material published by FortMilo is licensed as stated with that material",
   "Apache License 2.0",
+  "Source publication does not by itself represent package availability, release validation or installation readiness.",
   "Creative Commons Attribution-ShareAlike 4.0 International",
   "No Security Benchmark for Salesforce control prose is reproduced",
   "law of England and Wales",
   "courts of England and Wales have exclusive jurisdiction"
 ]) if (!terms.includes(required)) errors.push(`terms.html: missing required clause ${required}`);
+for (const prohibited of [
+  ["The public Security Observatory repository", "is licensed under"].join(" "),
+  ["Limitation", "of liability"].join(" "),
+  ["£", "100"].join(""),
+  ["fees", "paid"].join(" "),
+  ["aggregate", "liability"].join(" "),
+  ["relevant", "service"].join(" "),
+  "£"
+]) if (terms.includes(prohibited)) errors.push(`terms.html: prohibited release or monetary wording ${prohibited}`);
 
 const privacy = htmlByRoute.get("privacy.html") || "";
 for (const required of [
-  "Last updated:</strong> 31 July 2026",
+  "Last updated:</strong> 8 August 2026",
   "Controller:</strong> Luca Pacini, trading as FortMilo",
   "Harpenden, Hertfordshire, United Kingdom",
   "12 months after the enquiry closes",
   "IP address",
-  "website hosting, email delivery and storage",
+  "Personal information is not sold. It may be disclosed when required by law or processed by providers supporting website hosting, email delivery and storage, and necessary IT, security or professional support.",
   "outside the United Kingdom",
   "right to object to processing based on legitimate interests",
   "Information Commissioner’s Office"
 ]) if (!privacy.includes(required)) errors.push(`privacy.html: missing required privacy wording ${required}`);
+const privacyPlaceholder = ["An email provider is not named here", "because no provider has been confirmed for publication."].join(" ");
+if (privacy.includes(privacyPlaceholder)) errors.push(`privacy.html: prohibited placeholder wording ${privacyPlaceholder}`);
 
 const securityText = await readRequired(".well-known/security.txt");
 if (securityText) {
@@ -529,18 +549,61 @@ for (const required of [acknowledgementSentence, "my wife and sons", "Ali", "Dan
 const acknowledgementMain = /<main id="main">([\s\S]*?)<\/main>/u.exec(acknowledgements)?.[1] || "";
 if (/<img\b|<script\b|linkedin|social link|job title|biograph/iu.test(acknowledgementMain)) errors.push("acknowledgements.html: prohibited photo, script, social, job-title or biography content");
 for (const [output, html] of htmlByRoute) {
-  if (!html.includes('<a href="/acknowledgements.html">Acknowledgements</a>')) errors.push(`${output}: missing Acknowledgements footer link`);
+  const footerMarkup = /<footer class="site-footer">[\s\S]*?<\/footer>/u.exec(html)?.[0] || "";
+  if (!footerMarkup.includes('<a href="/documents/">Technical whitepaper</a>')) errors.push(`${output}: missing Technical whitepaper footer link`);
+  if (!footerMarkup.includes('<a href="/acknowledgements.html">Acknowledgements</a>')) errors.push(`${output}: missing Acknowledgements footer link`);
   const corporateNav = /<nav class="corporate-nav"[\s\S]*?<\/nav>/u.exec(html)?.[0] || "";
   if (!corporateNav || corporateNav.includes("Acknowledgements")) errors.push(`${output}: Acknowledgements must not appear in corporate navigation`);
+  if (corporateNav.includes("Technical whitepaper")) errors.push(`${output}: Technical whitepaper must not appear in corporate navigation`);
 }
+
+const overview = htmlByRoute.get("security-observatory/index.html") || "";
+for (const required of ["Sandbox-first", "Not yet available for public installation."]) if (!overview.includes(required)) errors.push(`security-observatory/index.html: missing customer-facing product boundary ${required}`);
+const internalPackageClaim = ["Public package distribution", "is not yet claimed."].join(" ");
+if (overview.includes(internalPackageClaim)) errors.push("security-observatory/index.html: internal package-claim wording remains");
 
 const evidence = htmlByRoute.get("security-observatory/evidence.html") || "";
 for (const required of [
+  "This guide uses distinct vocabulary for outcome, coverage and retained evidence state.",
   "<h3>Severity</h3><ul><li>Critical</li><li>High</li><li>Moderate</li></ul>",
   "<h3>Outcome</h3><ul><li>Risk evidence</li><li>No risk evidence surfaced</li><li>Unknown/Error</li><li>Not applicable</li></ul>",
   "<h3>Coverage</h3><ul><li>Automated</li><li>Partial Evidence</li><li>Manual Required</li><li>Not Covered</li><li>Extended Check</li></ul>",
-  "<h3>Retained evidence state</h3><ul><li>Risk evidence</li><li>No risk evidence surfaced</li><li>Unknown/Error</li><li>Not assessed</li></ul>"
+  "<h3>Retained evidence state</h3><ul><li>Risk evidence</li><li>No risk evidence surfaced</li><li>Unknown/Error</li><li>Not assessed</li></ul>",
+  "published under CC BY-SA 4.0",
+  "Security Observatory works fully without SBS enabled.",
+  "SBS version v0.4.0, mapping set M1, revision 1",
+  "45</strong><span>SBS controls in the v1 registry",
+  "47</strong><span>Mapping metadata records across those controls",
+  "11</strong><span>Distinct SBS control-key families mapped",
+  "10 of 45 controls",
+  "17 of 45 controls",
+  "18 of 45 controls",
+  "There are no Automated or Extended Check dispositions in the current M1 catalogue.",
+  "producing 12 ordered scanner-family associations across the 10 mapped controls",
+  "retained SBS control → retained mapped scanner family or families → retained scanner-family evidence state → retained control outcome → related retained family findings",
+  "Findings are joined, not stamped:",
+  "Family-scoped, not control-exclusive:",
+  "not a claim that every finding is uniquely attributable to one SBS control.",
+  "<p class=\"section-label\">Safe export</p>",
+  "SBS control traceability export — 14 columns",
+  "Scan Number, Retained Registry Key, Retained SBS Version, Retained Mapping Revision, Control Key, Control Title, Domain, Coverage Type, Mapped Scanner Families, Retained Family Evidence State, Retained Control Outcome, Retained family findings, Degraded Source, Sanitised Cause.",
+  "Formula-injection-safe by default",
+  "No raw Salesforce IDs, raw queries, stack traces, tokens, session identifiers, raw IP addresses, credentials or certificate bodies.",
+  "Like-for-like comparison",
+  "cross-organisation comparison is rejected",
+  "Same evidence depth required",
+  "Not an SBS drift engine",
+  "What a result does not mean",
+  "No risk evidence surfaced is not a pass.",
+  "Not a compliance decision.",
+  "History is not rewritten."
 ]) if (!evidence.includes(required)) errors.push(`security-observatory/evidence.html: terminology drift in ${required}`);
+for (const prohibited of [
+  ["The public product source", "does not currently publish application code"].join(" "),
+  ["pending release", "verification"].join(" "),
+  ["final packaging, installation", "and clean-org verification steps are still in progress"].join(" "),
+  "This page describes the current source model."
+]) if (evidence.includes(prohibited)) errors.push(`security-observatory/evidence.html: internal release wording remains ${prohibited}`);
 
 const styles = await readFile(path.join(root, "site-src/styles.css"), "utf8");
 const primaryColour = /--button-primary:\s*(#[0-9a-f]{6})/iu.exec(styles)?.[1];
