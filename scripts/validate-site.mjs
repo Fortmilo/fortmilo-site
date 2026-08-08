@@ -394,11 +394,7 @@ for (const route of routes) {
   if (!html.includes(headerLogo)) errors.push(`${route.output}: missing approved compact header logo or intrinsic dimensions`);
   if ((html.match(/\/assets\/fortmilo-shield-512\.png/gu) || []).length !== 1) errors.push(`${route.output}: expected one compact header-logo reference`);
   const bannerCount = (html.match(/\/assets\/fortmilo-brand-banner-1200x675\.png/gu) || []).length;
-  if (route.output === "index.html") {
-    if (bannerCount !== 1 || !html.includes('<img src="/assets/fortmilo-brand-banner-1200x675.png" alt="FortMilo shield and wordmark" width="1200" height="675">')) errors.push("index.html: missing approved primary banner or intrinsic dimensions");
-  } else if (bannerCount !== 0) {
-    errors.push(`${route.output}: primary banner must appear on the homepage only`);
-  }
+  if (bannerCount !== 0) errors.push(`${route.output}: obsolete primary banner found`);
   const ids = [...html.matchAll(/\bid="([^"]+)"/gu)].map((match) => match[1]);
   if (new Set(ids).size !== ids.length) errors.push(`${route.output}: duplicate id`);
   if (/<script\b/iu.test(html) || /gtag|google-analytics|plausible|matomo/iu.test(html)) errors.push(`${route.output}: analytics, tracking or executable script found`);
@@ -458,6 +454,47 @@ if (manifestBuffer) {
 const contact = htmlByRoute.get("contact.html") || "";
 for (const required of ["Contact FortMilo.", "Luca Pacini", "Luca Pacini, trading as FortMilo", "Harpenden, Hertfordshire, United Kingdom", "info@fortmilo.co.uk", "https://fortmilo.co.uk/", "https://fortmilo.co.uk/security-observatory/", "/.well-known/security.txt"]) if (!contact.includes(required)) errors.push(`contact.html: missing ${required}`);
 if (!contact.includes("contact-grid") || (contact.match(/class="contact-card"/gu) || []).length !== 2) errors.push("contact.html: missing balanced two-column contact layout");
+
+const homepage = htmlByRoute.get("index.html") || "";
+const homepageH1 = "Salesforce security evidence collected and retained inside your org.";
+const homepageSupport = "Bring OAuth grants, privileged access, external exposure and evidence gaps into one review surface, with reasons and safe next actions kept explicit.";
+const homepageDescription = "Security Observatory organises read-only Salesforce security evidence for OAuth grants, privileged access, external exposure and evidence gaps.";
+const homepageChips = ["Read-only", "No automatic remediation", "Evidence retained in your org"];
+const differentiators = [
+  ["Read-only by design", "Reports evidence and limitations without revoking tokens, removing permissions, blocking APIs, changing endpoints or writing security changes back to Salesforce."],
+  ["Evidence retained inside Salesforce", "Evidence collection, review and retained context remain within the subscriber organisation."],
+  ["Unavailable evidence stays explicit", "Blocked or incomplete sources remain Not assessed, with a reason and a safe next action. Missing evidence is not converted into zero."],
+  ["Sanitised evidence by design", "Evidence is presented without tokens, session identifiers, raw IP addresses, secrets, private keys, certificate bodies or credential values."],
+  ["Prioritise access and exposure", "Focus review on OAuth grants, privileged access and externally exposed surfaces, with affected users, applications or assets shown where retained evidence supports it."]
+];
+const homepageCorporateNav = '<nav class="corporate-nav" aria-label="Corporate navigation"><a aria-current="page" href="/">Home</a><a href="/security-observatory/">Security Observatory</a><a href="/architecture-security.html">Architecture & Security</a><a href="/contact.html">Contact</a></nav>';
+const illustrativePanel = '<aside class="illustrative-evidence" aria-labelledby="illustrative-evidence-label"><p id="illustrative-evidence-label" class="evidence-label">Illustrative evidence state</p><dl><div><dt>State</dt><dd>Not assessed</dd></div><div><dt>Reason</dt><dd>The evidence source was unavailable or incomplete.</dd></div><div><dt>Next safe action</dt><dd>Review access to the required source, then rerun the scan.</dd></div></dl><footer>Illustrative example — no organisation data shown.</footer></aside>';
+const sbsAttribution = '<p class="sbs-attribution">References control identifiers from the independent <a href="https://www.securitybenchmark.org/">Security Benchmark for Salesforce (SBS)</a>, licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</p>';
+if ((homepage.split(homepageH1).length - 1) !== 1 || !homepage.includes(`<h1>${homepageH1}</h1>`)) errors.push("index.html: expected the exact homepage h1 once");
+if ((homepage.split(homepageSupport).length - 1) !== 1 || !homepage.includes(`<p class="lead">${homepageSupport}</p>`)) errors.push("index.html: expected the exact homepage support copy once");
+if (!homepage.includes("<h2>Evidence designed for Salesforce security review</h2>")) errors.push("index.html: missing exact differentiator heading");
+for (const [heading, copy] of differentiators) {
+  if ((homepage.split(heading).length - 1) !== 1 || !homepage.includes(`<h3>${heading}</h3>`)) errors.push(`index.html: expected differentiator heading once ${heading}`);
+  if (!homepage.includes(`<p>${copy}</p>`)) errors.push(`index.html: missing differentiator copy ${heading}`);
+}
+const heroChips = /<ul class="hero-chips"[^>]*>([\s\S]*?)<\/ul>/u.exec(homepage)?.[1] || "";
+if ((homepage.match(/class="hero-chips"/gu) || []).length !== 1 || (heroChips.match(/<li>/gu) || []).length !== 3) errors.push("index.html: expected exactly three trust chips");
+for (const chip of homepageChips) if ((heroChips.split(`<li>${chip}</li>`).length - 1) !== 1) errors.push(`index.html: expected approved trust chip once ${chip}`);
+if ((homepage.match(/class="card differentiator-card"/gu) || []).length !== 5) errors.push("index.html: expected exactly five differentiator cards");
+if (!homepage.includes(illustrativePanel)) errors.push("index.html: illustrative evidence panel content or semantics differ from the approved contract");
+if (!homepage.includes(sbsAttribution)) errors.push("index.html: SBS attribution or approved links differ from the approved contract");
+if (!homepage.includes(homepageCorporateNav)) errors.push("index.html: corporate navigation labels, order or active state differ from the approved contract");
+if (!homepage.includes(`<meta name="description" content="${homepageDescription}">`) || !homepage.includes(`<meta property="og:description" content="${homepageDescription}">`)) errors.push("index.html: incorrect homepage descriptions");
+if (!homepage.includes("<title>FortMilo | Security Observatory</title>")) errors.push("index.html: incorrect homepage title");
+if (!homepage.includes('<a class="button button-primary" href="/security-observatory/">Explore Security Observatory</a>') || !homepage.includes('<a class="button button-secondary" href="/contact.html">Contact</a>')) errors.push("index.html: incorrect homepage actions");
+for (const prohibited of [
+  "Security Observatory by FortMilo",
+  "Read-only security evidence for Salesforce.",
+  "hero-brand-art",
+  "fortmilo-brand-banner-1200x675",
+  "What happened",
+  "Subscriber-owned authentication"
+]) if (homepage.includes(prohibited)) errors.push(`index.html: obsolete or unapproved homepage content ${prohibited}`);
 
 const terms = htmlByRoute.get("terms.html") || "";
 for (const required of [
@@ -611,6 +648,10 @@ if (!primaryColour || contrastRatio(primaryColour, "#ffffff") < 4.5 || !styles.i
 if (!styles.includes("#main { scroll-margin-top:") || /\[id\][^{]*scroll-margin|:target[^{]*scroll-margin/iu.test(styles)) errors.push("site-src/styles.css: skip-link fragment offset is missing or too broad for SVG IDs");
 if (!styles.includes(".card-grid-five { grid-template-columns: repeat(6") || !styles.includes(".card-grid-five .card:nth-last-child(-n + 2) { grid-column: span 3; }")) errors.push("site-src/styles.css: missing 3+2 desktop product-card layout");
 if (!styles.includes(".contact-grid { display: grid; grid-template-columns: repeat(2")) errors.push("site-src/styles.css: missing two-column Contact layout");
+if (/font-weight:\s*750\b/iu.test(styles)) errors.push("site-src/styles.css: prohibited font-weight 750");
+if (!/\.corporate-nav a\[aria-current="page"\],\s*\.product-nav a\[aria-current="page"\]\s*\{[^}]*color:\s*#fff;[^}]*background:\s*transparent;[^}]*box-shadow:\s*inset 0 -2px 0 var\(--accent\);[^}]*\}/iu.test(styles)) errors.push("site-src/styles.css: active navigation must use white text, a transparent background and a thin red underline");
+if (!/\.corporate-nav a:hover,\s*\.product-nav a:hover\s*\{[^}]*background:\s*rgba\(255, 255, 255, \.07\);[^}]*\}/iu.test(styles)) errors.push("site-src/styles.css: navigation hover treatment must remain distinct from active navigation");
+if (!styles.includes(":focus-visible { outline: 3px solid var(--accent-soft); outline-offset: 3px; }")) errors.push("site-src/styles.css: distinct focus-visible treatment is missing");
 
 if (errors.length) {
   console.error(errors.join("\n"));
