@@ -61,6 +61,8 @@ const requiredSocialMetadata = [
   `<meta name="twitter:image:alt" content="${previewImageAlt}">`
 ];
 
+const prohibitedMonetaryWording = /[£$€]|fees paid|aggregate liability|liability cap|relevant service/iu;
+
 const staleAssetTokens = [
   ["fortmilo-logo", ".svg"].join(""),
   ["fortmilo-security-observatory-og-20260730", ".jpg"].join(""),
@@ -385,6 +387,7 @@ for (const route of routes) {
   if (/Salesforce Partner|AppExchange|approved by Salesforce|(?<!not )endorsed by Salesforce/iu.test(html)) errors.push(`${route.output}: prohibited Salesforce relationship claim`);
   if (/href="https:\/\/github\.com\/Fortmilo\//iu.test(html)) errors.push(`${route.output}: prohibited GitHub repository link`);
   if (/FortMilo Lab|individual applicant|pending-address|business-address confirmation|actual application terminology|where supported/iu.test(html)) errors.push(`${route.output}: stale identity, address or terminology wording`);
+  if (prohibitedMonetaryWording.test(html)) errors.push(`${route.output}: prohibited monetary liability wording found`);
   if (!html.includes("Luca Pacini, trading as FortMilo.") || !html.includes("Independent of and not endorsed by Salesforce, Inc. Salesforce is a trademark of Salesforce, Inc.")) errors.push(`${route.output}: incomplete approved footer identity or disclaimer`);
   const ogImages = [...html.matchAll(/<meta property="og:image" content="([^"]+)">/gu)].map((match) => match[1]);
   const twitterImages = [...html.matchAll(/<meta name="twitter:image" content="([^"]+)">/gu)].map((match) => match[1]);
@@ -436,17 +439,11 @@ if (!contact.includes("contact-grid") || (contact.match(/class="contact-card"/gu
 
 const terms = htmlByRoute.get("terms.html") || "";
 for (const required of [
-  "Last updated:</strong> 31 July 2026",
+  "Last updated:</strong> 1 August 2026",
   "Luca Pacini, trading as FortMilo",
   "Apache License 2.0",
   "Creative Commons Attribution-ShareAlike 4.0 International",
   "No Security Benchmark for Salesforce control prose is reproduced",
-  "indirect or consequential loss",
-  "loss of profit, revenue, business, goodwill or data",
-  "greater of £100 or the fees paid for that service during the preceding 12 months",
-  "death or personal injury caused by negligence",
-  "fraud or fraudulent misrepresentation",
-  "liability that cannot legally be excluded",
   "law of England and Wales",
   "courts of England and Wales have exclusive jurisdiction"
 ]) if (!terms.includes(required)) errors.push(`terms.html: missing required clause ${required}`);
