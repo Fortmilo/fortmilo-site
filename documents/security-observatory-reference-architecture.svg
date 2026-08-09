@@ -1,0 +1,241 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1396" viewBox="0 0 1600 1396" role="img" aria-labelledby="soTitle soDesc">
+<title id="soTitle">Security Observatory by FortMilo —  reference architecture</title>
+<desc id="soDesc">Design constraints. Three inviolable constraints sit above the architecture: no automated FortMilo or third-party data egress; no remediation; no false-clean signal. The architecture is designed around all three. Business use. A Salesforce customer organisation contains a security reviewer/admin role and a review-evidence-and-decide activity. Security posture evidence supports CISO, risk and compliance stakeholders. Manual remediation is drawn separately and marked out of scope: the Observatory issues no change to the org. Trust boundary. A dashed technical boundary marks the subscriber Salesforce org runtime. Product execution, configuration reads and Observatory-owned evidence storage sit inside it; business users and decision-making remain outside the runtime boundary. Product architecture. The Security Observatory package reads org configuration and metadata without modifying those Salesforce sources. Four product capabilities execute in sequence: collect configuration evidence, classify evidence state, map to SBS control references, and present and export evidence. The product writes sanitised Observatory-owned evidence, findings and CSV export artefacts inside the subscriber org and reads the SBS control registry. Salesforce runtime. The Salesforce platform provides the subscriber-org runtime. Apex, async queueables, SOQL and a Named Credential execute scans, authenticated same-org Tooling API self-callouts and evidence persistence. In-org execution/storage and Tooling API self-callout services support the product. Boundary crossings. Two connections cross the technical runtime boundary: the evidence service supports the business review activity, and a customer-initiated CSV data flow runs from the export capability to that activity. Only the CSV data flow carries exported evidence.</desc>
+<defs>
+<marker id="mArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1,1 L9,5 L1,9 Z" fill="#2F3E55"/></marker>
+<marker id="oArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1,1 L9,5 L1,9 Z" fill="#C2410C"/></marker>
+</defs>
+<rect width="1600" height="1396" fill="#FBFCFD"/>
+<text x="40" y="52" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="30" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">Security Observatory by FortMilo</text>
+<text x="40" y="78" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="12.5" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">Reference architecture · Salesforce-native security evidence architecture · website publication candidate</text>
+<text x="1560" y="44" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#54657C" font-weight="700" text-anchor="end" letter-spacing="0.8">VERSION 4.0 · 09 AUG 2026</text>
+<text x="1560" y="64" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#54657C" font-weight="700" text-anchor="end" letter-spacing="0.8">STATUS: REFERENCE VIEW — NOT A RELEASE STATEMENT</text>
+<text x="1560" y="84" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#C2410C" font-weight="700" text-anchor="end" letter-spacing="0.8">NATIVE · READ-ONLY ASSESSMENT · NO AUTOMATED THIRD-PARTY EGRESS</text>
+<rect x="40" y="100" width="1504" height="112" rx="12" fill="#F4F1FB" stroke="#B9AEDB" stroke-width="1.2"/>
+<text x="60" y="126" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="15" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">Design constraints — inviolable</text>
+<rect x="60" y="138" width="464" height="62" rx="9" fill="#E8E2F6" stroke="#5C4A94" stroke-width="1.4"/>
+<text x="76" y="158" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#5C4A94" font-weight="700" text-anchor="start" letter-spacing="0.9">DESIGN CONSTRAINT</text>
+<text x="76" y="178" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">No automated FortMilo or third-party egress</text>
+<text x="76" y="194" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">No evidence is sent to FortMilo or non-Salesforce services</text>
+<rect x="555" y="138" width="464" height="62" rx="9" fill="#E8E2F6" stroke="#5C4A94" stroke-width="1.4"/>
+<text x="571" y="158" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#5C4A94" font-weight="700" text-anchor="start" letter-spacing="0.9">DESIGN CONSTRAINT</text>
+<text x="571" y="178" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">No remediation</text>
+<text x="571" y="194" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">Assessment only — the org owner decides and acts</text>
+<rect x="1050" y="138" width="464" height="62" rx="9" fill="#E8E2F6" stroke="#5C4A94" stroke-width="1.4"/>
+<text x="1066" y="158" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#5C4A94" font-weight="700" text-anchor="start" letter-spacing="0.9">DESIGN CONSTRAINT</text>
+<text x="1066" y="178" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">No false-clean signal</text>
+<text x="1066" y="194" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">Absence of evidence is never rendered as safe</text>
+<text x="1524" y="126" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="end" letter-spacing="0">Implemented by the architecture below — supporting links omitted for legibility</text>
+<rect x="40" y="228" width="1504" height="192" rx="12" fill="#FDF8E5" stroke="#DCC96E" stroke-width="1.2"/>
+<text x="60" y="254" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="15" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">Business use</text>
+<text x="60" y="272" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">Who operates the Observatory, who consumes its evidence, and who acts on it</text>
+<rect x="60" y="284" width="420" height="118" rx="7" fill="#FFF8D2" stroke="#8A7619" stroke-width="1.4"/>
+<text x="76" y="302" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="start" letter-spacing="0.9">ORGANISATION</text>
+<text x="76" y="320" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">Salesforce customer organisation</text>
+<rect x="76" y="330" width="190" height="56" rx="16" fill="#FFFDF0" stroke="#8A7619" stroke-width="1.4"/>
+<text x="90" y="350" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="start" letter-spacing="0.9">ROLE</text>
+<text x="90" y="368" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" fill="#0F1B2D" font-weight="400" text-anchor="start" letter-spacing="0">Security reviewer / admin</text>
+<rect x="278" y="330" width="190" height="56" rx="11" fill="#FFFDF0" stroke="#8A7619" stroke-width="1.4"/>
+<text x="292" y="350" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="start" letter-spacing="0.9">REVIEW ACTIVITY</text>
+<text x="292" y="368" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" fill="#0F1B2D" font-weight="400" text-anchor="start" letter-spacing="0">Review evidence &amp; decide</text>
+<text x="76" y="396" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">Structure: customer organisation, reviewer role and review activity</text>
+<rect x="520" y="306" width="300" height="76" rx="16" fill="#FFF8D2" stroke="#8A7619" stroke-width="1.4"/>
+<text x="538" y="326" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="start" letter-spacing="0.9">EVIDENCE SERVICE</text>
+<text x="670" y="346" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13.5" fill="#0F1B2D" font-weight="700" text-anchor="middle" letter-spacing="0">Security posture evidence</text>
+<text x="670" y="364" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="middle" letter-spacing="0">Configuration state, with cause</text>
+<rect x="880" y="306" width="260" height="76" rx="16" fill="#FFF8D2" stroke="#8A7619" stroke-width="1.4"/>
+<text x="896" y="326" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="start" letter-spacing="0.9">ROLE</text>
+<text x="896" y="346" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">CISO · Risk · Compliance</text>
+<text x="896" y="364" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">Assurance consumers</text>
+<rect x="1184" y="306" width="340" height="76" rx="11" fill="#EEF0F3" stroke="#8A96A5" stroke-width="1.4"/>
+<text x="1200" y="326" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#48545F" font-weight="700" text-anchor="start" letter-spacing="0.9">ACTIVITY · OUT OF SCOPE</text>
+<text x="1200" y="346" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" fill="#48545F" font-weight="700" text-anchor="start" letter-spacing="0">Remediate manually</text>
+<text x="1200" y="364" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#48545F" font-weight="400" text-anchor="start" letter-spacing="0">Observatory issues no change to the org</text>
+<path d="M468,358 L516,358" fill="none" stroke="#2F3E55" stroke-width="1.7" stroke-dasharray="3 4" marker-end="url(#mArrow)"/>
+<path d="M820,344 L876,344" fill="none" stroke="#2F3E55" stroke-width="1.7" marker-end="url(#mArrow)"/>
+<rect x="32" y="436" width="1536" height="814" rx="16" fill="none" stroke="#C2410C" stroke-width="2.2" stroke-dasharray="10 6"/>
+<rect x="46" y="426" width="530" height="20" fill="#FBFCFD"/>
+<text x="52" y="442" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#C2410C" font-weight="700" text-anchor="start" letter-spacing="1.0">SUBSCRIBER SALESFORCE ORG — TECHNICAL TRUST BOUNDARY</text>
+<text x="1530" y="460" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="end" letter-spacing="0">Technical runtime boundary; business users remain outside it</text>
+<rect x="48" y="470" width="1500" height="542" rx="12" fill="#EEF5FC" stroke="#9FC4E1" stroke-width="1.2"/>
+<text x="80" y="496" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="15" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">Product architecture</text>
+<text x="1240" y="496" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" fill="#54657C" font-weight="400" text-anchor="end" letter-spacing="0">Reference architecture; delivered coverage is release-specific</text>
+<rect x="68" y="532" width="250" height="254" rx="7" fill="#DCEDF9" stroke="#2A6389" stroke-width="1.4"/>
+<text x="84" y="552" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="start" letter-spacing="0.9">CONFIGURATION / EVIDENCE</text>
+<text x="84" y="572" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">Org configuration</text>
+<text x="84" y="588" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">&amp; metadata</text>
+<text x="84" y="614" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">· Setup Audit Trail</text>
+<text x="84" y="633" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">· Connected apps &amp; OAuth grants</text>
+<text x="84" y="652" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">· Sites &amp; Experience configuration</text>
+<text x="84" y="671" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">· Permission sets, profiles, licences</text>
+<text x="84" y="690" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">· Login History</text>
+<text x="84" y="709" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">· Session &amp; password policies</text>
+<text x="84" y="730" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="9.5" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">Representative surfaces; coverage varies by release.</text>
+<text x="84" y="748" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#2A6389" font-weight="700" text-anchor="start" letter-spacing="0">Read-only, via SOQL and</text>
+<text x="84" y="762" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#2A6389" font-weight="700" text-anchor="start" letter-spacing="0">authenticated Tooling API</text>
+<text x="84" y="776" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#2A6389" font-weight="700" text-anchor="start" letter-spacing="0">self-callouts. Never written.</text>
+<rect x="350" y="526" width="900" height="464" rx="7" fill="#F6FBFE" stroke="#2A6389" stroke-width="1.4"/>
+<text x="370" y="550" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="start" letter-spacing="0.9">PRODUCT COMPONENT</text>
+<text x="800" y="574" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="18" fill="#0F1B2D" font-weight="700" text-anchor="middle" letter-spacing="0">Security Observatory</text>
+<text x="800" y="592" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" fill="#54657C" font-weight="400" text-anchor="middle" letter-spacing="0">Salesforce package · executes inside the subscriber org</text>
+<rect x="470" y="604" width="660" height="60" rx="16" fill="#DCEDF9" stroke="#2A6389" stroke-width="1.4"/>
+<text x="486" y="624" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="start" letter-spacing="0.9">EVIDENCE SERVICE</text>
+<text x="800" y="628" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="14" fill="#0F1B2D" font-weight="700" text-anchor="middle" letter-spacing="0">Observatory evidence service</text>
+<text x="800" y="648" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="middle" letter-spacing="0">States and causes — no FortMilo-generated score or verdict</text>
+<rect x="368" y="692" width="864" height="168" rx="11" fill="#EAF4FB" stroke="#2A6389" stroke-width="1.4"/>
+<text x="384" y="712" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="start" letter-spacing="0.9">PRODUCT CAPABILITY</text>
+<text x="800" y="716" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="14" fill="#0F1B2D" font-weight="700" text-anchor="middle" letter-spacing="0">Operate Security Observatory</text>
+<rect x="382" y="728" width="197" height="108" rx="11" fill="#FFFFFF" stroke="#2A6389" stroke-width="1.4"/>
+<text x="395" y="748" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="start" letter-spacing="0.9">PRODUCT CAPABILITY</text>
+<text x="395" y="768" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">Collect configuration</text>
+<text x="395" y="783" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">evidence</text>
+<text x="395" y="802.0" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">User-initiated scanning</text>
+<text x="395" y="814.5" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">Queueable execution</text>
+<text x="395" y="827.0" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">Read-only SOQL + Tooling API</text>
+<rect x="595" y="728" width="197" height="108" rx="11" fill="#FFFFFF" stroke="#2A6389" stroke-width="1.4"/>
+<text x="608" y="748" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="start" letter-spacing="0.9">PRODUCT CAPABILITY</text>
+<text x="608" y="768" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">Classify evidence</text>
+<text x="608" y="783" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">state</text>
+<text x="608" y="802.0" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">Availability state assigned</text>
+<text x="608" y="814.5" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">Cause always recorded</text>
+<text x="608" y="827.0" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">Absence is never clean</text>
+<rect x="808" y="728" width="197" height="108" rx="11" fill="#FFFFFF" stroke="#2A6389" stroke-width="1.4"/>
+<text x="821" y="748" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="start" letter-spacing="0.9">PRODUCT CAPABILITY</text>
+<text x="821" y="768" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">Map to SBS</text>
+<text x="821" y="783" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">control references</text>
+<text x="821" y="802.0" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">Control IDs referenced only</text>
+<text x="821" y="814.5" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">Control text not reproduced</text>
+<text x="821" y="827.0" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">Mapped coverage stated per release</text>
+<rect x="1021" y="728" width="197" height="108" rx="11" fill="#FFFFFF" stroke="#2A6389" stroke-width="1.4"/>
+<text x="1034" y="748" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="start" letter-spacing="0.9">PRODUCT CAPABILITY</text>
+<text x="1034" y="768" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">Present &amp; export</text>
+<text x="1034" y="783" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11.5" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">evidence</text>
+<text x="1034" y="802.0" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">In-org dashboard</text>
+<text x="1034" y="814.5" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">Customer-initiated CSV export</text>
+<text x="1034" y="827.0" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">No automated transmission</text>
+<path d="M580,782 L593,782" fill="none" stroke="#2F3E55" stroke-width="1.6" marker-end="url(#mArrow)"/>
+<path d="M793,782 L806,782" fill="none" stroke="#2F3E55" stroke-width="1.6" marker-end="url(#mArrow)"/>
+<path d="M1006,782 L1019,782" fill="none" stroke="#2F3E55" stroke-width="1.6" marker-end="url(#mArrow)"/>
+<text x="800" y="852" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="middle" letter-spacing="0">Structure: capabilities are grouped inside Security Observatory · other containment is visual only</text>
+<rect x="382" y="892" width="197" height="70" rx="7" fill="#DCEDF9" stroke="#2A6389" stroke-width="1.4"/>
+<text x="395" y="912" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="start" letter-spacing="0.9">CONFIGURATION / EVIDENCE</text>
+<text x="395" y="932" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">Sanitised evidence</text>
+<text x="395" y="947" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">record</text>
+<path d="M480.5,836 L480.5,888" fill="none" stroke="#2F3E55" stroke-width="1.7" stroke-dasharray="2 4" marker-end="url(#mArrow)"/>
+<rect x="450.7" y="861" width="59.6" height="22" rx="11" fill="#FBFCFD" stroke="#D0D9E3" stroke-width="1.1"/>
+<text x="480.5" y="875.6" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="middle" letter-spacing="0.8">WRITES</text>
+<rect x="595" y="892" width="197" height="70" rx="7" fill="#DCEDF9" stroke="#2A6389" stroke-width="1.4"/>
+<text x="608" y="912" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="start" letter-spacing="0.9">CONFIGURATION / EVIDENCE</text>
+<text x="608" y="932" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">Finding &amp;</text>
+<text x="608" y="947" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">evidence state</text>
+<path d="M693.5,836 L693.5,888" fill="none" stroke="#2F3E55" stroke-width="1.7" stroke-dasharray="2 4" marker-end="url(#mArrow)"/>
+<rect x="663.7" y="861" width="59.6" height="22" rx="11" fill="#FBFCFD" stroke="#D0D9E3" stroke-width="1.1"/>
+<text x="693.5" y="875.6" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="middle" letter-spacing="0.8">WRITES</text>
+<rect x="808" y="892" width="197" height="70" rx="7" fill="#DCEDF9" stroke="#2A6389" stroke-width="1.4"/>
+<text x="821" y="912" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="start" letter-spacing="0.9">CONFIGURATION / EVIDENCE</text>
+<text x="821" y="932" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">SBS control</text>
+<text x="821" y="947" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">registry</text>
+<path d="M906.5,890 L906.5,842" fill="none" stroke="#2F3E55" stroke-width="1.7" stroke-dasharray="2 4" marker-end="url(#mArrow)"/>
+<rect x="880.0" y="861" width="53.0" height="22" rx="11" fill="#FBFCFD" stroke="#D0D9E3" stroke-width="1.1"/>
+<text x="906.5" y="875.6" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="middle" letter-spacing="0.8">READS</text>
+<rect x="1021" y="892" width="197" height="70" rx="7" fill="#DCEDF9" stroke="#2A6389" stroke-width="1.4"/>
+<text x="1034" y="912" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="start" letter-spacing="0.9">CONFIGURATION / EVIDENCE</text>
+<text x="1034" y="932" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">CSV evidence</text>
+<text x="1034" y="947" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">export</text>
+<path d="M1119.5,836 L1119.5,888" fill="none" stroke="#2F3E55" stroke-width="1.7" stroke-dasharray="2 4" marker-end="url(#mArrow)"/>
+<rect x="1089.7" y="861" width="59.6" height="22" rx="11" fill="#FBFCFD" stroke="#D0D9E3" stroke-width="1.1"/>
+<text x="1119.5" y="875.6" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="middle" letter-spacing="0.8">WRITES</text>
+<text x="368" y="980" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">No business-record content, access tokens, session identifiers, certificate bodies, secrets or raw IP addresses are retained.</text>
+<path d="M318,782 L378,782" fill="none" stroke="#2F3E55" stroke-width="1.7" stroke-dasharray="2 4" marker-end="url(#mArrow)"/>
+<rect x="324.8" y="749" width="46.400000000000006" height="22" rx="11" fill="#FBFCFD" stroke="#D0D9E3" stroke-width="1.1"/>
+<text x="348" y="763.6" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="middle" letter-spacing="0.8">READ</text>
+<rect x="1290" y="532" width="246" height="236" rx="8" fill="#FFFFFF" stroke="#9FC4E1" stroke-width="1.3"/>
+<text x="1306" y="556" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="12" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">Canonical evidence availability states</text>
+<text x="1306" y="572" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">Never conflated with mapping additions</text>
+<text x="1306" y="596" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">· None found</text>
+<text x="1306" y="613" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">· Not assessed</text>
+<text x="1306" y="630" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">· Not retained at this</text>
+<text x="1306" y="647" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">   evidence level</text>
+<text x="1306" y="664" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">· Not captured</text>
+<text x="1306" y="690" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">Rendered mapping additions</text>
+<text x="1306" y="708" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">· Unavailable + safe cause</text>
+<text x="1306" y="726" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">· Not applicable</text>
+<text x="1306" y="748" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">Partial = completeness qualifier</text>
+<text x="1306" y="762" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="9.5" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">Execution outcome = separate dimension</text>
+<rect x="1290" y="788" width="246" height="202" rx="8" fill="#FFFFFF" stroke="#9FC4E1" stroke-width="1.3"/>
+<text x="1306" y="812" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="12" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">Deliberately absent</text>
+<text x="1306" y="828" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">Design constraints, not omissions</text>
+<text x="1306" y="852" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#48545F" font-weight="400" text-anchor="start" letter-spacing="0">× No remediation or write-back</text>
+<text x="1306" y="869" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#48545F" font-weight="400" text-anchor="start" letter-spacing="0">× No SIEM or SOAR connector</text>
+<text x="1306" y="886" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#48545F" font-weight="400" text-anchor="start" letter-spacing="0">× No hosted backend</text>
+<text x="1306" y="903" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#48545F" font-weight="400" text-anchor="start" letter-spacing="0">× No multi-org trending store</text>
+<text x="1306" y="920" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#48545F" font-weight="400" text-anchor="start" letter-spacing="0">× No external FortMilo evidence service</text>
+<text x="1306" y="937" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#48545F" font-weight="400" text-anchor="start" letter-spacing="0">× No telemetry ingestion</text>
+<text x="1306" y="954" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#48545F" font-weight="400" text-anchor="start" letter-spacing="0">× No FortMilo-generated score or percentage</text>
+<text x="1306" y="971" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#48545F" font-weight="400" text-anchor="start" letter-spacing="0">× No pass/fail or clean verdict</text>
+<path d="M470,622 L330,622 L330,388" fill="none" stroke="#2F3E55" stroke-width="1.7" marker-end="url(#mArrow)"/>
+<rect x="383.6" y="611" width="72.80000000000001" height="22" rx="11" fill="#FBFCFD" stroke="#D0D9E3" stroke-width="1.1"/>
+<text x="420" y="625.6" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="middle" letter-spacing="0.8">SUPPORTS</text>
+<path d="M1218,782 L1270,782 L1270,406 L430,406 L430,388" fill="none" stroke="#C2410C" stroke-width="2.3" stroke-dasharray="9 5" marker-end="url(#oArrow)"/>
+<text x="1000" y="400" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" fill="#C2410C" font-weight="700" text-anchor="middle" letter-spacing="0">DATA FLOW · Customer-initiated CSV evidence — the only data-bearing crossing</text>
+<rect x="48" y="1040" width="1500" height="190" rx="12" fill="#EBF8F0" stroke="#9BD4AF" stroke-width="1.2"/>
+<text x="80" y="1066" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="15" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">Salesforce runtime</text>
+<text x="1524" y="1066" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" fill="#54657C" font-weight="400" text-anchor="end" letter-spacing="0">The subscriber org runtime that executes the scans and stores the evidence — FortMilo operates no infrastructure</text>
+<rect x="120" y="1092" width="300" height="60" rx="16" fill="#D6F1E0" stroke="#266946" stroke-width="1.4"/>
+<text x="138" y="1112" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="start" letter-spacing="0.9">PLATFORM SERVICE</text>
+<text x="270" y="1132" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="12" fill="#0F1B2D" font-weight="700" text-anchor="middle" letter-spacing="0">In-org execution &amp; storage</text>
+<rect x="450" y="1092" width="300" height="60" rx="16" fill="#D6F1E0" stroke="#266946" stroke-width="1.4"/>
+<text x="468" y="1112" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="start" letter-spacing="0.9">PLATFORM SERVICE</text>
+<text x="600" y="1132" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="12" fill="#0F1B2D" font-weight="700" text-anchor="middle" letter-spacing="0">Tooling API self-callout</text>
+<rect x="800" y="1076" width="700" height="120" rx="7" fill="#F4FBF7" stroke="#266946" stroke-width="1.4"/>
+<text x="818" y="1096" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="start" letter-spacing="0.9">RUNTIME PLATFORM</text>
+<text x="1150" y="1098" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="13.5" fill="#0F1B2D" font-weight="700" text-anchor="middle" letter-spacing="0">Salesforce Platform — subscriber org runtime</text>
+<rect x="820" y="1106" width="300" height="60" rx="11" fill="#FFFFFF" stroke="#266946" stroke-width="1.4"/>
+<text x="834" y="1126" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="start" letter-spacing="0.9">PRODUCT CAPABILITY</text>
+<text x="834" y="1144" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">Execute scans, self-callouts</text>
+<text x="834" y="1158" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">&amp; persist evidence</text>
+<rect x="1140" y="1106" width="340" height="60" rx="7" fill="#FFFFFF" stroke="#266946" stroke-width="1.4"/>
+<text x="1154" y="1126" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="start" letter-spacing="0.9">RUNTIME SERVICES</text>
+<text x="1154" y="1144" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">Apex · async queueables · SOQL</text>
+<text x="1154" y="1158" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#0F1B2D" font-weight="700" text-anchor="start" letter-spacing="0">Named Credential</text>
+<text x="818" y="1188" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">Runtime structure: Salesforce Platform hosts Apex, SOQL and Named Credential execution</text>
+<path d="M816,1136 L754,1136" fill="none" stroke="#2F3E55" stroke-width="1.7" stroke-dasharray="3 4" marker-end="url(#mArrow)"/>
+<path d="M900,1166 L900,1212 L270,1212 L270,1156" fill="none" stroke="#2F3E55" stroke-width="1.7" stroke-dasharray="3 4" marker-end="url(#mArrow)"/>
+<rect x="517.0" y="1201" width="86.0" height="22" rx="11" fill="#FBFCFD" stroke="#D0D9E3" stroke-width="1.1"/>
+<text x="560" y="1215.6" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="middle" letter-spacing="0.8">IMPLEMENTS</text>
+<path d="M380,1090 L380,996" fill="none" stroke="#2F3E55" stroke-width="1.7" marker-end="url(#mArrow)"/>
+<rect x="343.6" y="1015" width="72.80000000000001" height="22" rx="11" fill="#FBFCFD" stroke="#D0D9E3" stroke-width="1.1"/>
+<text x="380" y="1029.6" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="middle" letter-spacing="0.8">SUPPORTS</text>
+<path d="M600,1090 L600,996" fill="none" stroke="#2F3E55" stroke-width="1.7" marker-end="url(#mArrow)"/>
+<path d="M800,690 L800,668" fill="none" stroke="#2F3E55" stroke-width="1.7" stroke-dasharray="3 4" marker-end="url(#mArrow)"/>
+<rect x="829.0" y="667" width="86.0" height="22" rx="11" fill="#FBFCFD" stroke="#D0D9E3" stroke-width="1.1"/>
+<text x="872" y="681.6" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="700" text-anchor="middle" letter-spacing="0.8">IMPLEMENTS</text>
+<rect x="40" y="1266" width="1520" height="88" rx="10" fill="#FFFFFF" stroke="#D0D9E3" stroke-width="1.2"/>
+<text x="62" y="1290" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="11" fill="#54657C" font-weight="700" text-anchor="start" letter-spacing="0.8">Legend</text>
+<path d="M140,1290 L184,1290" fill="none" stroke="#2F3E55" stroke-width="1.7" marker-end="url(#mArrow)"/>
+<text x="192" y="1294" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" fill="#0F1B2D" font-weight="400" text-anchor="start" letter-spacing="0">Supports</text>
+<path d="M290,1290 L334,1290" fill="none" stroke="#2F3E55" stroke-width="1.7" stroke-dasharray="3 4" marker-end="url(#mArrow)"/>
+<text x="342" y="1294" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" fill="#0F1B2D" font-weight="400" text-anchor="start" letter-spacing="0">Implements</text>
+<path d="M440,1290 L484,1290" fill="none" stroke="#2F3E55" stroke-width="1.7" marker-end="url(#mArrow)"/>
+<text x="492" y="1294" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" fill="#0F1B2D" font-weight="400" text-anchor="start" letter-spacing="0">Triggers</text>
+<path d="M590,1290 L634,1290" fill="none" stroke="#2F3E55" stroke-width="1.7" stroke-dasharray="9 5" marker-end="url(#mArrow)"/>
+<text x="642" y="1294" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" fill="#0F1B2D" font-weight="400" text-anchor="start" letter-spacing="0">Data flow</text>
+<path d="M740,1290 L784,1290" fill="none" stroke="#2F3E55" stroke-width="1.7" stroke-dasharray="2 4" marker-end="url(#mArrow)"/>
+<text x="792" y="1294" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" fill="#0F1B2D" font-weight="400" text-anchor="start" letter-spacing="0">Reads / writes</text>
+<path d="M890,1290 L934,1290" fill="none" stroke="#C2410C" stroke-width="1.7" stroke-dasharray="9 5" marker-end="url(#oArrow)"/>
+<text x="942" y="1294" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" fill="#C2410C" font-weight="700" text-anchor="start" letter-spacing="0">Data-bearing boundary crossing</text>
+<rect x="140" y="1318" width="34" height="20" rx="2" fill="#FFFFFF" stroke="#2F3E55" stroke-width="1.3"/>
+<text x="182" y="1332" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" fill="#0F1B2D" font-weight="400" text-anchor="start" letter-spacing="0">Organisation / component</text>
+<rect x="312" y="1318" width="34" height="20" rx="10" fill="#FFFFFF" stroke="#2F3E55" stroke-width="1.3"/>
+<text x="354" y="1332" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" fill="#0F1B2D" font-weight="400" text-anchor="start" letter-spacing="0">Activity / service</text>
+<rect x="484" y="1318" width="34" height="20" rx="7" fill="#FFFFFF" stroke="#2F3E55" stroke-width="1.4"/>
+<text x="526" y="1332" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" fill="#0F1B2D" font-weight="400" text-anchor="start" letter-spacing="0">Configuration / evidence</text>
+<rect x="656" y="1318" width="34" height="20" rx="9" fill="#FFFFFF" stroke="#2F3E55" stroke-width="1.4"/>
+<text x="698" y="1332" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" fill="#0F1B2D" font-weight="400" text-anchor="start" letter-spacing="0">Design constraint</text>
+<rect x="828" y="1318" width="34" height="20" rx="10" fill="#EEF0F3" stroke="#8A96A5" stroke-width="1.3"/>
+<text x="870" y="1332" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" fill="#0F1B2D" font-weight="400" text-anchor="start" letter-spacing="0">Out of scope</text>
+<rect x="1160" y="1312" width="32" height="32" rx="6" fill="none" stroke="#C2410C" stroke-width="2" stroke-dasharray="6 4"/>
+<text x="1202" y="1332" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10.5" fill="#C2410C" font-weight="700" text-anchor="start" letter-spacing="0">Subscriber org technical trust boundary</text>
+<text x="40" y="1376" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="start" letter-spacing="0">© 2026 Luca Pacini, trading as FortMilo · fortmilo.co.uk</text>
+<text x="1560" y="1376" font-family="Inter, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="10" fill="#54657C" font-weight="400" text-anchor="end" letter-spacing="0">Salesforce is a trademark of Salesforce, Inc. Independently developed; not endorsed by Salesforce, Inc.</text>
+</svg>
