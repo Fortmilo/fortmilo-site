@@ -31,7 +31,8 @@ export function iconLinks() {
 }
 
 export function socialImageMetadata() {
-  return `  <meta property="og:image" content="${previewImageUrl}">
+  return `  <meta property="og:site_name" content="FortMilo">
+  <meta property="og:image" content="${previewImageUrl}">
   <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">

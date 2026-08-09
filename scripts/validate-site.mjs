@@ -53,6 +53,7 @@ const requiredIconMetadata = [
 ];
 
 const requiredSocialMetadata = [
+  '<meta property="og:site_name" content="FortMilo">',
   `<meta property="og:image" content="${previewImageUrl}">`,
   '<meta property="og:image:type" content="image/jpeg">',
   '<meta property="og:image:width" content="1200">',
@@ -61,6 +62,42 @@ const requiredSocialMetadata = [
   '<meta name="twitter:card" content="summary_large_image">',
   `<meta name="twitter:image" content="${previewImageUrl}">`,
   `<meta name="twitter:image:alt" content="${previewImageAlt}">`
+];
+
+const expectedHomepageTitle = "FortMilo | Security Observatory for Salesforce";
+const expectedHomepageDescription = "FortMilo is a Salesforce Partner developing Security Observatory, a read-only Salesforce security evidence application for access, exposure and evidence gaps.";
+const expectedWebSite = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  name: "FortMilo",
+  url: "https://fortmilo.co.uk/"
+};
+const expectedOrganization = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "@id": "https://fortmilo.co.uk/#organization",
+  name: "FortMilo",
+  url: "https://fortmilo.co.uk/",
+  logo: "https://fortmilo.co.uk/assets/fortmilo-shield-512.png",
+  email: "info@fortmilo.co.uk",
+  description: "FortMilo develops Security Observatory, a read-only Salesforce security evidence application."
+};
+const expectedHomepageBodyHash = "4bc037b4050e3981558ad2d0c2c21e152e89528cd8ee1f724071237952641e4e";
+const expectedRobots = "User-agent: *\nAllow: /\nSitemap: https://fortmilo.co.uk/sitemap.xml\n";
+const expectedIndexableCanonicals = [
+  "https://fortmilo.co.uk/",
+  "https://fortmilo.co.uk/security-observatory/",
+  "https://fortmilo.co.uk/security-observatory/findings.html",
+  "https://fortmilo.co.uk/security-observatory/identity-access.html",
+  "https://fortmilo.co.uk/security-observatory/external-connections.html",
+  "https://fortmilo.co.uk/security-observatory/entitlements-assets.html",
+  "https://fortmilo.co.uk/security-observatory/evidence.html",
+  "https://fortmilo.co.uk/architecture-security.html",
+  "https://fortmilo.co.uk/documents/",
+  "https://fortmilo.co.uk/acknowledgements.html",
+  "https://fortmilo.co.uk/contact.html",
+  "https://fortmilo.co.uk/privacy.html",
+  "https://fortmilo.co.uk/terms.html"
 ];
 
 const prohibitedMonetaryWording = new RegExp([
@@ -292,6 +329,30 @@ function sha256(buffer) {
   return createHash("sha256").update(buffer).digest("hex");
 }
 
+function collectStructuredDataNodes(value, nodes = []) {
+  if (Array.isArray(value)) {
+    for (const item of value) collectStructuredDataNodes(item, nodes);
+  } else if (value && typeof value === "object") {
+    if (Object.hasOwn(value, "@type")) nodes.push(value);
+    for (const nested of Object.values(value)) collectStructuredDataNodes(nested, nodes);
+  }
+  return nodes;
+}
+
+function hasExactProperties(actual, expected) {
+  if (!actual || typeof actual !== "object" || Array.isArray(actual)) return false;
+  const actualKeys = Object.keys(actual).sort();
+  const expectedKeys = Object.keys(expected).sort();
+  return JSON.stringify(actualKeys) === JSON.stringify(expectedKeys)
+    && expectedKeys.every((key) => actual[key] === expected[key]);
+}
+
+function isValidDateOnly(value) {
+  if (!/^\d{4}-\d{2}-\d{2}$/u.test(value)) return false;
+  const parsed = new Date(`${value}T00:00:00Z`);
+  return !Number.isNaN(parsed.valueOf()) && parsed.toISOString().slice(0, 10) === value;
+}
+
 async function listFiles(directory, relative = "") {
   const files = [];
   for (const name of await readdir(directory)) {
@@ -376,11 +437,31 @@ if (svg && !/^(?:\uFEFF)?\s*(?:<\?xml\b[^?]*\?>\s*)?<svg(?:\s|>)/u.test(svg.toSt
 }
 
 const htmlByRoute = new Map();
+const structuredDataByRoute = new Map();
+const structuredDataScriptCountByRoute = new Map();
 for (const route of routes) {
   const buffer = await readRequired(route.output);
   if (!buffer) continue;
   const html = buffer.toString("utf8");
   htmlByRoute.set(route.output, html);
+  const scriptElements = [...html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/giu)];
+  const scriptOpenCount = (html.match(/<script\b/giu) || []).length;
+  const scriptCloseCount = (html.match(/<\/script>/giu) || []).length;
+  if (scriptElements.length !== scriptOpenCount || scriptElements.length !== scriptCloseCount) errors.push(`${route.output}: malformed script element`);
+  const structuredDataNodes = [];
+  for (const scriptElement of scriptElements) {
+    if (scriptElement[1].trim() !== 'type="application/ld+json"') {
+      errors.push(`${route.output}: executable or non-JSON-LD script found`);
+      continue;
+    }
+    try {
+      collectStructuredDataNodes(JSON.parse(scriptElement[2]), structuredDataNodes);
+    } catch (error) {
+      errors.push(`${route.output}: JSON-LD is not valid JSON (${error.message})`);
+    }
+  }
+  structuredDataByRoute.set(route.output, structuredDataNodes);
+  structuredDataScriptCountByRoute.set(route.output, scriptElements.length);
   if ((html.match(/<h1\b/gu) || []).length !== 1) errors.push(`${route.output}: expected one h1`);
   for (const required of ["<title>", 'name="description"', 'property="og:title"', 'property="og:description"', 'property="og:url"', 'rel="stylesheet"']) {
     if (!html.includes(required)) errors.push(`${route.output}: missing ${required}`);
@@ -392,15 +473,17 @@ for (const route of routes) {
     errors.push(`${route.output}: missing normal-page canonical`);
   }
   for (const metadata of [...requiredIconMetadata, ...requiredSocialMetadata]) if (!html.includes(metadata)) errors.push(`${route.output}: missing ${metadata}`);
+  if ((html.match(/<meta property="og:site_name" content="FortMilo">/gu) || []).length !== 1) errors.push(`${route.output}: expected exactly one FortMilo og:site_name`);
   if ((html.match(/\/favicon\.svg/gu) || []).length !== 1) errors.push(`${route.output}: expected exactly one /favicon.svg reference`);
   const headerLogo = '<img src="/assets/fortmilo-shield-512.png" alt="" width="512" height="512"><span>FortMilo</span>';
   if (!html.includes(headerLogo)) errors.push(`${route.output}: missing approved compact header logo or intrinsic dimensions`);
-  if ((html.match(/\/assets\/fortmilo-shield-512\.png/gu) || []).length !== 1) errors.push(`${route.output}: expected one compact header-logo reference`);
+  if ((html.match(/<img src="\/assets\/fortmilo-shield-512\.png"/gu) || []).length !== 1) errors.push(`${route.output}: expected one compact header-logo image reference`);
   const bannerCount = (html.match(/\/assets\/fortmilo-brand-banner-1200x675\.png/gu) || []).length;
   if (bannerCount !== 0) errors.push(`${route.output}: obsolete primary banner found`);
   const ids = [...html.matchAll(/\bid="([^"]+)"/gu)].map((match) => match[1]);
   if (new Set(ids).size !== ids.length) errors.push(`${route.output}: duplicate id`);
-  if (/<script\b/iu.test(html) || /gtag|google-analytics|plausible|matomo/iu.test(html)) errors.push(`${route.output}: analytics, tracking or executable script found`);
+  if (/google(?:-|\s)?analytics|googletagmanager|google tag manager|\bGTM(?:-[A-Z0-9]+)?\b|gtag\s*\(|plausible|matomo|tracking[\s_-]*pixel|marketing[\s_-]*cookie/iu.test(html)) errors.push(`${route.output}: analytics, tag manager, tracking pixel or marketing cookie found`);
+  if (/\son[a-z]+\s*=|(?:href|src)\s*=\s*["']javascript:/iu.test(html)) errors.push(`${route.output}: executable client-side JavaScript hook found`);
   if (/\b(?:AI|GPT|Codex|Claude|Gemini)\b/iu.test(html)) errors.push(`${route.output}: AI reference found`);
   if (/AppExchange|approved by Salesforce|(?<!not )endorsed by Salesforce/iu.test(html)) errors.push(`${route.output}: prohibited Salesforce relationship claim`);
   for (const claim of prohibitedSalesforceClaims) if (html.includes(claim)) errors.push(`${route.output}: prohibited Salesforce or AppExchange claim ${claim}`);
@@ -424,6 +507,69 @@ for (const route of routes) {
     }
   }
 }
+
+const homepageStructuredData = structuredDataByRoute.get("index.html") || [];
+const websiteNodes = homepageStructuredData.filter((node) => node["@type"] === "WebSite");
+const organizationNodes = homepageStructuredData.filter((node) => node["@type"] === "Organization");
+if (structuredDataScriptCountByRoute.get("index.html") !== 2 || homepageStructuredData.length !== 2) errors.push("index.html: expected exactly two data-only JSON-LD scripts and nodes");
+if (websiteNodes.length !== 1) errors.push("index.html: expected exactly one WebSite JSON-LD node");
+else {
+  if (!hasExactProperties(websiteNodes[0], expectedWebSite)) errors.push("index.html: WebSite JSON-LD values differ from governance");
+  if (Object.hasOwn(websiteNodes[0], "alternateName")) errors.push("index.html: WebSite alternateName is not authorised");
+}
+if (organizationNodes.length !== 1) errors.push("index.html: expected exactly one Organization JSON-LD node");
+else {
+  if (!hasExactProperties(organizationNodes[0], expectedOrganization)) errors.push("index.html: Organization JSON-LD values differ from governance");
+  if (Object.hasOwn(organizationNodes[0], "address")) errors.push("index.html: Organization address is not authorised");
+  if (Object.hasOwn(organizationNodes[0], "telephone")) errors.push("index.html: Organization telephone is not authorised");
+}
+for (const [output, nodes] of structuredDataByRoute) {
+  if (nodes.some((node) => node["@type"] === "LocalBusiness")) errors.push(`${output}: LocalBusiness JSON-LD is not authorised`);
+  if (output !== "index.html" && nodes.some((node) => ["WebSite", "Organization"].includes(node["@type"]))) errors.push(`${output}: WebSite and Organization JSON-LD must be homepage-only`);
+  if (output !== "index.html" && structuredDataScriptCountByRoute.get(output) !== 0) errors.push(`${output}: unexpected JSON-LD script outside the homepage`);
+}
+
+const indexableRoutes = routes.filter((route) => !route.noindex);
+const today = new Date().toISOString().slice(0, 10);
+const actualIndexableCanonicals = indexableRoutes.map((route) => route.canonical);
+if (JSON.stringify(actualIndexableCanonicals) !== JSON.stringify(expectedIndexableCanonicals)) errors.push("site-src/site-map.mjs: intended public canonical route coverage or order changed");
+if (new Set(actualIndexableCanonicals).size !== actualIndexableCanonicals.length) errors.push("site-src/site-map.mjs: duplicate indexable canonical route");
+for (const route of indexableRoutes) {
+  if (!isValidDateOnly(route.lastmod)) errors.push(`${route.output}: missing or invalid route lastmod`);
+  else if (route.lastmod > today) errors.push(`${route.output}: route lastmod is in the future`);
+}
+if (new Set(indexableRoutes.map((route) => route.lastmod)).size === 1) errors.push("site-src/site-map.mjs: all route lastmod values are mechanically identical");
+
+const expectedSitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${indexableRoutes.map((route) => `  <url><loc>${route.canonical}</loc><lastmod>${route.lastmod}</lastmod></url>`).join("\n")}\n</urlset>\n`;
+const sitemapBuffer = await readRequired("sitemap.xml");
+if (sitemapBuffer) {
+  const sitemap = sitemapBuffer.toString("utf8");
+  if (sitemap !== expectedSitemap) errors.push("sitemap.xml: content does not match the canonical indexable route map and per-route lastmod values");
+  const entries = [...sitemap.matchAll(/<url><loc>([^<]+)<\/loc><lastmod>([^<]+)<\/lastmod><\/url>/gu)].map((match) => ({ canonical: match[1], lastmod: match[2] }));
+  if (entries.length !== indexableRoutes.length || (sitemap.match(/<url>/gu) || []).length !== entries.length) errors.push("sitemap.xml: malformed or unexpected URL entry");
+  for (const route of indexableRoutes) {
+    const matches = entries.filter((entry) => entry.canonical === route.canonical);
+    if (matches.length !== 1) errors.push(`sitemap.xml: expected ${route.canonical} exactly once`);
+    else if (matches[0].lastmod !== route.lastmod) errors.push(`sitemap.xml: wrong lastmod for ${route.canonical}`);
+  }
+  for (const entry of entries) {
+    let parsed;
+    try {
+      parsed = new URL(entry.canonical);
+    } catch {
+      errors.push(`sitemap.xml: invalid URL ${entry.canonical}`);
+      continue;
+    }
+    if (parsed.protocol !== "https:" || parsed.hostname !== "fortmilo.co.uk" || parsed.port || parsed.username || parsed.password || parsed.search || parsed.hash) errors.push(`sitemap.xml: non-canonical URL ${entry.canonical}`);
+    if (!isValidDateOnly(entry.lastmod)) errors.push(`sitemap.xml: invalid lastmod ${entry.lastmod}`);
+    else if (entry.lastmod > today) errors.push(`sitemap.xml: future lastmod ${entry.lastmod}`);
+  }
+  for (const route of routes.filter((route) => route.noindex)) if (entries.some((entry) => entry.canonical === route.canonical)) errors.push(`sitemap.xml: noindex route included ${route.canonical}`);
+  if (entries.some((entry) => entry.canonical.endsWith(".pdf"))) errors.push("sitemap.xml: PDF must not be included in the HTML route sitemap");
+}
+
+const robotsBuffer = await readRequired("robots.txt");
+if (robotsBuffer && robotsBuffer.toString("utf8").replace(/\r\n?/gu, "\n") !== expectedRobots) errors.push("robots.txt: crawl allow-list or sitemap reference changed");
 
 const textFiles = allFiles.filter((file) => [".html", ".css", ".mjs", ".js", ".json", ".xml", ".md", ".txt", ".ps1", ".webmanifest"].includes(path.extname(file).toLowerCase()) || path.basename(file) === "site.webmanifest");
 const obsoleteWhitepaperPath = ["/documents/evidence-semantics-and-scanner-orchestration", ".pdf"].join("");
@@ -461,7 +607,7 @@ if (!contact.includes("contact-grid") || (contact.match(/class="contact-card"/gu
 const homepage = htmlByRoute.get("index.html") || "";
 const homepageH1 = "Salesforce security evidence collected and retained inside your org.";
 const homepageSupport = "Bring OAuth grants, privileged access, external exposure and evidence gaps into one review surface, with reasons and safe next actions kept explicit.";
-const homepageDescription = "Security Observatory organises read-only Salesforce security evidence for OAuth grants, privileged access, external exposure and evidence gaps.";
+const homepageDescription = expectedHomepageDescription;
 const homepageChips = ["Read-only", "No automatic remediation", "Evidence retained in your org"];
 const differentiators = [
   ["Read-only by design", "Reports evidence and limitations without revoking tokens, removing permissions, blocking APIs, changing endpoints or writing security changes back to Salesforce."],
@@ -493,7 +639,11 @@ if ((homepage.split("Continue the technical review").length - 1) !== 1 || !homep
 if (!(homepage.indexOf(sbsAttribution) < homepage.indexOf(technicalReviewCta) && homepage.indexOf(technicalReviewCta) < homepage.indexOf('<footer class="site-footer">'))) errors.push("index.html: technical review CTA must follow the SBS attribution and precede the shared footer");
 if (!homepage.includes(homepageCorporateNav)) errors.push("index.html: corporate navigation labels, order or active state differ from the approved contract");
 if (!homepage.includes(`<meta name="description" content="${homepageDescription}">`) || !homepage.includes(`<meta property="og:description" content="${homepageDescription}">`)) errors.push("index.html: incorrect homepage descriptions");
-if (!homepage.includes("<title>FortMilo | Security Observatory</title>")) errors.push("index.html: incorrect homepage title");
+if (!homepage.includes(`<title>${expectedHomepageTitle}</title>`) || !homepage.includes(`<meta property="og:title" content="${expectedHomepageTitle}">`)) errors.push("index.html: incorrect homepage title or og:title");
+const homepageBodyStart = homepage.indexOf("<body");
+const homepageBodyEnd = homepage.indexOf("</body>");
+const homepageBody = homepageBodyStart >= 0 && homepageBodyEnd >= homepageBodyStart ? homepage.slice(homepageBodyStart, homepageBodyEnd + 7).replace(/\r\n?/gu, "\n") : "";
+if (sha256(Buffer.from(homepageBody, "utf8")) !== expectedHomepageBodyHash) errors.push("index.html: visible homepage body differs from the authorised baseline");
 if (!homepage.includes('<a class="button button-primary" href="/security-observatory/">Explore Security Observatory</a>') || !homepage.includes('<a class="button button-secondary" href="/contact.html">Contact</a>')) errors.push("index.html: incorrect homepage actions");
 for (const prohibited of [
   "Security Observatory by FortMilo",
