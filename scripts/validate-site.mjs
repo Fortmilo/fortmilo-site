@@ -22,6 +22,7 @@ const expectedImages = new Map([
   ["assets/android-chrome-192x192.png", "5af19460703089a8ff214413844aeafeb62920529b13ced37315dd56ccdf9661"],
   ["assets/android-chrome-512x512.png", "c194e9a1687190110b2bce2e2ceeefac97bb5c8ff050df53a9e0197c601502a8"],
   ["assets/fortmilo-brand-banner-1200x675.png", "f01e55a44b8bdf309c41c4899a7917dd1982c1845d8a9c295bf0d8788e10fc13"],
+  ["assets/fortmilo-salesforce-partner-home.png", "3ce373a0add77fd997dca3e24e7f99859766e6df8ebb981d9fe35e8c043cd5ac"],
   ["assets/fortmilo-security-observatory-og-20260731.jpg", "e94aac3a839cf32183d1598d461db89724622612ea5299afcc00b1b9bccd8fd9"],
   ["assets/fortmilo-shield-512.png", "a39acef2c9e9dc76583ed60b4c4c1e59fe92c135a6295683edf080051d0fa980"]
 ]);
@@ -35,6 +36,7 @@ const pngDimensions = new Map([
   ["assets/android-chrome-192x192.png", [192, 192]],
   ["assets/android-chrome-512x512.png", [512, 512]],
   ["assets/fortmilo-brand-banner-1200x675.png", [1200, 675]],
+  ["assets/fortmilo-salesforce-partner-home.png", [1254, 1254]],
   ["assets/fortmilo-shield-512.png", [512, 512]]
 ]);
 
@@ -339,6 +341,7 @@ for (const [relativePath, expectedHash] of expectedImages) {
       parsedPngs.set(relativePath, png);
       const expected = pngDimensions.get(relativePath);
       if (!expected || png.width !== expected[0] || png.height !== expected[1]) errors.push(`${relativePath}: wrong PNG dimensions`);
+      if (relativePath === "assets/fortmilo-salesforce-partner-home.png" && png.colourType !== 6) errors.push(`${relativePath}: expected RGBA PNG colour type`);
       if (png.actualTransparency) errors.push(`${relativePath}: unexpected transparent pixels`);
     } catch (error) {
       errors.push(error.message);
@@ -470,6 +473,8 @@ const differentiators = [
 const homepageCorporateNav = '<nav class="corporate-nav" aria-label="Corporate navigation"><a aria-current="page" href="/">Home</a><a href="/security-observatory/">Security Observatory</a><a href="/architecture-security.html">Architecture & Security</a><a href="/contact.html">Contact</a></nav>';
 const illustrativePanel = '<aside class="illustrative-evidence" aria-labelledby="illustrative-evidence-label"><p id="illustrative-evidence-label" class="evidence-label">Illustrative evidence state</p><dl><div><dt>State</dt><dd>Not assessed</dd></div><div><dt>Reason</dt><dd>The evidence source was unavailable or incomplete.</dd></div><div><dt>Next safe action</dt><dd>Review access to the required source, then rerun the scan.</dd></div></dl><footer>Illustrative example — no organisation data shown.</footer></aside>';
 const sbsAttribution = '<p class="sbs-attribution">References control identifiers from the independent <a href="https://www.securitybenchmark.org/">Security Benchmark for Salesforce (SBS)</a>, licensed under <a href="https://creativecommons.org/licenses/by-sa/4.0/">CC BY-SA 4.0</a>.</p>';
+const homepageArtwork = '<figure class="home-hero-artwork"><img src="/assets/fortmilo-salesforce-partner-home.png" alt="FortMilo — Salesforce Partner" width="1254" height="1254"></figure>';
+const technicalReviewCta = '<section class="section section-accent"><div class="container"><div class="section-heading"><p class="section-label">Next steps</p><h2>Continue the technical review</h2><p>Review the evidence model in depth, request a launch notification or contact FortMilo with a technical question.</p></div><div class="actions"><a class="button button-primary" href="/documents/evidence-semantics-and-scanner-orchestration-v1.3.pdf">Read the technical whitepaper</a><a class="button button-secondary" href="mailto:info@fortmilo.co.uk?subject=Security%20Observatory%20launch%20notification">Notify me at launch</a><a class="button button-secondary" href="/contact.html">Contact FortMilo</a></div></div></section>';
 if ((homepage.split(homepageH1).length - 1) !== 1 || !homepage.includes(`<h1>${homepageH1}</h1>`)) errors.push("index.html: expected the exact homepage h1 once");
 if ((homepage.split(homepageSupport).length - 1) !== 1 || !homepage.includes(`<p class="lead">${homepageSupport}</p>`)) errors.push("index.html: expected the exact homepage support copy once");
 if (!homepage.includes("<h2>Evidence designed for Salesforce security review</h2>")) errors.push("index.html: missing exact differentiator heading");
@@ -483,6 +488,9 @@ for (const chip of homepageChips) if ((heroChips.split(`<li>${chip}</li>`).lengt
 if ((homepage.match(/class="card differentiator-card"/gu) || []).length !== 5) errors.push("index.html: expected exactly five differentiator cards");
 if (!homepage.includes(illustrativePanel)) errors.push("index.html: illustrative evidence panel content or semantics differ from the approved contract");
 if (!homepage.includes(sbsAttribution)) errors.push("index.html: SBS attribution or approved links differ from the approved contract");
+if ((homepage.match(/\/assets\/fortmilo-salesforce-partner-home\.png/gu) || []).length !== 1 || !homepage.includes(homepageArtwork)) errors.push("index.html: expected one approved FortMilo Salesforce Partner artwork reference with intrinsic dimensions");
+if ((homepage.split("Continue the technical review").length - 1) !== 1 || !homepage.includes(technicalReviewCta)) errors.push("index.html: technical review CTA content or links differ from the approved contract");
+if (!(homepage.indexOf(sbsAttribution) < homepage.indexOf(technicalReviewCta) && homepage.indexOf(technicalReviewCta) < homepage.indexOf('<footer class="site-footer">'))) errors.push("index.html: technical review CTA must follow the SBS attribution and precede the shared footer");
 if (!homepage.includes(homepageCorporateNav)) errors.push("index.html: corporate navigation labels, order or active state differ from the approved contract");
 if (!homepage.includes(`<meta name="description" content="${homepageDescription}">`) || !homepage.includes(`<meta property="og:description" content="${homepageDescription}">`)) errors.push("index.html: incorrect homepage descriptions");
 if (!homepage.includes("<title>FortMilo | Security Observatory</title>")) errors.push("index.html: incorrect homepage title");
@@ -556,10 +564,9 @@ if (markerPaths.length !== 4) errors.push("architecture-security.html: expected 
 for (const tag of svgPaths) if (!tag.includes('fill="#ff8c80"') && !tag.includes('fill="none"')) errors.push(`architecture-security.html: connector path lacks fill="none": ${tag}`);
 const whitepaperPath = "/documents/evidence-semantics-and-scanner-orchestration-v1.3.pdf";
 const whitepaperTitle = "Evidence Semantics and Scanner Orchestration v1.3";
-for (const required of ["Technical whitepaper", whitepaperTitle, "Read the technical whitepaper", "Notify me at launch", "Contact FortMilo"]) if (!architecture.includes(required)) errors.push(`architecture-security.html: missing ${required}`);
+for (const required of ["Technical whitepaper", whitepaperTitle, "Read the technical whitepaper"]) if (!architecture.includes(required)) errors.push(`architecture-security.html: missing ${required}`);
 if (!architecture.includes(`href="${whitepaperPath}"`)) errors.push("architecture-security.html: missing versioned technical whitepaper link");
-if (!architecture.includes('href="mailto:info@fortmilo.co.uk?subject=Security%20Observatory%20launch%20notification"')) errors.push("architecture-security.html: incorrect launch-notification recipient or subject");
-if (!architecture.includes('<a class="button button-secondary" href="/contact.html">Contact FortMilo</a>')) errors.push("architecture-security.html: incorrect Contact FortMilo action");
+for (const prohibited of ["Continue the technical review", "Notify me at launch", 'href="mailto:info@fortmilo.co.uk?subject=Security%20Observatory%20launch%20notification"', ">Contact FortMilo</a>"]) if (architecture.includes(prohibited)) errors.push(`architecture-security.html: moved technical review CTA remains ${prohibited}`);
 for (const required of ["USER-INITIATED DOWNLOAD", "Downloaded</text><text", "Once downloaded, the sanitised file is outside the Salesforce trust boundary"]) if (!architecture.includes(required)) errors.push(`architecture-security.html: missing explicit CSV boundary crossing detail ${required}`);
 for (const required of ["PACKAGED CORE", "SUBSCRIBER-OWNED SETUP", "TRUST / OWNERSHIP BOUNDARY", 'data-boundary-orientation="vertical"', "TOOLING EVIDENCE UNAVAILABLE", "Not assessed with a bounded reason", "limitation and safe next action"]) if (!architecture.includes(required)) errors.push(`architecture-security.html: missing subscriber-authentication boundary detail ${required}`);
 for (const required of ["Can usable evidence", "USABLE", "EVIDENCE", "UNAVAILABLE OR", "INCOMPLETE EVIDENCE", "NOT ASSESSED", "Explicit reason", "SAFE NEXT", "ACTION"]) if (!architecture.includes(required)) errors.push(`architecture-security.html: missing usable/unavailable evidence branch detail ${required}`);

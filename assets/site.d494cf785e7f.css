@@ -79,9 +79,13 @@ a:hover { color: #fff; }
 }
 .hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 470px); align-items: center; gap: 3.25rem; padding-block: 3.4rem; }
 .home-page .hero { display: block; }
-.home-page .hero > .container { width: min(calc(100% - 2rem), 900px); }
+.home-page .hero > .container { width: min(calc(100% - 2rem), var(--max)); }
 .home-hero-content { padding-block: 4.2rem; }
-.home-page .hero-copy { max-width: 900px; }
+.home-hero-intro { display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 360px); align-items: center; gap: clamp(2rem, 4vw, 4rem); }
+.home-hero-intro > * { min-width: 0; }
+.home-page .hero-copy { max-width: 760px; }
+.home-hero-artwork { width: min(100%, 360px); margin: 0; justify-self: end; }
+.home-hero-artwork img { width: 100%; height: auto; aspect-ratio: 1; object-fit: contain; }
 .hero-copy { max-width: 690px; }
 .hero-brand-art {
   margin: 0;
@@ -214,6 +218,7 @@ h3 { margin: 0 0 .5rem; font-size: 1.14rem; line-height: 1.28; }
 }
 
 @media (max-width: 1100px) {
+  .home-hero-intro { grid-template-columns: minmax(0, 1fr) minmax(280px, 330px); gap: 2rem; }
   .proof-strip { grid-template-columns: repeat(3, minmax(0, 1fr)); }
   .card-grid-five { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .card-grid-five .card, .card-grid-five .card:nth-last-child(-n + 2) { grid-column: auto; }
@@ -229,6 +234,8 @@ h3 { margin: 0 0 .5rem; font-size: 1.14rem; line-height: 1.28; }
   .hero-grid { grid-template-columns: 1fr; gap: 2.2rem; padding-block: 3rem; }
   .home-page .hero { min-height: auto; }
   .home-hero-content { padding-block: 3.4rem; }
+  .home-hero-intro { grid-template-columns: 1fr; gap: 1.75rem; }
+  .home-hero-artwork { width: min(34vw, 280px); justify-self: center; }
   .hero-brand-art { max-width: 560px; }
   .split, .footer-grid, .contact-grid { grid-template-columns: 1fr; gap: 1.4rem; }
   .card-grid, .term-grid, .stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -249,6 +256,7 @@ h3 { margin: 0 0 .5rem; font-size: 1.14rem; line-height: 1.28; }
   .differentiators .card-grid-five .card:last-child { grid-column: auto; }
   .home-page .hero .actions { flex-direction: column; }
   .home-page .hero .button { width: 100%; }
+  .home-hero-artwork { width: min(68vw, 220px); }
   .diagram-card { overflow-x: auto; }
   .arch-svg { min-width: 860px; }
   .section { padding: 3.3rem 0; }
