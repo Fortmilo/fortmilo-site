@@ -1,4 +1,4 @@
-// Documents lastmod records the 10 August 2026 methodology paper publication.
+// Significant 10 August 2026 updates: methodology publication and bounded Evidence-page CSV claim alignment.
 export const routes = [
   { output: "index.html", canonical: "https://fortmilo.co.uk/", lastmod: "2026-08-09", corporateActive: "home" },
   { output: "security-observatory/index.html", canonical: "https://fortmilo.co.uk/security-observatory/", lastmod: "2026-08-08", corporateActive: "observatory", productActive: "overview" },
