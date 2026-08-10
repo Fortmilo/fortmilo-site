@@ -1,4 +1,4 @@
-// Significant 10 August 2026 updates: methodology publication, bounded CSV claims and public evidence-state/claim-boundary alignment.
+// Significant 10 August 2026 updates: methodology publication, bounded CSV claims, public evidence-state/claim-boundary alignment, privacy transfer wording and document framing.
 export const routes = [
   { output: "index.html", canonical: "https://fortmilo.co.uk/", lastmod: "2026-08-10", corporateActive: "home" },
   { output: "security-observatory/index.html", canonical: "https://fortmilo.co.uk/security-observatory/", lastmod: "2026-08-10", corporateActive: "observatory", productActive: "overview" },
@@ -11,7 +11,7 @@ export const routes = [
   { output: "documents/index.html", canonical: "https://fortmilo.co.uk/documents/", lastmod: "2026-08-10", corporateActive: "documents" },
   { output: "acknowledgements.html", canonical: "https://fortmilo.co.uk/acknowledgements.html", lastmod: "2026-08-08" },
   { output: "contact.html", canonical: "https://fortmilo.co.uk/contact.html", lastmod: "2026-07-31" },
-  { output: "privacy.html", canonical: "https://fortmilo.co.uk/privacy.html", lastmod: "2026-08-08" },
+  { output: "privacy.html", canonical: "https://fortmilo.co.uk/privacy.html", lastmod: "2026-08-10" },
   { output: "terms.html", canonical: "https://fortmilo.co.uk/terms.html", lastmod: "2026-08-08" },
   { output: "404.html", canonical: "https://fortmilo.co.uk/404.html", noindex: true }
 ];
