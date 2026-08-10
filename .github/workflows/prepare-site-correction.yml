@@ -1,0 +1,55 @@
+name: Prepare site correction
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/prepare-site-correction.yml"
+      - ".site-fix-payload.part*"
+
+permissions:
+  contents: write
+
+jobs:
+  prepare:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out current main
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Apply and validate the exact site correction
+        shell: bash
+        run: |
+          set -euo pipefail
+          git checkout -B site-fix-ready-20260811
+          cat .site-fix-payload.part* | base64 --decode > /tmp/site-fix.tar.gz
+          echo "e651fcf9c8c203b255257876ec443a42f5b6415b9cb22593f9142aa0a6216dd7  /tmp/site-fix.tar.gz" | sha256sum -c -
+          tar -xzf /tmp/site-fix.tar.gz
+          rm -f assets/fortmilo-salesforce-partner-home.png
+          rm -f scripts/validate-site-base.mjs
+          rm -f .site-fix-payload.part*
+          rm -f .github/workflows/prepare-site-correction.yml
+          npm run check
+          git diff --check
+          if grep -RniE 'Formula-injection-safe by default|Unknown/Error|No risk evidence surfaced|One export boundary, applied everywhere|fortmilo-salesforce-partner-home|Read the current technical whitepaper' --include='*.html' --include='*.css' .; then
+            echo "Prohibited public wording remains"
+            exit 1
+          fi
+          grep -q 'AUTHENTICATION ATTEMPTED' architecture-security.html
+          grep -q 'An attempted read failure is Unavailable, never Not assessed or None found.' architecture-security.html
+          grep -q 'Spreadsheet formula-trigger mitigation' security-observatory/evidence.html
+          grep -q 'Illustrative product view — no organisation data or evidence values shown.' index.html
+
+      - name: Commit validated result to the prepared branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "FortMilo site release"
+          git config user.email "info@fortmilo.co.uk"
+          git add -A
+          git diff --cached --quiet && { echo "No site correction staged"; exit 1; }
+          git commit -m "Correct public evidence states and homepage presentation"
+          git push --force origin HEAD:refs/heads/site-fix-ready-20260811
