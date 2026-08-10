@@ -7,7 +7,7 @@ export const routes = [
   { output: "security-observatory/entitlements-assets.html", canonical: "https://fortmilo.co.uk/security-observatory/entitlements-assets.html", lastmod: "2026-07-30", corporateActive: "observatory", productActive: "entitlements" },
   { output: "security-observatory/evidence.html", canonical: "https://fortmilo.co.uk/security-observatory/evidence.html", lastmod: "2026-08-08", corporateActive: "observatory", productActive: "evidence" },
   { output: "architecture-security.html", canonical: "https://fortmilo.co.uk/architecture-security.html", lastmod: "2026-08-09", corporateActive: "architecture" },
-  { output: "documents/index.html", canonical: "https://fortmilo.co.uk/documents/", lastmod: "2026-08-08" },
+  { output: "documents/index.html", canonical: "https://fortmilo.co.uk/documents/", lastmod: "2026-08-10" },
   { output: "acknowledgements.html", canonical: "https://fortmilo.co.uk/acknowledgements.html", lastmod: "2026-08-08" },
   { output: "contact.html", canonical: "https://fortmilo.co.uk/contact.html", lastmod: "2026-07-31", corporateActive: "contact" },
   { output: "privacy.html", canonical: "https://fortmilo.co.uk/privacy.html", lastmod: "2026-08-08" },
