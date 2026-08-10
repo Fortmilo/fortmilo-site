@@ -36,7 +36,13 @@ replaceOnce(
 replaceOnce(
   "homepage body hash",
   'const expectedHomepageBodyHash = "4bc037b4050e3981558ad2d0c2c21e152e89528cd8ee1f724071237952641e4e";',
-  'const expectedHomepageBodyHash = "3c45197dc0ed4bf419655400cde22f2c7e8ca225fb9efee89d7eae7a759c1afe";'
+  'const expectedHomepageBodyHash = "dcde9ad590a1c6c6e4eb7d4be56cb57eac1d08a8b381f05d3aeb70e80f72a0d0";'
+);
+
+replaceOnce(
+  "homepage corporate nav",
+  `const homepageCorporateNav = '<nav class="corporate-nav" aria-label="Corporate navigation"><a aria-current="page" href="/">Home</a><a href="/security-observatory/">Security Observatory</a><a href="/architecture-security.html">Architecture & Security</a><a href="/contact.html">Contact</a></nav>';`,
+  `const homepageCorporateNav = '<nav class="corporate-nav" aria-label="Corporate navigation"><a aria-current="page" href="/">Home</a><a href="/security-observatory/">Security Observatory</a><a href="/architecture-security.html">Architecture & Security</a><a href="/documents/">Documents</a></nav>';`
 );
 
 replaceOnce(
@@ -69,7 +75,7 @@ const documentsPolicy = [
   'const documentsDescription = "Technical whitepapers and methodology material for Security Observatory by FortMilo.";',
   'if (!allFiles.includes(historicalWhitepaperPath.slice(1))) errors.push(`missing ${historicalWhitepaperPath.slice(1)}`);',
   'if (!allFiles.includes(methodologyPaperPath.slice(1))) errors.push(`missing ${methodologyPaperPath.slice(1)}`);',
-  'for (const required of ["Version 1.3 has been superseded by v1.4 and remains available unchanged as an immutable historical publication.", \'href="\' + historicalWhitepaperPath + \'"\', "Read v1.3 history"]) if (!documents.includes(required)) errors.push(`documents/index.html: missing historical-publication boundary ${required}`);',
+  'if (documents.includes(historicalWhitepaperPath) || /\\bv1\\.3\\b/iu.test(documents)) errors.push("documents/index.html: superseded v1.3 must not be linked or presented on the Documents page");',
   'for (const required of ["Methodology paper", methodologyPaperTitle, methodologyPaperSubtitle, \'href="\' + methodologyPaperPath + \'"\', "Read the methodology paper"]) if (!documents.includes(required)) errors.push(`documents/index.html: missing authorised methodology-paper content ${required}`);',
   'if ((documents.match(/class="card technical-resource"/gu) || []).length !== 2) errors.push("documents/index.html: expected exactly two publication cards");',
   'if (!(documents.indexOf(whitepaperTitle) < documents.indexOf(methodologyPaperTitle))) errors.push("documents/index.html: Evidence Semantics must remain the primary publication before the methodology paper");',
