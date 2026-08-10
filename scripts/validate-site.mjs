@@ -22,6 +22,18 @@ function replaceAllExact(label, before, after, expectedCount) {
 }
 
 replaceOnce(
+  "favicon SVG recorded hash",
+  '["favicon.svg", "2dbc5023b718e959c69d27a42558b002b704399fb42d8b6298020fa5df97215c"]',
+  '["favicon.svg", "24293f12640b0687bac3edb5e68289ab524a0ae344699244409ec58935bfd06c"]'
+);
+
+replaceOnce(
+  "reference architecture SVG asset registration",
+  '["assets/fortmilo-shield-512.png", "a39acef2c9e9dc76583ed60b4c4c1e59fe92c135a6295683edf080051d0fa980"]',
+  '["assets/fortmilo-shield-512.png", "a39acef2c9e9dc76583ed60b4c4c1e59fe92c135a6295683edf080051d0fa980"],\n  ["documents/security-observatory-reference-architecture.svg", "ab068801bb71382624434df8a3e55b6eb728c37baa7f70cecacca87994807636"]'
+);
+
+replaceOnce(
   "homepage body hash",
   'const expectedHomepageBodyHash = "4bc037b4050e3981558ad2d0c2c21e152e89528cd8ee1f724071237952641e4e";',
   'const expectedHomepageBodyHash = "3c45197dc0ed4bf419655400cde22f2c7e8ca225fb9efee89d7eae7a759c1afe";'
