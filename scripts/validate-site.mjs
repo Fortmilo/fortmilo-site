@@ -86,6 +86,27 @@ const documentsPolicy = [
 
 replaceOnce("Documents publication policy", documentsCanonicalLine, documentsPolicy);
 
+const evidencePagePath = path.resolve(scriptDirectory, "..", "security-observatory", "evidence.html");
+const evidencePage = await readFile(evidencePagePath, "utf8");
+const evidencePageLower = evidencePage.toLowerCase();
+for (const prohibited of [
+  "formula-injection-safe",
+  "safe export",
+  "one export boundary, applied everywhere"
+]) {
+  if (evidencePageLower.includes(prohibited)) throw new Error(`security-observatory/evidence.html: prohibited universal CSV-safety wording ${prohibited}`);
+}
+for (const required of [
+  "bounded export controls",
+  "Export controls",
+  "Bounded controls for current export paths",
+  "Spreadsheet formula-trigger mitigation",
+  "enumerated helper-backed export paths only",
+  "not a claim that every spreadsheet-injection technique or any Apex-generated or future export path is covered"
+]) {
+  if (!evidencePage.includes(required)) throw new Error(`security-observatory/evidence.html: missing bounded CSV wording ${required}`);
+}
+
 await writeFile(effectiveValidatorPath, source, "utf8");
 let status = 1;
 
