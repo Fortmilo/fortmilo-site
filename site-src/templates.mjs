@@ -2,7 +2,7 @@ const corporateItems = [
   ["home", "Home", "/"],
   ["observatory", "Security Observatory", "/security-observatory/"],
   ["architecture", "Architecture & Security", "/architecture-security.html"],
-  ["contact", "Contact", "/contact.html"]
+  ["documents", "Documents", "/documents/"]
 ];
 
 const productItems = [
