@@ -36,7 +36,7 @@ replaceOnce(
 replaceOnce(
   "homepage body hash",
   'const expectedHomepageBodyHash = "4bc037b4050e3981558ad2d0c2c21e152e89528cd8ee1f724071237952641e4e";',
-  'const expectedHomepageBodyHash = "dcde9ad590a1c6c6e4eb7d4be56cb57eac1d08a8b381f05d3aeb70e80f72a0d0";'
+  'const expectedHomepageBodyHash = "d4bf4d9033291eb45459dad520daeec99b07c129e73ac028ec05f2e0d45ba29f";'
 );
 
 replaceOnce(
@@ -86,33 +86,82 @@ const documentsPolicy = [
 
 replaceOnce("Documents publication policy", documentsCanonicalLine, documentsPolicy);
 
-const evidencePagePath = path.resolve(scriptDirectory, "..", "security-observatory", "evidence.html");
+const siteRoot = path.resolve(scriptDirectory, "..");
+const evidencePagePath = path.join(siteRoot, "security-observatory", "evidence.html");
 const evidencePage = await readFile(evidencePagePath, "utf8");
 const evidencePageLower = evidencePage.toLowerCase();
 for (const prohibited of [
   "formula-injection-safe",
   "safe export",
-  "one export boundary, applied everywhere"
+  "one export boundary, applied everywhere",
+  "No risk evidence surfaced",
+  "Unknown/Error"
 ]) {
-  if (evidencePageLower.includes(prohibited)) throw new Error(`security-observatory/evidence.html: prohibited universal CSV-safety wording ${prohibited}`);
+  if (evidencePageLower.includes(prohibited.toLowerCase())) throw new Error(`security-observatory/evidence.html: prohibited public wording ${prohibited}`);
 }
 for (const required of [
-  "bounded export controls",
-  "Export controls",
-  "Bounded controls for current export paths",
+  "None found",
+  "Unavailable",
+  "Not assessed",
+  "Not retained at this evidence level",
+  "Not captured",
+  "Not applicable",
+  "Release-status boundary",
   "Spreadsheet formula-trigger mitigation",
   "enumerated helper-backed export paths only",
-  "not a claim that every spreadsheet-injection technique or any Apex-generated or future export path is covered"
+  "Complete raw-IP retained and export-shape validation remains environment-specific"
 ]) {
-  if (!evidencePage.includes(required)) throw new Error(`security-observatory/evidence.html: missing bounded CSV wording ${required}`);
+  if (!evidencePage.includes(required)) throw new Error(`security-observatory/evidence.html: missing bounded evidence wording ${required}`);
 }
+
+const homepage = await readFile(path.join(siteRoot, "index.html"), "utf8");
+for (const required of [
+  "<dt>State</dt><dd>Unavailable</dd>",
+  "The required evidence source could not be assessed.",
+  "A user-initiated sanitised CSV download is a separate export boundary.",
+  "Complete raw-IP retained and export-shape validation remains environment-specific."
+]) {
+  if (!homepage.includes(required)) throw new Error(`index.html: missing evidence-boundary wording ${required}`);
+}
+for (const prohibited of ["<dt>State</dt><dd>Not assessed</dd>", "No risk evidence surfaced", "Unknown/Error"]) {
+  if (homepage.includes(prohibited)) throw new Error(`index.html: prohibited evidence-state wording ${prohibited}`);
+}
+
+const architecture = await readFile(path.join(siteRoot, "architecture-security.html"), "utf8");
+for (const required of [
+  "Unavailable — bounded reason",
+  "Reviewed current paths keep zero distinct",
+  "Neither Unavailable nor Partial is a substitute for None found",
+  "exact-candidate persona validation"
+]) {
+  if (!architecture.includes(required)) throw new Error(`architecture-security.html: missing bounded evidence wording ${required}`);
+}
+for (const prohibited of ["Not assessed with a bounded reason", "UNAVAILABLE OR</text><text x=\"620\" y=\"385\">INCOMPLETE EVIDENCE</text><text x=\"857\" y=\"362\">NOT ASSESSED"]) {
+  if (architecture.includes(prohibited)) throw new Error(`architecture-security.html: obsolete state mapping ${prohibited}`);
+}
+
+const findings = await readFile(path.join(siteRoot, "security-observatory", "findings.html"), "utf8");
+for (const prohibited of ["No risk evidence surfaced", "Unknown/Error"]) {
+  if (findings.includes(prohibited)) throw new Error(`security-observatory/findings.html: obsolete evidence token ${prohibited}`);
+}
+for (const required of ["None found", "Unavailable", "Not retained at this evidence level", "Not captured"]) {
+  if (!findings.includes(required)) throw new Error(`security-observatory/findings.html: missing canonical evidence token ${required}`);
+}
+
+const entitlements = await readFile(path.join(siteRoot, "security-observatory", "entitlements-assets.html"), "utf8");
+if (entitlements.includes("FLS-gated controls")) throw new Error("security-observatory/entitlements-assets.html: unvalidated FLS-gated implementation claim returned");
+if (!entitlements.includes("exact-candidate persona validation")) throw new Error("security-observatory/entitlements-assets.html: missing persona-validation boundary");
+
+const identity = await readFile(path.join(siteRoot, "security-observatory", "identity-access.html"), "utf8");
+if (identity.includes("without session IDs or raw IP values")) throw new Error("security-observatory/identity-access.html: universal raw-IP exclusion claim returned");
+if (!identity.includes("Raw-IP omission or redaction is a design boundary")) throw new Error("security-observatory/identity-access.html: missing raw-IP validation boundary");
 
 await writeFile(effectiveValidatorPath, source, "utf8");
 let status = 1;
 
 try {
   const result = spawnSync(process.execPath, [effectiveValidatorPath], {
-    cwd: path.resolve(scriptDirectory, ".."),
+    cwd: siteRoot,
     stdio: "inherit"
   });
   if (result.error) throw result.error;
