@@ -27,200 +27,169 @@ jobs:
           from pathlib import Path
           import pymupdf
 
-          DOCS = Path('documents')
-          TECH_OLD = DOCS / 'evidence-semantics-and-scanner-orchestration-v1.4.9.pdf'
-          TECH_NEW = DOCS / 'evidence-semantics-and-scanner-orchestration.pdf'
-          METHOD_OLD = DOCS / 'orchestrating-ai-for-secure-software-delivery-v1.0.4.pdf'
-          METHOD_NEW = DOCS / 'orchestrating-ai-for-secure-software-delivery.pdf'
+          docs = Path('documents')
+          tech_old = docs / 'evidence-semantics-and-scanner-orchestration-v1.4.9.pdf'
+          tech_new = docs / 'evidence-semantics-and-scanner-orchestration.pdf'
+          method_old = docs / 'orchestrating-ai-for-secure-software-delivery-v1.0.4.pdf'
+          method_new = docs / 'orchestrating-ai-for-secure-software-delivery.pdf'
 
-          TECH_TO_METHOD_OLD = 'https://fortmilo.co.uk/documents/orchestrating-ai-for-secure-software-delivery/'
-          TECH_TO_METHOD_NEW = 'https://fortmilo.co.uk/documents/orchestrating-ai-for-secure-software-delivery.pdf'
-          METHOD_TO_TECH_OLD = 'https://fortmilo.co.uk/documents/evidence-semantics-and-scanner-orchestration/'
-          METHOD_TO_TECH_NEW = 'https://fortmilo.co.uk/documents/evidence-semantics-and-scanner-orchestration.pdf'
+          tech_old_url = 'https://fortmilo.co.uk/documents/orchestrating-ai-for-secure-software-delivery/'
+          tech_new_url = 'https://fortmilo.co.uk/documents/orchestrating-ai-for-secure-software-delivery.pdf'
+          method_old_url = 'https://fortmilo.co.uk/documents/evidence-semantics-and-scanner-orchestration/'
+          method_new_url = 'https://fortmilo.co.uk/documents/evidence-semantics-and-scanner-orchestration.pdf'
 
           def one_rect(page, text):
-              rects = page.search_for(text)
-              if len(rects) != 1:
-                  raise RuntimeError(f'Expected exactly one match for {text!r}, found {len(rects)}')
-              return rects[0]
+              matches = page.search_for(text)
+              if len(matches) != 1:
+                  raise RuntimeError(f'Expected one text match for {text!r}; found {len(matches)}')
+              return matches[0]
 
-          def add_line_replacement(page, old_text, new_text, fontname, fontsize):
-              rect = one_rect(page, old_text)
+          def queue_replace(page, old, new, font, size):
+              rect = one_rect(page, old)
               page.add_redact_annot(
                   pymupdf.Rect(rect.x0 - 0.4, rect.y0 - 0.3, rect.x1 + 0.4, rect.y1 + 0.3),
                   fill=(1, 1, 1),
               )
-              return (rect, new_text, fontname, fontsize)
+              return rect, new, font, size
 
-          def apply_line_replacements(page, replacements):
+          def remove_uri(page, uri):
+              links = [link for link in page.get_links() if link.get('uri') == uri]
+              if len(links) != 1:
+                  raise RuntimeError(f'Expected one URI annotation for {uri}; found {len(links)}')
+              rect = pymupdf.Rect(links[0]['from'])
+              page.delete_link(links[0])
+              return rect
+
+          def apply_replacements(page, replacements):
               page.apply_redactions()
-              for rect, new_text, fontname, fontsize in replacements:
-                  baseline = rect.y1 - 1.9
+              for rect, text, font, size in replacements:
                   page.insert_text(
-                      pymupdf.Point(rect.x0, baseline),
-                      new_text,
-                      fontname=fontname,
-                      fontsize=fontsize,
+                      pymupdf.Point(rect.x0, rect.y1 - 1.9),
+                      text,
+                      fontname=font,
+                      fontsize=size,
                       color=(0, 0, 0),
                   )
 
-          def replace_uri_link(page, old_uri, new_uri, fontname, fontsize):
-              matches = [link for link in page.get_links() if link.get('uri') == old_uri]
-              if len(matches) != 1:
-                  raise RuntimeError(f'Expected one link annotation for {old_uri}, found {len(matches)}')
-              old_link = matches[0]
-              old_rect = pymupdf.Rect(old_link['from'])
-              page.delete_link(old_link)
-              width = pymupdf.get_text_length(new_uri, fontname=fontname, fontsize=fontsize)
-              new_rect = pymupdf.Rect(old_rect.x0, old_rect.y0, old_rect.x0 + width, old_rect.y1)
-              page.insert_link({'kind': pymupdf.LINK_URI, 'from': new_rect, 'uri': new_uri})
+          def insert_uri(page, old_rect, uri, font, size):
+              width = pymupdf.get_text_length(uri, fontname=font, fontsize=size)
+              rect = pymupdf.Rect(old_rect.x0, old_rect.y0, old_rect.x0 + width, old_rect.y1)
+              page.insert_link({'kind': pymupdf.LINK_URI, 'from': rect, 'uri': uri})
 
-          def remove_publication_continuity(page):
-              candidates = []
-              for block in page.get_text('blocks'):
-                  text = block[4]
-                  if 'Publication continuity.' in text and 'Archived public editions' in text:
-                      candidates.append(block)
-              if len(candidates) != 1:
-                  raise RuntimeError(f'Expected one publication-continuity block, found {len(candidates)}')
-              x0, y0, x1, y1 = candidates[0][:4]
-              page.add_redact_annot(
-                  pymupdf.Rect(x0 - 0.5, y0 - 0.5, x1 + 0.5, y1 + 0.5),
-                  fill=(1, 1, 1),
-              )
-              page.apply_redactions()
+          # Technical paper.
+          tech = pymupdf.open(tech_old)
+          page = tech[0]
+          blocks = [
+              block for block in page.get_text('blocks')
+              if 'Publication continuity.' in block[4] and 'Archived public editions' in block[4]
+          ]
+          if len(blocks) != 1:
+              raise RuntimeError(f'Expected one publication-continuity block; found {len(blocks)}')
+          x0, y0, x1, y1 = blocks[0][:4]
+          page.add_redact_annot(pymupdf.Rect(x0 - .5, y0 - .5, x1 + .5, y1 + .5), fill=(1, 1, 1))
+          page.apply_redactions()
 
-          # Technical paper: remove publication-history wording and make the companion citation permanent.
-          tech = pymupdf.open(TECH_OLD)
-          remove_publication_continuity(tech[0])
-          tech_ref_page = tech[8]
-          tech_replacements = [
-              add_line_replacement(
-                  tech_ref_page,
+          page = tech[8]
+          replacements = [
+              queue_replace(
+                  page,
                   '12. FortMilo, Orchestrating AI for Secure Software Delivery, current edition (v1.0.4 at the date of this publication), 2026.',
                   '12. FortMilo, Orchestrating AI for Secure Software Delivery, 2026.',
-                  'Times-Roman',
-                  8.0,
+                  'Times-Roman', 8.0,
               ),
-              add_line_replacement(
-                  tech_ref_page,
-                  TECH_TO_METHOD_OLD,
-                  TECH_TO_METHOD_NEW,
-                  'Times-Roman',
-                  8.0,
-              ),
-              add_line_replacement(
-                  tech_ref_page,
+              queue_replace(page, tech_old_url, tech_new_url, 'Times-Roman', 8.0),
+              queue_replace(
+                  page,
                   'Each URL is printed in full so the references remain usable in printed and archived copies.',
                   'Each URL is printed in full so the references remain usable in printed copies.',
-                  'Helvetica',
-                  7.6,
+                  'Helvetica', 7.6,
               ),
           ]
-          replace_uri_link(tech_ref_page, TECH_TO_METHOD_OLD, TECH_TO_METHOD_NEW, 'Times-Roman', 8.0)
-          apply_line_replacements(tech_ref_page, tech_replacements)
-          tech.save(TECH_NEW, garbage=4, deflate=True, clean=True)
+          link_rect = remove_uri(page, tech_old_url)
+          apply_replacements(page, replacements)
+          insert_uri(page, link_rect, tech_new_url, 'Times-Roman', 8.0)
+          tech.save(tech_new, garbage=4, deflate=True, clean=True)
           tech.close()
 
-          # Methodology paper: keep the engineering case study intact; only remove publication-version dependency.
-          method = pymupdf.open(METHOD_OLD)
-          method_ref_page = method[23]
-          method_replacements = [
-              add_line_replacement(
-                  method_ref_page,
+          # Methodology paper. Keep unrelated engineering uses of "superseded" intact.
+          method = pymupdf.open(method_old)
+          page = method[23]
+          replacements = [
+              queue_replace(
+                  page,
                   '18. FortMilo, Evidence Semantics and Scanner Orchestration, current edition (v1.4.9 at the date of this publication), 2026.',
                   '18. FortMilo, Evidence Semantics and Scanner Orchestration, 2026.',
-                  'Times-Roman',
-                  8.0,
+                  'Times-Roman', 8.0,
               ),
-              add_line_replacement(
-                  method_ref_page,
-                  METHOD_TO_TECH_OLD,
-                  METHOD_TO_TECH_NEW,
-                  'Times-Roman',
-                  8.0,
-              ),
-              add_line_replacement(
-                  method_ref_page,
+              queue_replace(page, method_old_url, method_new_url, 'Times-Roman', 8.0),
+              queue_replace(
+                  page,
                   'Each URL is printed in full so the references remain usable in printed and archived copies.',
                   'Each URL is printed in full so the references remain usable in printed copies.',
-                  'Helvetica',
-                  7.6,
+                  'Helvetica', 7.6,
               ),
           ]
-          replace_uri_link(method_ref_page, METHOD_TO_TECH_OLD, METHOD_TO_TECH_NEW, 'Times-Roman', 8.0)
-          apply_line_replacements(method_ref_page, method_replacements)
-          method.save(METHOD_NEW, garbage=4, deflate=True, clean=True)
+          link_rect = remove_uri(page, method_old_url)
+          apply_replacements(page, replacements)
+          insert_uri(page, link_rect, method_new_url, 'Times-Roman', 8.0)
+          method.save(method_new, garbage=4, deflate=True, clean=True)
           method.close()
 
-          # The versioned public filenames cease to exist.
-          TECH_OLD.unlink()
-          METHOD_OLD.unlink()
+          tech_old.unlink()
+          method_old.unlink()
 
-          # Documents page: titles and public paths are intentionally version-free.
-          docs_page = Path('documents/index.html')
-          html = docs_page.read_text(encoding='utf-8')
+          # Documents page: no public version labels or publication-history wording.
+          page_path = docs / 'index.html'
+          html = page_path.read_text(encoding='utf-8')
           replacements = {
-              '<h2>Evidence Semantics and Scanner Orchestration v1.4.9</h2>':
-                  '<h2>Evidence Semantics and Scanner Orchestration</h2>',
-              'href="/documents/evidence-semantics-and-scanner-orchestration-v1.4.9.pdf"':
-                  'href="/documents/evidence-semantics-and-scanner-orchestration.pdf"',
-              '<p class="publication-status"><strong>Publication status:</strong> The technical whitepaper listed above is the current published guidance. Previous versions have been replaced and are no longer published on this site.</p>':
-                  '',
-              '<h2>Orchestrating AI for Secure Software Delivery v1.0.4</h2>':
-                  '<h2>Orchestrating AI for Secure Software Delivery</h2>',
-              'href="/documents/orchestrating-ai-for-secure-software-delivery-v1.0.4.pdf"':
-                  'href="/documents/orchestrating-ai-for-secure-software-delivery.pdf"',
+              '<h2>Evidence Semantics and Scanner Orchestration v1.4.9</h2>': '<h2>Evidence Semantics and Scanner Orchestration</h2>',
+              'href="/documents/evidence-semantics-and-scanner-orchestration-v1.4.9.pdf"': 'href="/documents/evidence-semantics-and-scanner-orchestration.pdf"',
+              '<p class="publication-status"><strong>Publication status:</strong> The technical whitepaper listed above is the current published guidance. Previous versions have been replaced and are no longer published on this site.</p>': '',
+              '<h2>Orchestrating AI for Secure Software Delivery v1.0.4</h2>': '<h2>Orchestrating AI for Secure Software Delivery</h2>',
+              'href="/documents/orchestrating-ai-for-secure-software-delivery-v1.0.4.pdf"': 'href="/documents/orchestrating-ai-for-secure-software-delivery.pdf"',
           }
           for old, new in replacements.items():
               if html.count(old) != 1:
-                  raise RuntimeError(f'Expected exactly one Documents-page occurrence of {old!r}')
+                  raise RuntimeError(f'Documents page expected one occurrence of {old!r}')
               html = html.replace(old, new)
-          docs_page.write_text(html, encoding='utf-8')
+          page_path.write_text(html, encoding='utf-8')
 
-          # Contract: make the section-7 audit reference cover every conforming artefact.
+          # Terminology contract cross-reference.
           contract_path = Path('EVIDENCE_TERMINOLOGY_CONTRACT.md')
           contract = contract_path.read_text(encoding='utf-8')
-          old_contract = '3. Every consuming surface listed in section 7 is audited against the new contract.'
-          new_contract = '3. Every conforming artefact identified in section 7 is audited against the new contract.'
-          if contract.count(old_contract) != 1:
-              raise RuntimeError('Expected exactly one terminology-contract section-8 audit sentence')
-          contract_path.write_text(contract.replace(old_contract, new_contract), encoding='utf-8')
+          old = '3. Every consuming surface listed in section 7 is audited against the new contract.'
+          new = '3. Every conforming artefact identified in section 7 is audited against the new contract.'
+          if contract.count(old) != 1:
+              raise RuntimeError('Terminology contract section-8 sentence not found exactly once')
+          contract_path.write_text(contract.replace(old, new), encoding='utf-8')
 
-          # Validator: enforce the permanent publication contract and reject versioned public paths.
+          # Site validator follows the permanent publication contract.
           validator_path = Path('scripts/validate-site.mjs')
           validator = validator_path.read_text(encoding='utf-8')
-          validator_replacements = {
-              '"Evidence Semantics and Scanner Orchestration v1.4.9"':
-                  '"Evidence Semantics and Scanner Orchestration"',
-              "'href=\"/documents/evidence-semantics-and-scanner-orchestration-v1.4.9.pdf\"'":
-                  "'href=\"/documents/evidence-semantics-and-scanner-orchestration.pdf\"'",
-              '"Orchestrating AI for Secure Software Delivery v1.0.4"':
-                  '"Orchestrating AI for Secure Software Delivery"',
-              "'href=\"/documents/orchestrating-ai-for-secure-software-delivery-v1.0.4.pdf\"'":
-                  "'href=\"/documents/orchestrating-ai-for-secure-software-delivery.pdf\"'",
-              '"documents/evidence-semantics-and-scanner-orchestration-v1.4.9.pdf"':
-                  '"documents/evidence-semantics-and-scanner-orchestration.pdf"',
-              '"documents/orchestrating-ai-for-secure-software-delivery-v1.0.4.pdf"':
-                  '"documents/orchestrating-ai-for-secure-software-delivery.pdf"',
+          replacements = {
+              '"Evidence Semantics and Scanner Orchestration v1.4.9"': '"Evidence Semantics and Scanner Orchestration"',
+              "'href=\"/documents/evidence-semantics-and-scanner-orchestration-v1.4.9.pdf\"'": "'href=\"/documents/evidence-semantics-and-scanner-orchestration.pdf\"'",
+              '"Orchestrating AI for Secure Software Delivery v1.0.4"': '"Orchestrating AI for Secure Software Delivery"',
+              "'href=\"/documents/orchestrating-ai-for-secure-software-delivery-v1.0.4.pdf\"'": "'href=\"/documents/orchestrating-ai-for-secure-software-delivery.pdf\"'",
+              '"documents/evidence-semantics-and-scanner-orchestration-v1.4.9.pdf"': '"documents/evidence-semantics-and-scanner-orchestration.pdf"',
+              '"documents/orchestrating-ai-for-secure-software-delivery-v1.0.4.pdf"': '"documents/orchestrating-ai-for-secure-software-delivery.pdf"',
           }
-          for old, new in validator_replacements.items():
-              if validator.count(old) < 1:
+          for old, new in replacements.items():
+              if old not in validator:
                   raise RuntimeError(f'Validator reference not found: {old!r}')
               validator = validator.replace(old, new)
 
-          marker = 'if (count(documents, \'class="card technical-resource"\') !== 2) errors.push("documents/index.html: expected two resource cards");'
-          extra = '''\nprohibitAll(documents, [\n  "Evidence Semantics and Scanner Orchestration v1.4.9",\n  "Orchestrating AI for Secure Software Delivery v1.0.4",\n  "evidence-semantics-and-scanner-orchestration-v1.4.9.pdf",\n  "orchestrating-ai-for-secure-software-delivery-v1.0.4.pdf",\n  "Publication status:",\n  "Previous versions",\n  "Older versioned PDFs"\n], "documents/index.html");'''
-          if validator.count(marker) != 1:
-              raise RuntimeError('Documents validator insertion marker not found exactly once')
-          validator = validator.replace(marker, marker + extra)
+          doc_marker = 'if (count(documents, \'class="card technical-resource"\') !== 2) errors.push("documents/index.html: expected two resource cards");'
+          doc_gate = '''\nprohibitAll(documents, [\n  "Evidence Semantics and Scanner Orchestration v1.4.9",\n  "Orchestrating AI for Secure Software Delivery v1.0.4",\n  "evidence-semantics-and-scanner-orchestration-v1.4.9.pdf",\n  "orchestrating-ai-for-secure-software-delivery-v1.0.4.pdf",\n  "Publication status:",\n  "Previous versions",\n  "Older versioned PDFs"\n], "documents/index.html");'''
+          if validator.count(doc_marker) != 1:
+              raise RuntimeError('Documents validator marker not found exactly once')
+          validator = validator.replace(doc_marker, doc_marker + doc_gate)
 
-          pdf_loop_marker = 'for (const pdf of [\n  "documents/evidence-semantics-and-scanner-orchestration.pdf",\n  "documents/orchestrating-ai-for-secure-software-delivery.pdf"\n]) {'
-          obsolete_gate = '''for (const obsoletePdf of [\n  "documents/evidence-semantics-and-scanner-orchestration-v1.4.9.pdf",\n  "documents/orchestrating-ai-for-secure-software-delivery-v1.0.4.pdf"\n]) {\n  if (fileSet.has(obsoletePdf)) errors.push(`versioned public PDF must not be published: ${obsoletePdf}`);\n}\n\n'''
-          if validator.count(pdf_loop_marker) != 1:
-              raise RuntimeError('Permanent PDF validation loop marker not found exactly once')
-          validator = validator.replace(pdf_loop_marker, obsolete_gate + pdf_loop_marker)
-          validator_path.write_text(validator, encoding='utf-8')
+          pdf_marker = 'for (const pdf of [\n  "documents/evidence-semantics-and-scanner-orchestration.pdf",\n  "documents/orchestrating-ai-for-secure-software-delivery.pdf"\n]) {'
+          old_file_gate = '''for (const obsoletePdf of [\n  "documents/evidence-semantics-and-scanner-orchestration-v1.4.9.pdf",\n  "documents/orchestrating-ai-for-secure-software-delivery-v1.0.4.pdf"\n]) {\n  if (fileSet.has(obsoletePdf)) errors.push(`versioned public PDF must not be published: ${obsoletePdf}`);\n}\n\n'''
+          if validator.count(pdf_marker) != 1:
+              raise RuntimeError('Permanent PDF validator marker not found exactly once')
+          validator_path.write_text(validator.replace(pdf_marker, old_file_gate + pdf_marker), encoding='utf-8')
 
       - name: Validate publication PDF contract
         shell: python
@@ -229,75 +198,48 @@ jobs:
           import pymupdf
 
           specs = [
-              {
-                  'path': Path('documents/evidence-semantics-and-scanner-orchestration.pdf'),
-                  'pages': 9,
-                  'own_version': 'v1.4.9',
-                  'new_url': 'https://fortmilo.co.uk/documents/orchestrating-ai-for-secure-software-delivery.pdf',
-                  'old_url': 'https://fortmilo.co.uk/documents/orchestrating-ai-for-secure-software-delivery/',
-                  'changed_pages': [0, 8],
-              },
-              {
-                  'path': Path('documents/orchestrating-ai-for-secure-software-delivery.pdf'),
-                  'pages': 25,
-                  'own_version': 'v1.0.4',
-                  'new_url': 'https://fortmilo.co.uk/documents/evidence-semantics-and-scanner-orchestration.pdf',
-                  'old_url': 'https://fortmilo.co.uk/documents/evidence-semantics-and-scanner-orchestration/',
-                  'changed_pages': [23],
-              },
+              (Path('documents/evidence-semantics-and-scanner-orchestration.pdf'), 9, 'v1.4.9',
+               'https://fortmilo.co.uk/documents/orchestrating-ai-for-secure-software-delivery.pdf',
+               'https://fortmilo.co.uk/documents/orchestrating-ai-for-secure-software-delivery/', [0, 8]),
+              (Path('documents/orchestrating-ai-for-secure-software-delivery.pdf'), 25, 'v1.0.4',
+               'https://fortmilo.co.uk/documents/evidence-semantics-and-scanner-orchestration.pdf',
+               'https://fortmilo.co.uk/documents/evidence-semantics-and-scanner-orchestration/', [23]),
           ]
-
-          for spec in specs:
-              if not spec['path'].is_file():
-                  raise SystemExit(f'Missing permanent publication: {spec["path"]}')
-              doc = pymupdf.open(spec['path'])
-              if doc.page_count != spec['pages']:
-                  raise SystemExit(f'Unexpected page count for {spec["path"]}: {doc.page_count}')
+          for path, pages, version, new_url, old_url, changed_pages in specs:
+              doc = pymupdf.open(path)
+              if doc.page_count != pages:
+                  raise SystemExit(f'Unexpected page count for {path}')
               text = '\n'.join(page.get_text('text') for page in doc)
-              if spec['own_version'] not in text:
-                  raise SystemExit(f'Internal version field missing from {spec["path"]}')
-              if spec['new_url'] not in text:
-                  raise SystemExit(f'Permanent companion URL missing from visible text in {spec["path"]}')
-              if spec['old_url'] in text:
-                  raise SystemExit(f'Obsolete directory URL remains in visible text in {spec["path"]}')
-              if 'printed and archived copies' in text:
-                  raise SystemExit(f'Archive-copy wording remains in {spec["path"]}')
-              if 'Each URL is printed in full so the references remain usable in printed copies.' not in text:
-                  raise SystemExit(f'Bounded printed-copy reference sentence missing in {spec["path"]}')
-              if 'EV-01' not in text or 'EV-04' not in text:
-                  raise SystemExit(f'EV identifier stability check failed for {spec["path"]}')
-
-              uris = [
-                  link.get('uri')
-                  for page in doc
-                  for link in page.get_links()
-                  if link.get('uri') and 'fortmilo.co.uk/documents' in link.get('uri')
-              ]
-              if spec['new_url'] not in uris:
-                  raise SystemExit(f'Permanent companion link annotation missing from {spec["path"]}')
-              if spec['old_url'] in uris:
-                  raise SystemExit(f'Obsolete companion link annotation remains in {spec["path"]}')
-
-              for pageno in spec['changed_pages']:
+              for required in (version, new_url, 'Each URL is printed in full so the references remain usable in printed copies.', 'EV-01', 'EV-04'):
+                  if required not in text:
+                      raise SystemExit(f'{path}: missing {required!r}')
+              for prohibited in (old_url, 'printed and archived copies'):
+                  if prohibited in text:
+                      raise SystemExit(f'{path}: prohibited {prohibited!r}')
+              uris = [link.get('uri') for page in doc for link in page.get_links() if link.get('uri')]
+              if new_url not in uris or old_url in uris:
+                  raise SystemExit(f'{path}: companion link annotation is not permanent')
+              for pageno in changed_pages:
                   pix = doc[pageno].get_pixmap(matrix=pymupdf.Matrix(1, 1), alpha=False)
-                  if pix.width < 500 or pix.height < 700 or len(pix.samples) == 0:
-                      raise SystemExit(f'Render validation failed for {spec["path"]} page {pageno + 1}')
+                  if pix.width < 500 or pix.height < 700 or not pix.samples:
+                      raise SystemExit(f'{path}: render check failed on page {pageno + 1}')
               doc.close()
 
-          tech_text = '\n'.join(page.get_text('text') for page in pymupdf.open(specs[0]['path']))
-          if 'Publication continuity' in tech_text or 'Archived public editions' in tech_text or 'archived editions' in tech_text:
-              raise SystemExit('Technical paper still contains publication-history wording')
-          if 'current edition (v1.0.4 at the date of this publication)' in tech_text:
-              raise SystemExit('Technical paper still pins companion publication version')
+          with pymupdf.open(specs[0][0]) as doc:
+              text = '\n'.join(page.get_text('text') for page in doc)
+              for prohibited in ('Publication continuity', 'Archived public editions', 'archived editions', 'current edition (v1.0.4 at the date of this publication)'):
+                  if prohibited in text:
+                      raise SystemExit(f'Technical paper still contains {prohibited!r}')
 
-          method_text = '\n'.join(page.get_text('text') for page in pymupdf.open(specs[1]['path']))
-          if 'current edition (v1.4.9 at the date of this publication)' in method_text:
-              raise SystemExit('Methodology paper still pins companion publication version')
+          with pymupdf.open(specs[1][0]) as doc:
+              text = '\n'.join(page.get_text('text') for page in doc)
+              if 'current edition (v1.4.9 at the date of this publication)' in text:
+                  raise SystemExit('Methodology paper still pins companion publication version')
 
-          for obsolete in [
+          for obsolete in (
               Path('documents/evidence-semantics-and-scanner-orchestration-v1.4.9.pdf'),
               Path('documents/orchestrating-ai-for-secure-software-delivery-v1.0.4.pdf'),
-          ]:
+          ):
               if obsolete.exists():
                   raise SystemExit(f'Versioned public file still exists: {obsolete}')
 
