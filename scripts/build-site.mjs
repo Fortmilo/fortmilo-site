@@ -10,32 +10,14 @@ const styles = await readFile(path.join(root, "site-src", "styles.css"), "utf8")
 const homeStyles = await readFile(path.join(root, "site-src", "home.css"), "utf8");
 const assetsDirectory = path.join(root, "assets");
 const existingCssNames = (await readdir(assetsDirectory)).filter((name) => /^site\.[a-f0-9]{12}\.css$/u.test(name));
-let cssFile;
-for (const name of existingCssNames) {
-  if ((await readFile(path.join(assetsDirectory, name), "utf8")) === styles) {
-    cssFile = `assets/${name}`;
-    break;
-  }
-}
-if (!cssFile) {
-  const hash = createHash("sha256").update(styles).digest("hex").slice(0, 12);
-  cssFile = `assets/site.${hash}.css`;
-  await writeFile(path.join(root, cssFile), styles);
-}
+const cssHash = createHash("sha256").update(styles).digest("hex").slice(0, 12);
+const cssFile = `assets/site.${cssHash}.css`;
+await writeFile(path.join(root, cssFile), styles);
 
 const existingHomeCssNames = (await readdir(assetsDirectory)).filter((name) => /^home\.[a-f0-9]{12}\.css$/u.test(name));
-let homeCssFile;
-for (const name of existingHomeCssNames) {
-  if ((await readFile(path.join(assetsDirectory, name), "utf8")) === homeStyles) {
-    homeCssFile = `assets/${name}`;
-    break;
-  }
-}
-if (!homeCssFile) {
-  const hash = createHash("sha256").update(homeStyles).digest("hex").slice(0, 12);
-  homeCssFile = `assets/home.${hash}.css`;
-  await writeFile(path.join(root, homeCssFile), homeStyles);
-}
+const homeCssHash = createHash("sha256").update(homeStyles).digest("hex").slice(0, 12);
+const homeCssFile = `assets/home.${homeCssHash}.css`;
+await writeFile(path.join(root, homeCssFile), homeStyles);
 
 function replaceHeadAssetMetadata(html, output) {
   const sharedLines = [

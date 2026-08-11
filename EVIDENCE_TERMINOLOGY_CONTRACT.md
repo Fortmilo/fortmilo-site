@@ -38,7 +38,7 @@ These states must never be collapsed into one another.
 
 **Unknown** is not a general rendered evidence state and must not be used as a substitute for Unavailable.
 
-It is reserved only for the bounded **EV-04 retained-evidence read warning** where a retained-evidence read itself cannot establish the expected value. Any such use must remain explicitly scoped to that warning condition.
+It is reserved only for the bounded retained-evidence read warning used when a retained-evidence read itself cannot establish the expected value. This is the **EV-04** condition in the supporting assurance record. Any such use must remain explicitly scoped to that warning condition.
 
 Generic **Unknown/Error** wording is not part of the canonical rendered vocabulary.
 
@@ -119,9 +119,10 @@ A terminology change is permitted only when all of the following occur:
 1. The contract version is incremented.
 2. The meaning of the changed term is updated here first.
 3. Every conforming artefact identified in section 7 is audited against the new contract.
-4. The Salesforce implementation and relevant validators are checked for conformity.
-5. Any affected technical publication is checked for conformity.
-6. All identified deltas are resolved before the changed terminology is published as current.
+4. The Salesforce implementation and validators are checked for conformity.
+5. Technical publications identified as conforming artefacts in section 7 are checked for conformity.
+6. The conformity determination for each artefact is recorded before the changed terminology is published or released.
+7. All identified deltas are resolved before the changed terminology is published as current.
 
 No consuming surface may silently introduce, redefine or retire a canonical term.
 

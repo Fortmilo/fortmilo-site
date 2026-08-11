@@ -136,6 +136,9 @@ const sourceCss = await readText("site-src/styles.css");
 if (cssFiles.length === 1) {
   const generatedCss = await readText(cssFiles[0]);
   if (generatedCss !== sourceCss) errors.push(`${cssFiles[0]} does not match site-src/styles.css`);
+  const expectedHash = createHash("sha256").update(generatedCss).digest("hex").slice(0, 12);
+  const actualHash = cssFiles[0].match(/^assets\/site\.([a-f0-9]{12})\.css$/u)?.[1];
+  if (actualHash !== expectedHash) errors.push(`${cssFiles[0]}: filename hash does not match content digest ${expectedHash}`);
 }
 
 const homeCssFiles = allFiles.filter((file) => /^assets\/home\.[a-f0-9]{12}\.css$/u.test(file));
@@ -144,6 +147,9 @@ const homeSourceCss = await readText("site-src/home.css");
 if (homeCssFiles.length === 1) {
   const generatedHomeCss = await readText(homeCssFiles[0]);
   if (generatedHomeCss !== homeSourceCss) errors.push(`${homeCssFiles[0]} does not match site-src/home.css`);
+  const expectedHomeHash = createHash("sha256").update(generatedHomeCss).digest("hex").slice(0, 12);
+  const actualHomeHash = homeCssFiles[0].match(/^assets\/home\.([a-f0-9]{12})\.css$/u)?.[1];
+  if (actualHomeHash !== expectedHomeHash) errors.push(`${homeCssFiles[0]}: filename hash does not match content digest ${expectedHomeHash}`);
 }
 
 if (fileSet.has("assets/fortmilo-salesforce-partner-home.png")) {
@@ -159,6 +165,10 @@ const contract = await readText("EVIDENCE_TERMINOLOGY_CONTRACT.md");
 requireAll(contract, [
   "**Contract version:** 1.0",
   "**Status:** Canonical",
+  "This is the **EV-04** condition in the supporting assurance record.",
+    "4. The Salesforce implementation and validators are checked for conformity.",
+    "5. Technical publications identified as conforming artefacts in section 7 are checked for conformity.",
+    "6. The conformity determination for each artefact is recorded before the changed terminology is published or released.",
   "**None found**",
   "**Unavailable**",
   "**Not assessed**",
@@ -225,6 +235,10 @@ requireAll(homeSourceCss, [
   ".home-page .home-differentiator-grid { grid-template-columns: 1fr; }"
 ], "site-src/home.css");
 if (homeSourceCss.includes(".product-preview")) errors.push("site-src/home.css: mock product-preview styling must not return");
+
+for (const [route, html] of htmlByRoute) {
+  if (html.includes("exact-candidate")) errors.push(`${route}: internal exact-candidate wording must not be public`);
+}
 
 const terminologyConsumers = [
   "index.html",
@@ -294,6 +308,7 @@ requireAll(evidence, [
   "This applies to the reviewed export helper paths and the enumerated trigger characters.",
   "It is not a claim that every spreadsheet-injection technique or every export path is covered.",
   "Scans created before terminology-contract version stamping remain pre-contract evidence and are not rewritten.",
+  "These figures describe FortMilo’s retained SBS mapping catalogue for mapping set M1 revision 1; they do not assert completeness or equivalence to the current upstream SBS release.",
   "They cannot be compared with v1.0 scans",
   "missing, different or unsupported terminology versions are Unavailable for comparison"
 ], "security-observatory/evidence.html");
@@ -312,6 +327,7 @@ if (count(architecture, '<p class="section-label">Diagram ') !== 4) errors.push(
 if (count(architecture, '<title id="') !== 4 || count(architecture, '<desc id="') !== 4) errors.push("architecture-security.html: every diagram requires title and description");
 requireAll(architecture, [
   "Unavailable evidence remains visible and explained.",
+  "The version is recorded inside the PDF.",
   '<h2>Evidence Semantics and Scanner Orchestration</h2>',
   '<a class="button button-primary" href="/documents/">Read the technical whitepaper</a>'
 ], "architecture-security.html");
@@ -391,14 +407,12 @@ requireAll(documents, [
 ], "documents/index.html");
 if (count(documents, 'class="card technical-resource"') !== 2) errors.push("documents/index.html: expected two resource cards");
 prohibitAll(documents, [
-  "Evidence Semantics and Scanner Orchestration v1.4.9",
-  "Orchestrating AI for Secure Software Delivery v1.0.4",
-  "evidence-semantics-and-scanner-orchestration-v1.4.9.pdf",
-  "orchestrating-ai-for-secure-software-delivery-v1.0.4.pdf",
   "Publication status:",
   "Previous versions",
   "Older versioned PDFs"
 ], "documents/index.html");
+if (/href="\/documents\/[^"]*-v\d+(?:\.\d+)*\.pdf"/iu.test(documents)) errors.push("documents/index.html: versioned public PDF href must not be published");
+if (/<h2>[^<]*\bv\d+(?:\.\d+)+\b[^<]*<\/h2>/iu.test(documents)) errors.push("documents/index.html: document heading must not expose a version number");
 
 const privacy = htmlByRoute.get("privacy.html") || "";
 requireAll(privacy, [
@@ -431,11 +445,17 @@ for (const route of indexableRoutes) {
 }
 if (/\.pdf<\/loc>|404\.html<\/loc>/u.test(sitemap)) errors.push("sitemap.xml: PDF or 404 must not be indexed");
 
-for (const obsoletePdf of [
-  "documents/evidence-semantics-and-scanner-orchestration-v1.4.9.pdf",
-  "documents/orchestrating-ai-for-secure-software-delivery-v1.0.4.pdf"
-]) {
-  if (fileSet.has(obsoletePdf)) errors.push(`versioned public PDF must not be published: ${obsoletePdf}`);
+const allowedDocumentFiles = [
+  "documents/evidence-semantics-and-scanner-orchestration.pdf",
+  "documents/index.html",
+  "documents/orchestrating-ai-for-secure-software-delivery.pdf"
+];
+const publicDocumentFiles = allFiles.filter((file) => file.startsWith("documents/")).sort();
+if (JSON.stringify(publicDocumentFiles) !== JSON.stringify(allowedDocumentFiles)) {
+  errors.push(`documents/: public artefact allow-list mismatch: ${publicDocumentFiles.join(", ")}`);
+}
+for (const file of publicDocumentFiles) {
+  if (/^documents\/.*-v\d+(?:\.\d+)*\.pdf$/iu.test(file)) errors.push(`versioned public PDF must not be published: ${file}`);
 }
 
 for (const pdf of [
