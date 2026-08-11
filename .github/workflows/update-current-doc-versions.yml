@@ -25,6 +25,7 @@ jobs:
           import re
           import subprocess
 
+          workflow_path = ".github/workflows/update-current-doc-versions.yml"
           tracked = subprocess.check_output(["git", "ls-files"], text=True).splitlines()
           replacements = {
               "evidence-semantics-and-scanner-orchestration-v1.4.pdf":
@@ -36,6 +37,8 @@ jobs:
           }
 
           for relative in tracked:
+              if relative == workflow_path:
+                  continue
               path = Path(relative)
               if not path.is_file() or path.suffix.lower() in {".pdf", ".png", ".jpg", ".jpeg", ".ico"}:
                   continue
