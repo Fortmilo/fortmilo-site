@@ -79,7 +79,20 @@ Where a usable count is retained but required scope is incomplete:
 
 Partial must never be used to hide an unavailable source or to convert incomplete evidence into a zero.
 
-## 6. Consumer surfaces
+## 6. Historical evidence and comparison
+
+Historical retained evidence is not rewritten when this contract changes.
+
+- Scans created before terminology-contract version stamping are **pre-contract / unversioned** evidence.
+- A legacy `Not assessed` value is not silently reinterpreted as v1.0 `Unavailable`.
+- New scans retain the terminology contract version used for their comparison semantics.
+- Comparison is available only when both scans carry the same supported terminology contract version, in addition to any separate like-for-like evidence-depth and source-organisation requirements.
+- If either terminology version is missing, differs or is unsupported, comparison is **Unavailable** and must not imply improvement, resolution, worsening or newly observed evidence.
+- Existing pre-contract scans are not backfilled merely to make them comparable.
+
+The deliberate consequence is that scans created before terminology version stamping become unavailable for v1.0 comparison once the version gate ships. Preserving historical meaning takes precedence over manufacturing a comparison across incompatible semantics.
+
+## 7. Consumer surfaces
 
 The following public website surfaces consume this contract and must be checked together whenever the contract changes:
 
@@ -95,7 +108,9 @@ The following public website surfaces consume this contract and must be checked 
 
 The Salesforce application, validators and technical whitepapers that use these semantics are also conforming artefacts and must be checked before publication or release.
 
-## 7. Change procedure
+Terms, Privacy, Contact and Acknowledgements are included in whole-site regression because they share navigation, footer and partner-status presentation, but they are not terminology consumers.
+
+## 8. Change procedure
 
 This contract is frozen at the version shown above.
 
@@ -103,14 +118,14 @@ A terminology change is permitted only when all of the following occur:
 
 1. The contract version is incremented.
 2. The meaning of the changed term is updated here first.
-3. Every consuming surface listed in section 6 is audited against the new contract.
+3. Every consuming surface listed in section 7 is audited against the new contract.
 4. The Salesforce implementation and relevant validators are checked for conformity.
 5. Any affected technical publication is checked for conformity.
 6. All identified deltas are resolved before the changed terminology is published as current.
 
 No consuming surface may silently introduce, redefine or retire a canonical term.
 
-## 8. Publication rule
+## 9. Publication rule
 
 This contract defines terminology. It does not by itself prove scanner coverage, installation compatibility, release validation, compliance, security, or the existence of evidence in a particular Salesforce organisation.
 
