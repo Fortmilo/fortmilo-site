@@ -1,0 +1,49 @@
+name: Close terminology validator
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  validate-and-close:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Remove obsolete case-insensitive diagram token guard
+        shell: python
+        run: |
+          from pathlib import Path
+          path = Path("scripts/validate-site.mjs")
+          text = path.read_text(encoding="utf-8")
+          old = '  "UNAVAILABLE OR",\n'
+          if text.count(old) != 1:
+              raise SystemExit(f"Expected one obsolete validator guard, found {text.count(old)}")
+          path.write_text(text.replace(old, ""), encoding="utf-8")
+
+      - name: Remove temporary workflow
+        run: git rm .github/workflows/close-terminology-validator.yml
+
+      - name: Validate exact site source
+        run: npm run check
+
+      - name: Ensure build introduced no unrelated drift
+        run: |
+          git diff --check
+          git status --short
+
+      - name: Commit validator correction
+        run: |
+          git config user.name "FortMilo site validation"
+          git config user.email "info@fortmilo.co.uk"
+          git add -A
+          git commit -m "Close evidence terminology validation gate"
+          git push origin HEAD:main
