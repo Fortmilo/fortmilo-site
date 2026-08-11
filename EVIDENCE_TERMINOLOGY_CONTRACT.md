@@ -106,7 +106,7 @@ The following public website surfaces consume this contract and must be checked 
 8. Architecture & Security, including all diagrams and accompanying prose
 9. Documents
 
-The Salesforce application, validators and technical whitepapers that use these semantics are also conforming artefacts and must be checked before publication or release.
+The Salesforce application, validators and technical whitepapers are also conforming artefacts and must be checked before publication or release.
 
 Terms, Privacy, Contact and Acknowledgements are included in whole-site regression because they share navigation, footer and partner-status presentation, but they are not terminology consumers.
 

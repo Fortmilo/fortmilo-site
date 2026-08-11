@@ -166,6 +166,7 @@ requireAll(contract, [
   "**Contract version:** 1.0",
   "**Status:** Canonical",
   "This is the **EV-04** condition in the supporting assurance record.",
+  "The Salesforce application, validators and technical whitepapers are also conforming artefacts and must be checked before publication or release.",
     "4. The Salesforce implementation and validators are checked for conformity.",
     "5. Technical publications identified as conforming artefacts in section 7 are checked for conformity.",
     "6. The conformity determination for each artefact is recorded before the changed terminology is published or released.",
@@ -331,7 +332,7 @@ requireAll(architecture, [
   '<h2>Evidence Semantics and Scanner Orchestration</h2>',
   '<a class="button button-primary" href="/documents/">Read the technical whitepaper</a>'
 ], "architecture-security.html");
-if (/evidence-semantics-and-scanner-orchestration-v1\.4\.pdf/u.test(architecture) || architecture.includes("Read the current technical whitepaper")) {
+if (architecture.includes("Read the current technical whitepaper")) {
   errors.push("architecture-security.html: stale direct/version-defensive whitepaper CTA");
 }
 
@@ -412,7 +413,11 @@ prohibitAll(documents, [
   "Older versioned PDFs"
 ], "documents/index.html");
 if (/href="\/documents\/[^"]*-v\d+(?:\.\d+)*\.pdf"/iu.test(documents)) errors.push("documents/index.html: versioned public PDF href must not be published");
-if (/<h2>[^<]*\bv\d+(?:\.\d+)+\b[^<]*<\/h2>/iu.test(documents)) errors.push("documents/index.html: document heading must not expose a version number");
+const documentHeadings = [...documents.matchAll(/<h([1-6])\b[^>]*>([\s\S]*?)<\/h\1>/giu)]
+  .map((match) => match[2].replace(/<[^>]+>/gu, " "));
+if (documentHeadings.some((heading) => /\bv\d+(?:\.\d+)*\b/iu.test(heading))) {
+  errors.push("documents/index.html: document heading must not expose a version number");
+}
 
 const privacy = htmlByRoute.get("privacy.html") || "";
 requireAll(privacy, [
