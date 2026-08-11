@@ -381,15 +381,24 @@ if (identity.includes("complete retained-data and export-shape validation remain
 const documents = htmlByRoute.get("documents/index.html") || "";
 requireAll(documents, [
   "Technical whitepaper",
-  "Evidence Semantics and Scanner Orchestration v1.4.9",
-  'href="/documents/evidence-semantics-and-scanner-orchestration-v1.4.9.pdf"',
+  "Evidence Semantics and Scanner Orchestration",
+  'href="/documents/evidence-semantics-and-scanner-orchestration.pdf"',
   "The evidence semantics and scanner architecture behind Security Observatory. Read this to evaluate the product.",
   "Methodology paper",
-  "Orchestrating AI for Secure Software Delivery v1.0.4",
+  "Orchestrating AI for Secure Software Delivery",
   "Written for engineering and governance readers; it is not product documentation.",
-  'href="/documents/orchestrating-ai-for-secure-software-delivery-v1.0.4.pdf"'
+  'href="/documents/orchestrating-ai-for-secure-software-delivery.pdf"'
 ], "documents/index.html");
 if (count(documents, 'class="card technical-resource"') !== 2) errors.push("documents/index.html: expected two resource cards");
+prohibitAll(documents, [
+  "Evidence Semantics and Scanner Orchestration v1.4.9",
+  "Orchestrating AI for Secure Software Delivery v1.0.4",
+  "evidence-semantics-and-scanner-orchestration-v1.4.9.pdf",
+  "orchestrating-ai-for-secure-software-delivery-v1.0.4.pdf",
+  "Publication status:",
+  "Previous versions",
+  "Older versioned PDFs"
+], "documents/index.html");
 
 const privacy = htmlByRoute.get("privacy.html") || "";
 requireAll(privacy, [
@@ -422,9 +431,16 @@ for (const route of indexableRoutes) {
 }
 if (/\.pdf<\/loc>|404\.html<\/loc>/u.test(sitemap)) errors.push("sitemap.xml: PDF or 404 must not be indexed");
 
-for (const pdf of [
+for (const obsoletePdf of [
   "documents/evidence-semantics-and-scanner-orchestration-v1.4.9.pdf",
   "documents/orchestrating-ai-for-secure-software-delivery-v1.0.4.pdf"
+]) {
+  if (fileSet.has(obsoletePdf)) errors.push(`versioned public PDF must not be published: ${obsoletePdf}`);
+}
+
+for (const pdf of [
+  "documents/evidence-semantics-and-scanner-orchestration.pdf",
+  "documents/orchestrating-ai-for-secure-software-delivery.pdf"
 ]) {
   if (!fileSet.has(pdf)) errors.push(`missing ${pdf}`);
   else if ((await stat(path.join(root, pdf))).size < 10_000) errors.push(`${pdf}: unexpectedly small`);

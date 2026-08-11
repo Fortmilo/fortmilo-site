@@ -118,7 +118,7 @@ A terminology change is permitted only when all of the following occur:
 
 1. The contract version is incremented.
 2. The meaning of the changed term is updated here first.
-3. Every consuming surface listed in section 7 is audited against the new contract.
+3. Every conforming artefact identified in section 7 is audited against the new contract.
 4. The Salesforce implementation and relevant validators are checked for conformity.
 5. Any affected technical publication is checked for conformity.
 6. All identified deltas are resolved before the changed terminology is published as current.
