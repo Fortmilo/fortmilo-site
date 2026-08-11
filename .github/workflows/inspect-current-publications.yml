@@ -1,0 +1,74 @@
+name: Inspect current publications
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+
+      - name: Install PDF tooling
+        run: python -m pip install --quiet pymupdf
+
+      - name: Inspect publication text and links
+        shell: python
+        run: |
+          from pathlib import Path
+          import fitz
+          import re
+
+          files = [
+              Path('documents/evidence-semantics-and-scanner-orchestration-v1.4.9.pdf'),
+              Path('documents/orchestrating-ai-for-secure-software-delivery-v1.0.4.pdf'),
+          ]
+          terms = [
+              'fortmilo.co.uk/documents',
+              'Publication continuity',
+              'Archived',
+              'archive',
+              'supersed',
+              'previous version',
+              'previous edition',
+              'public edition',
+          ]
+
+          for path in files:
+              print(f'=== FILE {path} ===')
+              doc = fitz.open(path)
+              print(f'pages={doc.page_count}')
+              for pageno, page in enumerate(doc):
+                  text = page.get_text('text')
+                  lowered = text.lower()
+                  for term in terms:
+                      idx = lowered.find(term.lower())
+                      if idx >= 0:
+                          start = max(0, idx - 280)
+                          end = min(len(text), idx + len(term) + 520)
+                          snippet = ' '.join(text[start:end].split())
+                          print(f'PAGE {pageno + 1} TERM {term!r}: {snippet}')
+                  for link in page.get_links():
+                      uri = link.get('uri')
+                      if uri and 'fortmilo.co.uk' in uri:
+                          print(f'PAGE {pageno + 1} LINK: uri={uri!r} rect={link.get("from")}')
+              doc.close()
+
+      - name: Remove temporary workflow
+        run: git rm -f .github/workflows/inspect-current-publications.yml
+
+      - name: Commit workflow cleanup
+        run: |
+          git config user.name "FortMilo publication inspection"
+          git config user.email "info@fortmilo.co.uk"
+          git commit -m "Remove temporary publication inspection workflow"
+          git push origin HEAD:main
