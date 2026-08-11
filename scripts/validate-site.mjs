@@ -188,21 +188,21 @@ for (const prohibited of [
   "formula-injection-safe",
   "Safe export",
   "One export boundary, applied everywhere",
-  "Risk evidence",
-  "No risk evidence surfaced",
+  "One canonical rendered vocabulary",
+  "None found",
   "Unknown/Error"
 ]) if (evidence.toLowerCase().includes(prohibited.toLowerCase())) errors.push(`security-observatory/evidence.html: prohibited ${prohibited}`);
 for (const required of [
-  "One canonical rendered vocabulary",
-  "None found",
-  "Unavailable",
-  "Not assessed",
-  "Not retained at this evidence level",
-  "Not captured",
-  "Not applicable",
-  "A retained state is the point-in-time rendered state stored with a scan.",
-  "Findings and Evidence &amp; Coverage use this same rendered-state vocabulary.",
-  "None found is not a pass.",
+  "Evidence conditions and current presentation",
+  "Observed evidence",
+  "Successful zero",
+  "Unavailable source",
+  "Retained-read warning",
+  "No risk evidence surfaced or numeric 0",
+  "Needs review / fixed warning copy",
+  "Detail not retained",
+  "Presentation may vary by surface, but it must not strengthen the underlying evidence.",
+  "No risk evidence surfaced or a zero count is not a pass.",
   "Each surface exports a fixed allow-list",
   "Spreadsheet formula-trigger mitigation",
   "This applies to the reviewed export helper paths and the enumerated trigger characters.",
@@ -235,10 +235,11 @@ for (const required of [
   "read complete?",
   "UNAVAILABLE",
   "Attempted read failed",
+  "SUCCESSFUL ZERO",
   "Unavailable if attempted · Not assessed if not attempted",
-  "An attempted read failure is Unavailable, never Not assessed or None found."
+  "An attempted read failure is Unavailable, never Not assessed or a successful zero."
 ]) if (!diagram4.includes(required)) errors.push(`architecture Diagram 4: missing ${required}`);
-for (const prohibited of ["unavailable or incomplete evidence as not assessed", "UNAVAILABLE OR", "INCOMPLETE EVIDENCE"]) if (diagram4.includes(prohibited)) errors.push(`architecture Diagram 4: prohibited ${prohibited}`);
+for (const prohibited of ["unavailable or incomplete evidence as not assessed", "UNAVAILABLE OR", "INCOMPLETE EVIDENCE", "NONE FOUND"]) if (diagram4.includes(prohibited)) errors.push(`architecture Diagram 4: prohibited ${prohibited}`);
 for (const required of [
   '<h2>Evidence Semantics and Scanner Orchestration</h2>',
   '<a class="button button-primary" href="/documents/">Read the technical whitepaper</a>'
