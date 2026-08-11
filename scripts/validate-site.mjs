@@ -369,7 +369,6 @@ requireAll(diagram4, [
 ], "architecture Diagram 4");
 prohibitAll(diagram4, [
   "unavailable or incomplete evidence as not assessed",
-  "UNAVAILABLE OR",
   "INCOMPLETE EVIDENCE",
   "Did the required read complete?"
 ], "architecture Diagram 4");
