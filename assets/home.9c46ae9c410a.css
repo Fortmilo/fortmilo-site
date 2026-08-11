@@ -1,0 +1,11 @@
+.home-page .home-differentiator-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.home-page .home-differentiator-grid .card { grid-column: auto; }
+
+@media (max-width: 900px) {
+  .home-hero-intro { grid-template-columns: 1fr; }
+  .hero-brand-art { width: min(100%, 720px); justify-self: center; }
+}
+
+@media (max-width: 680px) {
+  .home-page .home-differentiator-grid { grid-template-columns: 1fr; }
+}
