@@ -34,7 +34,7 @@ npm run check
 - Corporate site and Security Observatory product guide only.
 - No customer data, org evidence, credentials, tokens, session IDs, secrets, certificate bodies, private keys, raw IP addresses or production screenshots.
 - Product screenshots must come from a sanitised evidence set.
-- Security Observatory remains read-only, sandbox-first and advisory.
+- Security Observatory remains sandbox-first and advisory, with read-only assessment of Salesforce security configuration.
 - The public product repository is a curated release surface, not a mirror of private implementation history.
 
 ## Contact
