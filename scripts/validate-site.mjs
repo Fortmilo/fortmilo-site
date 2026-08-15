@@ -271,12 +271,22 @@ for (const route of terminologyConsumers) {
 
 const overview = htmlByRoute.get("security-observatory/index.html") || "";
 requireAll(overview, [
-  "collects Salesforce security evidence",
+  "<h1>Everything you need to review, in one place.</h1>",
+  '<p class="lead">Six review areas covering findings, identity, external connections, entitlements and the evidence behind them. Assessment and retained evidence stay inside Salesforce.</p>',
+  "Each review area shows what the Observatory surfaces and how far the evidence goes.",
+  "Dashboard screenshot slot: insert the approved sanitised product capture here when available.",
+  "Product boundaries",
   "Read-only assessment",
   "The Observatory is advisory. It does not remediate or modify the Salesforce security configuration it assesses.",
   "Product-owned records retain scan results, evidence, findings and comparison data."
 ], "security-observatory/index.html");
-prohibitAll(overview, ["collects read-only Salesforce evidence", "Read-only and advisory"], "security-observatory/index.html");
+prohibitAll(overview, [
+  "Security Observatory collects Salesforce security evidence, preserves provenance",
+  "Explore each documented review area without exposing organisation data or evidence values.",
+  "The product source supporting source-established public claims is privately maintained; validation against the release build and target environment is stated separately.",
+  "Read-only and advisory"
+], "security-observatory/index.html");
+if (!(overview.indexOf("Overview plus five review areas") < overview.indexOf("Product boundaries"))) errors.push("security-observatory/index.html: product boundaries must follow review-area cards");
 
 const findings = htmlByRoute.get("security-observatory/findings.html") || "";
 requireAll(findings, [
@@ -330,7 +340,9 @@ requireAll(evidence, [
   "missing, different or unsupported terminology versions are Unavailable for comparison",
   "Missing evidence is not a clean result",
   "When an evidence source cannot be assessed, Security Observatory preserves that limitation explicitly.",
-  "Illustrative evidence state"
+  "Illustrative evidence state",
+  "Evidence state, coverage and limitation answer different questions, and the Observatory keeps them separate.",
+  "The product implementation source supporting source-established statements is privately maintained; those statements remain self-attested unless a public artefact is cited."
 ], "security-observatory/evidence.html");
 prohibitAll(evidence, [
   "Successful zero",
@@ -411,8 +423,16 @@ prohibitAll(diagram4, [
 
 const identity = htmlByRoute.get("security-observatory/identity-access.html") || "";
 const identityBoundary = "Session identifiers are never displayed. Raw IP values are omitted or redacted; exact retained-data shape is validated per environment.";
-if (count(identity, identityBoundary) !== 2) errors.push("identity-access.html: expected customer-facing identity boundary twice");
+requireAll(identity, ['<p class="lead">Inspect identity posture, login evidence and broad access signals without changing user access.</p>'], "security-observatory/identity-access.html");
+if (count(identity, identityBoundary) !== 1) errors.push("identity-access.html: expected identity qualification once below hero");
 if (identity.includes("complete retained-data and export-shape validation remains environment-specific")) errors.push("identity-access.html: evidence-register wording returned");
+
+const entitlements = htmlByRoute.get("security-observatory/entitlements-assets.html") || "";
+requireAll(entitlements, [
+  '<p class="lead">Review licence usage, broad permissions and governed asset context without automatically removing access or changing commercial assignments.</p>',
+  "Validation against the target release build, environment and user personas remains the boundary for running-user sharing, CRUD and field-level-security claims."
+], "security-observatory/entitlements-assets.html");
+prohibitAll(entitlements, ["Running-user sharing, CRUD and field-level-security behaviour must be validated against the target release build, environment and user personas before being claimed.</p>"], "security-observatory/entitlements-assets.html");
 
 const documents = htmlByRoute.get("documents/index.html") || "";
 requireAll(documents, [
