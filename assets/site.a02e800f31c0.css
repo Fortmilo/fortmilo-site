@@ -78,6 +78,7 @@ a:hover { color: #fff; }
   background: radial-gradient(circle at 80% 22%, rgba(255, 75, 56, .15), transparent 31%), linear-gradient(135deg, #07101d 0%, #0b1727 60%, #07101d 100%);
 }
 .hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, 470px); align-items: center; gap: 3.25rem; padding-block: 3.4rem; }
+.product-overview-hero { grid-template-columns: minmax(0, 1fr); }
 .home-page .hero { display: block; }
 .home-page .hero > .container { width: min(calc(100% - 2rem), var(--max)); }
 .home-hero-content { padding-block: 4.2rem; }
@@ -141,6 +142,7 @@ h3 { margin: 0 0 .5rem; font-size: 1.14rem; line-height: 1.28; }
 
 .evidence-panel { padding: 1.1rem; border: 1px solid rgba(255,255,255,.09); border-radius: 18px; background: linear-gradient(180deg, rgba(19,34,55,.99), rgba(8,18,32,.99)); box-shadow: var(--shadow); }
 .evidence-panel > p { margin: 0 0 .8rem; color: #c8d1de; font-size: .75rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+.product-boundaries-panel { margin-top: 1.5rem; }
 .illustrative-evidence { margin-top: 2rem; overflow: hidden; border: 1px solid var(--border); border-radius: 16px; background: linear-gradient(180deg, rgba(19,34,55,.99), rgba(8,18,32,.99)); box-shadow: var(--shadow); }
 .illustrative-evidence .evidence-label { margin: 0; padding: .85rem 1rem; border-bottom: 1px solid var(--border); color: var(--accent-soft); font-size: .76rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
 .illustrative-evidence dl { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin: 0; }
