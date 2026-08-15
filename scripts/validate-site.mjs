@@ -111,12 +111,12 @@ for (const route of routes) {
     'href="/privacy.html">Privacy</a>',
     'href="/terms.html">Terms</a>',
     'href="/documents/">Technical whitepaper</a>',
-    'href="/acknowledgements.html">Acknowledgements</a>',
     'href="/.well-known/security.txt">Security</a>',
     "FortMilo is a Salesforce Partner.",
     "Security Observatory is independently developed and is not endorsed by Salesforce, Inc.",
     "Salesforce is a trademark of Salesforce, Inc."
   ], `${route.output} footer`);
+  if (footer.includes('href="/acknowledgements.html"')) errors.push(`${route.output} footer: Acknowledgements must remain a secondary link`);
 
   if (/<form\b/iu.test(html)) errors.push(`${route.output}: unexpected form`);
   if (/google-analytics|googletagmanager|segment\.com|mixpanel|hotjar/iu.test(html)) errors.push(`${route.output}: analytics/tracking reference found`);
@@ -200,19 +200,26 @@ requireAll(contract, [
 
 const homepage = htmlByRoute.get("index.html") || "";
 const homepageMain = mainOf(homepage);
-const homepageLead = "Bring OAuth grants, privileged access, external exposure and evidence gaps into one review surface, with reasons and safe next actions kept explicit. Automatic assessment and retained evidence stay inside your Salesforce organisation; user-initiated export is an explicit boundary.";
 requireAll(homepage, [
-  "<h1>Salesforce security evidence collected and retained inside your org.</h1>",
-  `<p class="lead">${homepageLead}</p>`,
-  '<li>Read-only</li><li>No automatic remediation</li><li>Evidence retained in your org</li>',
+  "<h1>See Salesforce security exposure without digging through Setup.</h1>",
+  '<p class="lead">FortMilo Security Observatory brings OAuth grants, privileged access, licences, external exposure and retained security evidence into one Salesforce-native review surface.</p>',
+  "Currently in sandbox validation. Not yet available for public installation.",
+  '<li>Read-only assessment</li><li>No automatic remediation</li><li>Evidence retained in your org</li>',
   '<figure class="hero-brand-art"><img src="/assets/fortmilo-brand-banner-1200x675.png" alt="FortMilo" width="1200" height="675"></figure>',
-  "Illustrative evidence state",
-  "Read-only by design",
-  "Unavailable evidence stays explicit",
-  "Sanitised evidence by design",
-  "Prioritise access and exposure",
-  "When a required source cannot be assessed, the state stays Unavailable with a bounded reason and a safe next action. Missing evidence is never converted into zero.",
-  "Tokens, session identifiers, secrets, private keys, certificate bodies and credential values are excluded from retained review evidence. Raw IP values are omitted or redacted.",
+  "Product screenshot slot: add a real sanitised dashboard capture here when approved.",
+  "<h2>What you get from a scan</h2>",
+  "Find risky access and exposure",
+  "See who or what is affected",
+  "Keep evidence and compare change over time",
+  "Missing evidence never becomes zero",
+  "<h2>How it works</h2>",
+  "1. Configure",
+  "2. Run scan",
+  "3. Review posture",
+  "4. Investigate findings",
+  "5. Compare scans",
+  "<h2>Why not just Salesforce Setup?</h2>",
+  "Salesforce already exposes much of this security evidence across Setup, standard objects and APIs.",
   '<a class="button button-primary" href="/documents/">Read the technical whitepaper</a>'
 ], "index.html");
 
@@ -220,15 +227,15 @@ if (count(homepage, 'class="card differentiator-card"') !== 4) errors.push("inde
 if (count(homepage, 'class="hero-brand-art"') !== 1) errors.push("index.html: expected one plain FortMilo hero artwork");
 if (!/data-page-style="home" href="\/assets\/home\.[a-f0-9]{12}\.css"/u.test(homepage)) errors.push("index.html: missing generated home stylesheet");
 prohibitAll(homepageMain, [
+  "Salesforce security evidence collected and retained inside your org.",
+  "Illustrative evidence state",
+  "Read-only by design",
+  "Unavailable evidence stays explicit",
+  "Sanitised evidence by design",
+  "Prioritise access and exposure",
+  "Notify me at launch",
   "product-preview",
-  "Illustrative product view",
-  "fortmilo-salesforce-partner-home.png",
-  "FortMilo — Salesforce Partner",
-  "Evidence retained inside Salesforce",
-  "Read the current technical whitepaper",
-  "Selected current zero and unavailable paths have test and controlled runtime evidence",
-  "Complete raw-IP retained and export-shape validation remains environment-specific",
-  "Evidence retained in your org, with user-initiated export as an explicit boundary."
+  "Illustrative product view"
 ], "index.html");
 requireAll(homeSourceCss, [
   ".home-page .home-differentiator-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }",
@@ -261,6 +268,15 @@ for (const route of terminologyConsumers) {
     "Unknown/Error"
   ], route);
 }
+
+const overview = htmlByRoute.get("security-observatory/index.html") || "";
+requireAll(overview, [
+  "collects Salesforce security evidence",
+  "Read-only assessment",
+  "The Observatory is advisory. It does not remediate or modify the Salesforce security configuration it assesses.",
+  "Product-owned records retain scan results, evidence, findings and comparison data."
+], "security-observatory/index.html");
+prohibitAll(overview, ["collects read-only Salesforce evidence", "Read-only and advisory"], "security-observatory/index.html");
 
 const findings = htmlByRoute.get("security-observatory/findings.html") || "";
 requireAll(findings, [
@@ -311,7 +327,10 @@ requireAll(evidence, [
   "Scans created before terminology-contract version stamping remain pre-contract evidence and are not rewritten.",
   "These figures describe FortMilo’s retained SBS mapping catalogue for mapping set M1 revision 1; they do not assert completeness or equivalence to the current upstream SBS release.",
   "They cannot be compared with v1.0 scans",
-  "missing, different or unsupported terminology versions are Unavailable for comparison"
+  "missing, different or unsupported terminology versions are Unavailable for comparison",
+  "Missing evidence is not a clean result",
+  "When an evidence source cannot be assessed, Security Observatory preserves that limitation explicitly.",
+  "Illustrative evidence state"
 ], "security-observatory/evidence.html");
 prohibitAll(evidence, [
   "Successful zero",
@@ -401,12 +420,14 @@ requireAll(documents, [
   "Evidence Semantics and Scanner Orchestration",
   'href="/documents/evidence-semantics-and-scanner-orchestration.pdf"',
   "The evidence semantics and scanner architecture behind Security Observatory. Read this to evaluate the product.",
-  "Methodology paper",
+  "Research",
+  "Independent engineering research",
+  "These publications provide wider technical context and are not FortMilo Security Observatory product documentation.",
   "Orchestrating AI for Secure Software Delivery",
   "Written for engineering and governance readers; it is not product documentation.",
   'href="/documents/orchestrating-ai-for-secure-software-delivery.pdf"'
 ], "documents/index.html");
-if (count(documents, 'class="card technical-resource"') !== 2) errors.push("documents/index.html: expected two resource cards");
+if (count(documents, 'class="card technical-resource"') !== 3) errors.push("documents/index.html: expected three resource cards");
 prohibitAll(documents, [
   "Publication status:",
   "Previous versions",
@@ -418,6 +439,9 @@ const documentHeadings = [...documents.matchAll(/<h([1-6])\b[^>]*>([\s\S]*?)<\/h
 if (documentHeadings.some((heading) => /\bv\d+(?:\.\d+)*\b/iu.test(heading))) {
   errors.push("documents/index.html: document heading must not expose a version number");
 }
+
+const contact = htmlByRoute.get("contact.html") || "";
+requireAll(contact, ['href="/acknowledgements.html">Project acknowledgements</a>'], "contact.html");
 
 const privacy = htmlByRoute.get("privacy.html") || "";
 requireAll(privacy, [
@@ -431,6 +455,7 @@ requireAll(privacy, [
 
 const terms = htmlByRoute.get("terms.html") || "";
 requireAll(terms, [
+  "Security Observatory is sandbox-first and advisory.",
   "Any Security Observatory source material published by FortMilo is licensed as stated with that material",
   "Apache License 2.0",
   "Source publication does not by itself represent package availability, release validation or installation readiness.",
@@ -453,7 +478,8 @@ if (/\.pdf<\/loc>|404\.html<\/loc>/u.test(sitemap)) errors.push("sitemap.xml: PD
 const allowedDocumentFiles = [
   "documents/evidence-semantics-and-scanner-orchestration.pdf",
   "documents/index.html",
-  "documents/orchestrating-ai-for-secure-software-delivery.pdf"
+  "documents/orchestrating-ai-for-secure-software-delivery.pdf",
+  "documents/security-observatory-reference-architecture-v4.1.svg"
 ];
 const publicDocumentFiles = allFiles.filter((file) => file.startsWith("documents/")).sort();
 if (JSON.stringify(publicDocumentFiles) !== JSON.stringify(allowedDocumentFiles)) {
