@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { customerVisibleSurface, headingErrors, namingErrors } from "./public-site-contract.mjs";
 
+// Regression fixtures for the public naming and heading contract.
 assert.deepEqual(headingErrors("<h1>One</h1><h2>Two</h2><h3>Three</h3>"), []);
 assert.ok(headingErrors("<h1>One</h1><h3>Three</h3>").some((value) => value.includes("skipped H1 to H3")));
 assert.ok(headingErrors("<h1>One</h1><h1>Again</h1>").some((value) => value.includes("exactly one H1")));
