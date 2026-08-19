@@ -20,7 +20,7 @@ jobs:
       - name: Validate all public routes
         run: npm run validate
 
-      - name: Request and verify Pages build from configured source
+      - name: Request Pages build and verify the live domain
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -33,6 +33,7 @@ jobs:
             "https://api.github.com/repos/${GITHUB_REPOSITORY}/pages/builds")
           echo "Pages request: ${response}"
 
+          built=false
           for attempt in $(seq 1 60); do
             latest=$(curl --fail-with-body --silent --show-error --location \
               --header "Accept: application/vnd.github+json" \
@@ -44,7 +45,8 @@ jobs:
             echo "Pages build attempt ${attempt}: status=${status} commit=${commit}"
             case "${status}" in
               built)
-                exit 0
+                built=true
+                break
                 ;;
               errored|cancelled)
                 printf '%s\n' "${latest}"
@@ -54,5 +56,41 @@ jobs:
             sleep 5
           done
 
-          echo "Timed out waiting for GitHub Pages build"
+          if [ "${built}" != "true" ]; then
+            echo "Timed out waiting for GitHub Pages build"
+            exit 1
+          fi
+
+          for attempt in $(seq 1 60); do
+            nonce="${GITHUB_RUN_ID}-${attempt}"
+            home=$(curl --fail --silent --show-error --location \
+              --header "Cache-Control: no-cache" \
+              "https://fortmilo.co.uk/?deployment=${nonce}")
+            overview=$(curl --fail --silent --show-error --location \
+              --header "Cache-Control: no-cache" \
+              "https://fortmilo.co.uk/security-observatory/?deployment=${nonce}")
+            architecture=$(curl --fail --silent --show-error --location \
+              --header "Cache-Control: no-cache" \
+              "https://fortmilo.co.uk/architecture-security.html?deployment=${nonce}")
+            sitemap=$(curl --fail --silent --show-error --location \
+              --header "Cache-Control: no-cache" \
+              "https://fortmilo.co.uk/sitemap.xml?deployment=${nonce}")
+
+            if printf '%s' "${home}" | grep -Fq "Security Observatory brings OAuth grants" \
+              && printf '%s' "${home}" | grep -Fq "Request access when available" \
+              && printf '%s' "${home}" | grep -Fq 'href="/acknowledgements.html">Acknowledgements' \
+              && ! printf '%s' "${home}" | grep -Fq "FortMilo Security Observatory brings" \
+              && printf '%s' "${overview}" | grep -Fq "<h1>Security Observatory</h1>" \
+              && printf '%s' "${overview}" | grep -Fq "Five review areas" \
+              && printf '%s' "${architecture}" | grep -Fq "No security remediation or write-back to assessed Salesforce configuration." \
+              && [ "$(printf '%s' "${sitemap}" | grep -Fc '<lastmod>2026-08-19</lastmod>')" -eq 13 ]; then
+              echo "Verified corrected content on https://fortmilo.co.uk/"
+              exit 0
+            fi
+
+            echo "Live verification attempt ${attempt}: previous Pages content still visible"
+            sleep 5
+          done
+
+          echo "Timed out waiting for corrected content on the public domain"
           exit 1
