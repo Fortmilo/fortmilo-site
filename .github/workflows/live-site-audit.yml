@@ -1,0 +1,109 @@
+name: One-time live site audit
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Verify every live route and public artefact
+        run: |
+          node <<'NODE'
+          const routes = [
+            "/",
+            "/security-observatory/",
+            "/security-observatory/findings.html",
+            "/security-observatory/identity-access.html",
+            "/security-observatory/external-connections.html",
+            "/security-observatory/entitlements-assets.html",
+            "/security-observatory/evidence.html",
+            "/architecture-security.html",
+            "/documents/",
+            "/acknowledgements.html",
+            "/contact.html",
+            "/privacy.html",
+            "/terms.html",
+            "/404.html"
+          ];
+
+          const prohibited = [
+            "FortMilo Security Observatory",
+            "Fortmilo Security Observatory",
+            "FORTMILO Security Observatory",
+            "Salesforce Security Observatory",
+            "Security Observatory by FortMilo"
+          ];
+
+          function headingErrors(html) {
+            const headings = [...html.matchAll(/<h([1-6])\b[^>]*>/giu)].map(m => Number(m[1]));
+            const errors = [];
+            const h1s = headings.filter(level => level === 1).length;
+            if (h1s !== 1) errors.push(`expected exactly one H1, found ${h1s}`);
+            if (!headings.length || headings[0] !== 1) errors.push("H1 is not the first heading");
+            for (let i = 1; i < headings.length; i += 1) {
+              if (headings[i] > headings[i - 1] + 1) {
+                errors.push(`skipped H${headings[i - 1]} to H${headings[i]}`);
+              }
+            }
+            return errors;
+          }
+
+          const failures = [];
+          const nonce = `${Date.now()}-${process.env.GITHUB_RUN_ID || "local"}`;
+
+          for (const route of routes) {
+            const url = `https://fortmilo.co.uk${route}?live-audit=${nonce}`;
+            const response = await fetch(url, { headers: { "Cache-Control": "no-cache" }, redirect: "follow" });
+            if (!response.ok) {
+              failures.push(`${route}: HTTP ${response.status}`);
+              continue;
+            }
+            const html = await response.text();
+
+            if (!html.includes('href="/acknowledgements.html">Acknowledgements</a>')) {
+              failures.push(`${route}: Acknowledgements footer link missing`);
+            }
+            for (const value of prohibited) {
+              if (html.includes(value)) failures.push(`${route}: prohibited naming remains: ${value}`);
+            }
+            for (const value of headingErrors(html)) failures.push(`${route}: ${value}`);
+          }
+
+          const home = await (await fetch(`https://fortmilo.co.uk/?live-audit-home=${nonce}`, { headers: { "Cache-Control": "no-cache" } })).text();
+          if (!home.includes("Security Observatory brings OAuth grants")) failures.push("home: corrected lead missing");
+          if (!home.includes("Request access when available")) failures.push("home: access CTA missing");
+
+          const overview = await (await fetch(`https://fortmilo.co.uk/security-observatory/?live-audit-overview=${nonce}`, { headers: { "Cache-Control": "no-cache" } })).text();
+          if (!overview.includes("<h1>Security Observatory</h1>")) failures.push("overview: canonical H1 missing");
+          if (!overview.includes("Five review areas")) failures.push("overview: five-area wording missing");
+
+          const architecture = await (await fetch(`https://fortmilo.co.uk/architecture-security.html?live-audit-architecture=${nonce}`, { headers: { "Cache-Control": "no-cache" } })).text();
+          if (!architecture.includes("No security remediation or write-back to assessed Salesforce configuration.")) failures.push("architecture: scoped read-only wording missing");
+          if (architecture.includes("Read-only first")) failures.push("architecture: stale Read-only first remains");
+
+          const docs = await (await fetch(`https://fortmilo.co.uk/documents/?live-audit-docs=${nonce}`, { headers: { "Cache-Control": "no-cache" } })).text();
+          if (docs.includes("FortMilo Security Observatory product documentation")) failures.push("documents: stale compound product name remains");
+          if (docs.includes("; it is not product documentation")) failures.push("documents: duplicate item-level disclaimer remains");
+
+          const svg = await (await fetch(`https://fortmilo.co.uk/documents/security-observatory-reference-architecture-v4.1.svg?live-audit-svg=${nonce}`, { headers: { "Cache-Control": "no-cache" } })).text();
+          if (!svg.includes("Security Observatory — reference architecture")) failures.push("reference architecture: corrected accessible title missing");
+          if (svg.includes("Security Observatory by FortMilo")) failures.push("reference architecture: stale product title remains");
+
+          const sitemap = await (await fetch(`https://fortmilo.co.uk/sitemap.xml?live-audit-sitemap=${nonce}`, { headers: { "Cache-Control": "no-cache" } })).text();
+          const lastmods = [...sitemap.matchAll(/<lastmod>([^<]+)<\/lastmod>/gu)].map(m => m[1]);
+          if (lastmods.length !== 13) failures.push(`sitemap: expected 13 lastmod values, found ${lastmods.length}`);
+          if (lastmods.some(value => value !== "2026-08-19")) failures.push(`sitemap: not every indexed route is dated 2026-08-19 (${[...new Set(lastmods)].join(", ")})`);
+
+          if (failures.length) {
+            console.error(failures.join("\n"));
+            process.exit(1);
+          }
+
+          console.log(`LIVE VERIFIED: ${routes.length} routes, footer, naming, headings, CTA, architecture, documents, SVG and ${lastmods.length} sitemap lastmod values.`);
+          NODE
