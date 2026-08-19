@@ -1,0 +1,30 @@
+name: Export current public PDFs
+
+on:
+  pull_request:
+    branches:
+      - publication-binary-export-2026-08-19
+
+permissions:
+  contents: read
+
+jobs:
+  export:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout current live website baseline
+        uses: actions/checkout@v6
+        with:
+          ref: main
+      - name: Package current public PDFs
+        run: |
+          tar -czf current-public-pdfs.tar.gz \
+            documents/orchestrating-ai-for-secure-software-delivery.pdf \
+            documents/evidence-semantics-and-scanner-orchestration.pdf
+      - name: Upload current public PDFs
+        uses: actions/upload-artifact@v4
+        with:
+          name: current-public-pdfs
+          path: current-public-pdfs.tar.gz
+          if-no-files-found: error
+          retention-days: 1
