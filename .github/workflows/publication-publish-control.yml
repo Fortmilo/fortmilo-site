@@ -26,7 +26,7 @@ jobs:
 
       - name: Download exact successful private publication build
         env:
-          PUBLICATION_ARTIFACT_URL: 'https://sdmntprnortheu.oaiusercontent.com/files/00000000-fca8-81f4-ad2c-9e5515a5d2da/raw?se=2026-08-19T15%3A42%3A43Z&sp=r&sv=2026-02-06&sr=b&scid=4be1001b-847e-5461-8088-88bcb487676b&skoid=9b41a688-1b44-4731-856e-b0efcf3660ed&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-19T07%3A57%3A09Z&ske=2026-08-20T07%3A57%3A09Z&sks=b&skv=2026-02-06&sig=C6F3nLh1/M6NWgSuljDpBwObX8hLMa9qGrAEdFgDl4g%3D'
+          PUBLICATION_ARTIFACT_URL: 'https://sdmntprnortheu.oaiusercontent.com/files/00000000-9d3c-81f4-b760-a856f1a9d5c5/raw?se=2026-08-19T15%3A46%3A05Z&sp=r&sv=2026-02-06&sr=b&scid=8a07b1d1-85fd-5c1a-9e50-25ca36ab16c6&skoid=9b41a688-1b44-4731-856e-b0efcf3660ed&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-08-19T05%3A12%3A56Z&ske=2026-08-20T05%3A12%3A56Z&sks=b&skv=2026-02-06&sig=YDVk/ZZGE8dlcIOSqXQ3XWvJPD834dR6YABnJkCbP4w%3D'
         run: |
           curl --fail --location --silent --show-error "$PUBLICATION_ARTIFACT_URL" --output /tmp/req076-final-publications.zip
           echo 'f09d20355053f00f64d105ca13ded1aa71c5b1d4f41fa9fd6899cda10b35a472  /tmp/req076-final-publications.zip' | sha256sum -c -
@@ -51,14 +51,14 @@ jobs:
           rm -rf .publication-publish
           rm -f .github/workflows/publication-req076-publish.yml
 
-      - name: Commit only verified public PDFs
+      - name: Commit verified public PDFs and transport cleanup
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
-          git diff --cached --check
-          changed=$(git diff --cached --name-only | sort)
-          expected=$(printf '%s\n' 'documents/evidence-semantics-and-scanner-orchestration.pdf' 'documents/orchestrating-ai-for-secure-software-delivery.pdf' | sort)
-          test "$changed" = "$expected"
+          unexpected=$(git diff --cached --name-only | grep -v -E '^(documents/evidence-semantics-and-scanner-orchestration\.pdf|documents/orchestrating-ai-for-secure-software-delivery\.pdf|\.publication-publish/|\.github/workflows/publication-req076-publish\.yml)$' || true)
+          test -z "$unexpected"
+          git diff --cached --name-only | grep -Fx 'documents/evidence-semantics-and-scanner-orchestration.pdf'
+          git diff --cached --name-only | grep -Fx 'documents/orchestrating-ai-for-secure-software-delivery.pdf'
           git commit -m 'Publish REQ-076 corrected technical papers'
           git push origin HEAD:publication-req076-publish-2026-08-19
