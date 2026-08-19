@@ -2,6 +2,7 @@ import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { routes } from "../site-src/site-map.mjs";
+import { headingErrors, namingErrors } from "./public-site-contract.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const errors = [];
@@ -18,16 +19,6 @@ async function walk(directory, prefix = "") {
   return files;
 }
 
-function visibleText(html) {
-  return html
-    .replace(/<!--[\s\S]*?-->/gu, " ")
-    .replace(/<script\b[\s\S]*?<\/script>/giu, " ")
-    .replace(/<style\b[\s\S]*?<\/style>/giu, " ")
-    .replace(/\b(?:href|src)="[^"]*"/giu, " ")
-    .replace(/<[^>]+>/gu, " ")
-    .replace(/\s+/gu, " ");
-}
-
 function resolvePublicPath(value) {
   const clean = value.split("#", 1)[0].split("?", 1)[0];
   if (!clean || clean === "/") return "index.html";
@@ -37,13 +28,6 @@ function resolvePublicPath(value) {
 
 const allFiles = await walk(root);
 const fileSet = new Set(allFiles);
-const prohibitedNames = [
-  "FortMilo Security Observatory",
-  "Fortmilo Security Observatory",
-  "FORTMILO Security Observatory",
-  "Salesforce Security Observatory",
-  "Security Observatory by FortMilo"
-];
 
 if (routes.length !== 14) errors.push(`expected 14 declared routes, found ${routes.length}`);
 
@@ -80,20 +64,8 @@ for (const route of routes) {
     if (!footer.includes(required)) errors.push(`${route.output}: footer missing ${required}`);
   }
 
-  const headingLevels = [...html.matchAll(/<h([1-6])\b[^>]*>/giu)].map((match) => Number(match[1]));
-  const h1Count = headingLevels.filter((level) => level === 1).length;
-  if (h1Count !== 1) errors.push(`${route.output}: expected exactly one H1, found ${h1Count}`);
-  if (headingLevels.length && headingLevels[0] !== 1) errors.push(`${route.output}: H1 must be first heading`);
-  for (let index = 1; index < headingLevels.length; index += 1) {
-    if (headingLevels[index] > headingLevels[index - 1] + 1) {
-      errors.push(`${route.output}: skipped H${headingLevels[index - 1]} to H${headingLevels[index]}`);
-    }
-  }
-
-  const customerText = visibleText(html);
-  for (const name of prohibitedNames) {
-    if (customerText.includes(name)) errors.push(`${route.output}: prohibited customer-visible name ${name}`);
-  }
+  for (const message of headingErrors(html)) errors.push(`${route.output}: ${message}`);
+  for (const message of namingErrors(html, route.output)) errors.push(`${route.output}: ${message}`);
 
   if (/<form\b/iu.test(html)) errors.push(`${route.output}: unexpected form`);
   if (/google-analytics|googletagmanager|segment\.com|mixpanel|hotjar/iu.test(html)) errors.push(`${route.output}: analytics/tracking reference found`);
@@ -151,4 +123,4 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log(`Validated ${routes.length} routes, ${indexed.length} indexed lastmod values, shared footer, headings, naming, links and reference architecture`);
+console.log(`Validated ${routes.length} routes, ${indexed.length} indexed lastmod values, shared footer, headings, naming, metadata, links and reference architecture`);
