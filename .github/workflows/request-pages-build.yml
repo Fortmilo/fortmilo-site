@@ -1,7 +1,7 @@
-name: Request GitHub Pages rebuild
+name: Validate and rebuild GitHub Pages
 
 on:
-  pull_request:
+  push:
     branches:
       - main
   workflow_dispatch:
@@ -10,8 +10,12 @@ permissions:
   contents: read
   pages: write
 
+concurrency:
+  group: branch-pages
+  cancel-in-progress: false
+
 jobs:
-  request:
+  publish:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
