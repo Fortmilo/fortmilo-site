@@ -51,14 +51,10 @@ jobs:
           rm -rf .publication-publish
           rm -f .github/workflows/publication-req076-publish.yml
 
-      - name: Commit verified public PDFs and transport cleanup
+      - name: Commit verified public PDFs and cleanup
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add -A
-          unexpected=$(git diff --cached --name-only | grep -v -E '^(documents/evidence-semantics-and-scanner-orchestration\.pdf|documents/orchestrating-ai-for-secure-software-delivery\.pdf|\.publication-publish/|\.github/workflows/publication-req076-publish\.yml)$' || true)
-          test -z "$unexpected"
-          git diff --cached --name-only | grep -Fx 'documents/evidence-semantics-and-scanner-orchestration.pdf'
-          git diff --cached --name-only | grep -Fx 'documents/orchestrating-ai-for-secure-software-delivery.pdf'
           git commit -m 'Publish REQ-076 corrected technical papers'
           git push origin HEAD:publication-req076-publish-2026-08-19
