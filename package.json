@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build-site.mjs",
-    "validate": "node scripts/validate-public-site.mjs",
+    "test:contract": "node scripts/test-public-site-contract.mjs",
+    "validate": "npm run test:contract && node scripts/validate-public-site.mjs",
     "check": "npm run build && npm run validate"
   }
 }
