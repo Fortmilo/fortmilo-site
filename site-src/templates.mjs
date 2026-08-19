@@ -51,7 +51,7 @@ export function header({ corporateActive, productActive }) {
 }
 
 export function footer() {
-  return `<footer class="site-footer"><div class="container footer-grid"><div><p><strong>Luca Pacini, trading as FortMilo.</strong></p><p>Harpenden, Hertfordshire, United Kingdom.</p><p>FortMilo is a Salesforce Partner. Security Observatory is independently developed and is not endorsed by Salesforce, Inc. Salesforce is a trademark of Salesforce, Inc.</p></div><div><div class="footer-links"><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/documents/">Technical whitepaper</a><a href="/.well-known/security.txt">Security</a></div><p>© 2026 Luca Pacini. All rights reserved.</p></div></div></footer>`;
+  return `<footer class="site-footer"><div class="container footer-grid"><div><p><strong>Luca Pacini, trading as FortMilo.</strong></p><p>Harpenden, Hertfordshire, United Kingdom.</p><p>FortMilo is a Salesforce Partner. Security Observatory is independently developed and is not endorsed by Salesforce, Inc. Salesforce is a trademark of Salesforce, Inc.</p></div><div><div class="footer-links"><a href="/contact.html">Contact</a><a href="/acknowledgements.html">Acknowledgements</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/documents/">Technical whitepaper</a><a href="/.well-known/security.txt">Security</a></div><p>© 2026 Luca Pacini. All rights reserved.</p></div></div></footer>`;
 }
 
 export function page({ title, description, canonical, corporateActive, productActive, bodyClass = "", body, cssFile, noindex = false }) {

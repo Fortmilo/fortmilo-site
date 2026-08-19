@@ -34,8 +34,8 @@
 <body class="architecture-page">
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="site-header"><div class="container header-inner"><a class="brand" href="/" aria-label="FortMilo home"><img src="/assets/fortmilo-shield-512.png" alt="" width="512" height="512"><span>FortMilo</span></a><nav class="corporate-nav" aria-label="Corporate navigation"><a href="/">Home</a><a href="/security-observatory/">Security Observatory</a><a aria-current="page" href="/architecture-security.html">Architecture & Security</a><a href="/documents/">Documents</a></nav></div></header>
-  <main id="main" data-public-copy-revision="2026-08-11">
-    <section class="page-hero"><div class="container hero-grid"><div><p class="eyebrow">Architecture &amp; Security</p><h1>Salesforce-native, bounded and explainable.</h1><p class="lead">Security Observatory separates experience, orchestration, collection, evidence and governance so each documented trust boundary stays visible.</p></div><aside class="evidence-panel"><p>Architecture principles</p><ul class="fact-list"><li><strong>In-org runtime</strong><span>Automatic scanning and retained product evidence stay inside Salesforce; user-initiated CSV download is a separate boundary.</span></li><li><strong>Read-only first</strong><span>No security remediation or production write-back.</span></li><li><strong>Least privilege</strong><span>Subscriber-owned authentication; running-user sharing, CRUD and field-level-security behaviour must be validated against the target release build, environment and user personas before being claimed.</span></li><li><strong>Truthful limitations</strong><span>Unavailable evidence remains visible and explained.</span></li></ul></aside></div></section>
+  <main id="main" data-public-copy-revision="2026-08-19">
+    <section class="page-hero"><div class="container hero-grid"><div><p class="eyebrow">Architecture &amp; Security</p><h1>Salesforce-native, bounded and explainable.</h1><p class="lead">Security Observatory separates experience, orchestration, collection, evidence and governance so each documented trust boundary stays visible.</p></div><aside class="evidence-panel"><p>Architecture principles</p><ul class="fact-list"><li><strong>In-org runtime</strong><span>Automatic scanning and retained product evidence stay inside Salesforce; user-initiated CSV download is a separate boundary.</span></li><li><strong>Read-only assessment</strong><span>No security remediation or write-back to assessed Salesforce configuration.</span></li><li><strong>Least privilege</strong><span>Subscriber-owned authentication; running-user sharing, CRUD and field-level-security behaviour must be validated against the target release build, environment and user personas before being claimed.</span></li><li><strong>Truthful limitations</strong><span>Unavailable evidence remains visible and explained.</span></li></ul></aside></div></section>
 
     <section class="section"><div class="container"><div class="section-heading"><p class="section-label">Diagram 1</p><h2>Runtime architecture</h2></div><div class="diagram-block"><div class="diagram-card" role="region" aria-label="Scrollable runtime architecture diagram" tabindex="0"><p class="diagram-subtitle">Invocation and retained-evidence paths inside the Salesforce trust boundary</p>
       <svg class="arch-svg" viewBox="0 0 1160 590" role="img" aria-labelledby="runtime-title runtime-desc">
@@ -87,35 +87,26 @@
         <defs><marker id="arrow-d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M0 0 L10 5 L0 10 Z" fill="#ff8c80"/></marker></defs>
         <rect x="28" y="252" width="170" height="88" rx="15" fill="#152740" stroke="#3b5274" stroke-width="2"/>
         <text x="113" y="287" fill="#f7f9fc" font-size="15" font-weight="700" text-anchor="middle">SOURCE / FAMILY</text><text x="113" y="311" fill="#f7f9fc" font-size="15" font-weight="700" text-anchor="middle">CONTEXT</text>
-
         <polygon points="330,210 442,296 330,382 218,296" fill="#152740" stroke="#ff4b38" stroke-width="2"/>
         <text x="330" y="287" fill="#f7f9fc" font-size="15" font-weight="700" text-anchor="middle">Was assessment</text><text x="330" y="311" fill="#f7f9fc" font-size="15" font-weight="700" text-anchor="middle">attempted?</text>
-
         <rect x="480" y="60" width="210" height="92" rx="15" fill="#152740" stroke="#3b5274" stroke-width="2"/>
         <text x="585" y="96" fill="#f7f9fc" font-size="16" font-weight="700" text-anchor="middle">NOT ASSESSED</text><text x="585" y="122" fill="#afbdd0" font-size="13" text-anchor="middle">Not run for this scope</text>
-
         <polygon points="590,218 708,296 590,374 472,296" fill="#152740" stroke="#ff4b38" stroke-width="2"/>
         <text x="590" y="287" fill="#f7f9fc" font-size="14" font-weight="700" text-anchor="middle">Was usable evidence</text><text x="590" y="309" fill="#f7f9fc" font-size="14" font-weight="700" text-anchor="middle">obtained?</text>
-
         <rect x="770" y="365" width="170" height="94" rx="15" fill="#152740" stroke="#ff4b38" stroke-width="2"/>
         <text x="855" y="401" fill="#f7f9fc" font-size="16" font-weight="700" text-anchor="middle">UNAVAILABLE</text><text x="855" y="427" fill="#afbdd0" font-size="13" text-anchor="middle">Attempted source/read failed</text>
         <rect x="970" y="365" width="162" height="94" rx="15" fill="#152740" stroke="#ff4b38" stroke-width="2"/>
         <text x="1051" y="397" fill="#f7f9fc" font-size="14" font-weight="700" text-anchor="middle">BOUNDED CAUSE</text><text x="1051" y="420" fill="#f7f9fc" font-size="14" font-weight="700" text-anchor="middle">+ SAFE NEXT</text><text x="1051" y="443" fill="#f7f9fc" font-size="14" font-weight="700" text-anchor="middle">ACTION</text>
-
         <polygon points="820,94 930,168 820,242 710,168" fill="#152740" stroke="#ff4b38" stroke-width="2"/>
         <text x="820" y="159" fill="#f7f9fc" font-size="14" font-weight="700" text-anchor="middle">Matching records</text><text x="820" y="181" fill="#f7f9fc" font-size="14" font-weight="700" text-anchor="middle">observed?</text>
-
         <rect x="970" y="50" width="162" height="94" rx="15" fill="#152740" stroke="#3b5274" stroke-width="2"/>
         <text x="1051" y="82" fill="#f7f9fc" font-size="14" font-weight="700" text-anchor="middle">CONTEXTUAL</text><text x="1051" y="105" fill="#f7f9fc" font-size="14" font-weight="700" text-anchor="middle">RESULT</text><text x="1051" y="128" fill="#afbdd0" font-size="12" text-anchor="middle">Metric or finding label</text>
-
         <rect x="970" y="190" width="162" height="94" rx="15" fill="#152740" stroke="#3b5274" stroke-width="2"/>
         <text x="1051" y="226" fill="#f7f9fc" font-size="16" font-weight="700" text-anchor="middle">NONE FOUND</text><text x="1051" y="252" fill="#afbdd0" font-size="13" text-anchor="middle">Successful assessed zero</text>
-
         <rect x="472" y="520" width="660" height="96" rx="15" fill="#0b1828" stroke="#3b5274" stroke-width="2"/>
         <text x="802" y="551" fill="#ff8c80" font-size="14" font-weight="800" text-anchor="middle">COMPOSITE EVIDENCE</text>
         <text x="802" y="577" fill="#f7f9fc" font-size="13" text-anchor="middle">Retain any usable count as Partial; identify each missing portion separately:</text>
         <text x="802" y="600" fill="#afbdd0" font-size="13" text-anchor="middle">Unavailable if attempted · Not assessed if not attempted</text>
-
         <g fill="#ff8c80" font-size="12" font-weight="800"><text x="450" y="130">NO</text><text x="452" y="282">YES</text><text x="720" y="205">YES</text><text x="718" y="344">NO</text><text x="947" y="91">YES</text><text x="947" y="231">NO</text></g>
         <g stroke="#ff8c80" stroke-width="3" marker-end="url(#arrow-d)"><path d="M198 296 H213" fill="none"/><path d="M400 238 C445 188 450 106 475 106" fill="none"/><path d="M442 296 H467" fill="none"/><path d="M656 246 C690 210 700 168 705 168" fill="none"/><path d="M708 296 C742 320 754 412 765 412" fill="none"/><path d="M930 132 C946 116 952 97 965 97" fill="none"/><path d="M930 204 C946 217 952 237 965 237" fill="none"/><path d="M940 412 H965" fill="none"/><path d="M855 459 V515" fill="none"/></g>
       </svg>
@@ -124,6 +115,6 @@
     <section class="section"><div class="container"><article class="card technical-resource"><p class="section-label">Technical whitepaper</p><h2>Evidence Semantics and Scanner Orchestration</h2><p>A deeper explanation of the evidence semantics, scanner orchestration and retained-evidence model behind Security Observatory. The version is recorded inside the PDF.</p><div class="actions"><a class="button button-primary" href="/documents/">Read the technical whitepaper</a></div></article></div></section>
 
   </main>
-  <footer class="site-footer"><div class="container footer-grid"><div><p><strong>Luca Pacini, trading as FortMilo.</strong></p><p>Harpenden, Hertfordshire, United Kingdom.</p><p>FortMilo is a Salesforce Partner. Security Observatory is independently developed and is not endorsed by Salesforce, Inc. Salesforce is a trademark of Salesforce, Inc.</p></div><div><div class="footer-links"><a href="/contact.html">Contact</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/documents/">Technical whitepaper</a><a href="/.well-known/security.txt">Security</a></div><p>© 2026 Luca Pacini. All rights reserved.</p></div></div></footer>
+  <footer class="site-footer"><div class="container footer-grid"><div><p><strong>Luca Pacini, trading as FortMilo.</strong></p><p>Harpenden, Hertfordshire, United Kingdom.</p><p>FortMilo is a Salesforce Partner. Security Observatory is independently developed and is not endorsed by Salesforce, Inc. Salesforce is a trademark of Salesforce, Inc.</p></div><div><div class="footer-links"><a href="/contact.html">Contact</a><a href="/acknowledgements.html">Acknowledgements</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/documents/">Technical whitepaper</a><a href="/.well-known/security.txt">Security</a></div><p>© 2026 Luca Pacini. All rights reserved.</p></div></div></footer>
 </body>
 </html>

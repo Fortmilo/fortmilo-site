@@ -31,11 +31,12 @@ Implement/review in this order:
 
 1. Architecture product-level `Read-only first` -> **Read-only assessment**.
 2. Scope the body to: **No security remediation or write-back to assessed Salesforce configuration.**
-3. Add shared availability/status visibility: **Product status: Sandbox validation. Not yet available for public installation.**
+3. Keep sandbox-validation status on Home and Overview, and use **Request access when available** as the practical availability mechanism. Do not add a global availability banner/footer or repeat availability disclaimers on every technical page.
 4. Correct H1 -> H3 heading gaps on affected review-area pages.
 5. Add heading-order regression validation in `scripts/validate-site.mjs`.
 6. Correct the Overview five-versus-six contradiction: there are five review-area cards plus Overview.
 7. Remove the duplicate item-level `not product documentation` disclaimer from Documents while retaining the section-level disclaimer.
+8. Keep the Acknowledgements page visibly linked from the shared footer on every route.
 
 ## Explicitly deferred / do not invent
 
