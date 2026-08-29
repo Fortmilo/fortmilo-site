@@ -1,6 +1,6 @@
 {
-  "name": "FortMilo",
-  "short_name": "FortMilo",
+  "name": "Fortmilo",
+  "short_name": "Fortmilo",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#07101d",

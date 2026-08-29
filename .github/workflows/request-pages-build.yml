@@ -83,11 +83,11 @@ jobs:
             if printf '%s' "${home}" | grep -Fq "Security Observatory brings OAuth grants" \
               && printf '%s' "${home}" | grep -Fq "Request access when available" \
               && printf '%s' "${home}" | grep -Fq 'href="/acknowledgements.html">Acknowledgements' \
-              && ! printf '%s' "${home}" | grep -Fq "FortMilo Security Observatory brings" \
+              && ! printf '%s' "${home}" | grep -Fq "Fortmilo Security Observatory brings" \
               && printf '%s' "${overview}" | grep -Fq "<h1>Security Observatory</h1>" \
               && printf '%s' "${overview}" | grep -Fq "Five review areas" \
               && printf '%s' "${architecture}" | grep -Fq "No security remediation or write-back to assessed Salesforce configuration." \
-              && [ "$(printf '%s' "${sitemap}" | grep -Fc '<lastmod>2026-08-19</lastmod>')" -eq 13 ]; then
+              && [ "$(printf '%s' "${sitemap}" | grep -Fc '<lastmod>2026-08-29</lastmod>')" -eq 13 ]; then
               echo "Verified corrected content on https://fortmilo.co.uk/"
               exit 0
             fi

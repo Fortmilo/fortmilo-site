@@ -1,12 +1,21 @@
 export const prohibitedFormalNames = [
-  "FortMilo Security Observatory",
+  "FortMilo",
+  "FORTMILO",
   "Fortmilo Security Observatory",
-  "FORTMILO Security Observatory",
   "Salesforce Security Observatory"
 ];
 
-export const exceptionalProductName = "Security Observatory by FortMilo";
-export const approvedExceptionalNameLocations = new Set();
+export const attributedProductName = "Security Observatory by Fortmilo";
+
+export const prohibitedEvidenceClaims = [
+  ["Coverage type describes evidence", "detail level"].join(" "),
+  ["Partial Evidence outcome", "tiles"].join(" "),
+  ["run, scope or evidence", "detail level"].join(" "),
+  ["CSV generation remains inside", "Salesforce"].join(" "),
+  ["Collection, retention, review and CSV generation occur inside", "the subscriber Salesforce organisation"].join(" "),
+  ["some usable assignment evidence was retained, but", "the full population could not be retained safely"].join(" "),
+  ["Missing scope identified separately as Not assessed or", "Unavailable"].join(" ")
+];
 
 function parseAttributes(tag) {
   const attributes = new Map();
@@ -82,9 +91,35 @@ export function namingErrors(html, route) {
     if (surface.includes(name)) errors.push(`prohibited customer-visible name ${name}`);
   }
 
-  if (surface.includes(exceptionalProductName) && !approvedExceptionalNameLocations.has(route)) {
-    errors.push(`unapproved routine use of exceptional product name ${exceptionalProductName}`);
+  return errors;
+}
+
+export function evidenceTerminologyErrors(value) {
+  const errors = [];
+
+  for (const claim of prohibitedEvidenceClaims) {
+    if (value.toLowerCase().includes(claim.toLowerCase())) {
+      errors.push(`prohibited evidence-semantics claim ${claim}`);
+    }
   }
 
   return errors;
+}
+
+export function publicCopyRevisionErrors(html, publicationDate) {
+  const revisions = [...html.matchAll(/\bdata-public-copy-revision\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/giu)]
+    .map((match) => match[1] ?? match[2] ?? match[3]);
+
+  return revisions
+    .filter((revision) => revision !== publicationDate)
+    .map((revision) => `data-public-copy-revision ${revision} does not match current publication date ${publicationDate}`);
+}
+
+export function deploymentTriggerPublicationDateErrors(value, publicationDate) {
+  const dates = [...value.matchAll(/\b\d{4}-\d{2}-\d{2}\b/gu)].map((match) => match[0]);
+  if (dates.length !== 1) return [`expected exactly one deployment-trigger publication date, found ${dates.length}`];
+  if (dates[0] !== publicationDate) {
+    return [`deployment-trigger publication date ${dates[0]} does not match current publication date ${publicationDate}`];
+  }
+  return [];
 }

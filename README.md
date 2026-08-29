@@ -1,8 +1,8 @@
-# FortMilo website
+# Fortmilo website
 
 Source for [fortmilo.co.uk](https://fortmilo.co.uk), published from the `main` branch through GitHub Pages.
 
-The site is operated by Luca Pacini, trading as FortMilo, in Harpenden, Hertfordshire, United Kingdom.
+The site is operated by Luca Pacini, trading as Fortmilo, in Harpenden, Hertfordshire, United Kingdom.
 
 ## Build
 
@@ -40,6 +40,6 @@ npm run check
 ## Contact
 
 - Luca Pacini
-- Luca Pacini, trading as FortMilo
+- Luca Pacini, trading as Fortmilo
 - Harpenden, Hertfordshire, United Kingdom
 - [info@fortmilo.co.uk](mailto:info@fortmilo.co.uk)

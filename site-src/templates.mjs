@@ -16,7 +16,7 @@ const productItems = [
 
 export const previewImagePath = "/assets/fortmilo-security-observatory-og-20260731.jpg";
 export const previewImageUrl = `https://fortmilo.co.uk${previewImagePath}`;
-export const previewImageAlt = "FortMilo — Security Observatory";
+export const previewImageAlt = "Fortmilo — Security Observatory";
 
 export function iconLinks() {
   return `  <link rel="icon" href="/favicon.ico" sizes="any">
@@ -31,7 +31,7 @@ export function iconLinks() {
 }
 
 export function socialImageMetadata() {
-  return `  <meta property="og:site_name" content="FortMilo">
+  return `  <meta property="og:site_name" content="Fortmilo">
   <meta property="og:image" content="${previewImageUrl}">
   <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1200">
@@ -47,15 +47,15 @@ function nav(items, active, className, label) {
 }
 
 export function header({ corporateActive, productActive }) {
-  return `<header class="site-header"><div class="container header-inner"><a class="brand" href="/" aria-label="FortMilo home"><img src="/assets/fortmilo-shield-512.png" alt="" width="512" height="512"><span>FortMilo</span></a>${nav(corporateItems, corporateActive, "corporate-nav", "Corporate navigation")}</div>${productActive ? `<div class="product-nav-wrap">${nav(productItems, productActive, "product-nav container", "Security Observatory sections")}</div>` : ""}</header>`;
+  return `<header class="site-header"><div class="container header-inner"><a class="brand" href="/" aria-label="Fortmilo home"><img src="/assets/fortmilo-shield-512.png" alt="" width="512" height="512"><span>Fortmilo</span></a>${nav(corporateItems, corporateActive, "corporate-nav", "Corporate navigation")}</div>${productActive ? `<div class="product-nav-wrap">${nav(productItems, productActive, "product-nav container", "Security Observatory sections")}</div>` : ""}</header>`;
 }
 
 export function footer() {
-  return `<footer class="site-footer"><div class="container footer-grid"><div><p><strong>Luca Pacini, trading as FortMilo.</strong></p><p>Harpenden, Hertfordshire, United Kingdom.</p><p>FortMilo is a Salesforce Partner. Security Observatory is independently developed and is not endorsed by Salesforce, Inc. Salesforce is a trademark of Salesforce, Inc.</p></div><div><div class="footer-links"><a href="/contact.html">Contact</a><a href="/acknowledgements.html">Acknowledgements</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/documents/">Technical whitepaper</a><a href="/.well-known/security.txt">Security</a></div><p>© 2026 Luca Pacini. All rights reserved.</p></div></div></footer>`;
+  return `<footer class="site-footer"><div class="container footer-grid"><div><p><strong>Luca Pacini, trading as Fortmilo.</strong></p><p>Harpenden, Hertfordshire, United Kingdom.</p><p>Fortmilo is a Salesforce Partner. Security Observatory is independently developed and is not endorsed by Salesforce, Inc. Salesforce is a trademark of Salesforce, Inc.</p></div><div><div class="footer-links"><a href="/contact.html">Contact</a><a href="/acknowledgements.html">Acknowledgements</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/documents/">Technical whitepaper</a><a href="/.well-known/security.txt">Security</a></div><p>© 2026 Luca Pacini. All rights reserved.</p></div></div></footer>`;
 }
 
 export function page({ title, description, canonical, corporateActive, productActive, bodyClass = "", body, cssFile, noindex = false }) {
-  const fullTitle = title.includes("FortMilo") ? title : `${title} | FortMilo`;
+  const fullTitle = title.includes("Fortmilo") ? title : `${title} | Fortmilo`;
   return `<!doctype html>
 <html lang="en-GB">
 <head>

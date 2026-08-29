@@ -6,8 +6,8 @@ import { routes } from "../site-src/site-map.mjs";
 import { footer, header, iconLinks, socialImageMetadata } from "../site-src/templates.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const styles = await readFile(path.join(root, "site-src", "styles.css"), "utf8");
-const homeStyles = await readFile(path.join(root, "site-src", "home.css"), "utf8");
+const styles = (await readFile(path.join(root, "site-src", "styles.css"), "utf8")).replace(/\r\n?/gu, "\n");
+const homeStyles = (await readFile(path.join(root, "site-src", "home.css"), "utf8")).replace(/\r\n?/gu, "\n");
 const assetsDirectory = path.join(root, "assets");
 const existingCssNames = (await readdir(assetsDirectory)).filter((name) => /^site\.[a-f0-9]{12}\.css$/u.test(name));
 const cssHash = createHash("sha256").update(styles).digest("hex").slice(0, 12);

@@ -79,4 +79,4 @@ finally {
     $source.Dispose()
 }
 
-Write-Output "Generated $outputPath from the approved 1200x675 FortMilo banner."
+Write-Output "Generated $outputPath from the approved 1200x675 Fortmilo banner."
