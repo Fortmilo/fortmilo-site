@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import { readFile, readdir, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { routes } from "../site-src/site-map.mjs";
+import { documentAssets, routes } from "../site-src/site-map.mjs";
 import { footer, header, iconLinks, socialImageMetadata } from "../site-src/templates.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -70,7 +70,8 @@ for (const route of routes) {
   await writeFile(output, html, "utf8");
 }
 
-const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${routes.filter((route) => !route.noindex).map((route) => `  <url><loc>${route.canonical}</loc><lastmod>${route.lastmod}</lastmod></url>`).join("\n")}\n</urlset>\n`;
+const sitemapEntries = [...routes.filter((route) => !route.noindex), ...documentAssets];
+const sitemap = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${sitemapEntries.map((entry) => `  <url><loc>${entry.canonical}</loc><lastmod>${entry.lastmod}</lastmod></url>`).join("\n")}\n</urlset>\n`;
 await writeFile(path.join(root, "sitemap.xml"), sitemap);
 await writeFile(path.join(root, "robots.txt"), "User-agent: *\nAllow: /\nSitemap: https://fortmilo.co.uk/sitemap.xml\n");
 await writeFile(path.join(root, ".nojekyll"), "");
