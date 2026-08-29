@@ -4,8 +4,12 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build-site.mjs",
+    "generate:evidence-paper": "node scripts/generate-evidence-paper.mjs",
     "test:contract": "node scripts/test-public-site-contract.mjs",
     "validate": "npm run test:contract && node scripts/validate-public-site.mjs",
     "check": "npm run build && npm run validate"
+  },
+  "devDependencies": {
+    "pdf-lib": "1.17.1"
   }
 }

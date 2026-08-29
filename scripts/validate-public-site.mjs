@@ -1,7 +1,9 @@
+import { createHash } from "node:crypto";
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { routes } from "../site-src/site-map.mjs";
+import { PDFArray, PDFDict, PDFDocument, PDFHexString, PDFName, PDFString } from "pdf-lib";
+import { documentAssets, routes } from "../site-src/site-map.mjs";
 import {
   deploymentTriggerPublicationDateErrors,
   evidenceTerminologyErrors,
@@ -31,6 +33,14 @@ function resolvePublicPath(value) {
   if (!clean || clean === "/") return "index.html";
   const relative = clean.startsWith("/") ? clean.slice(1) : clean;
   return relative.endsWith("/") ? `${relative}index.html` : relative;
+}
+
+function decodePdfString(value) {
+  return value instanceof PDFString || value instanceof PDFHexString ? value.decodeText() : null;
+}
+
+function sha256(bytes) {
+  return createHash("sha256").update(bytes).digest("hex");
 }
 
 const allFiles = await walk(root);
@@ -94,8 +104,14 @@ if (indexed.some((route) => route.lastmod !== currentPublicationDate)) {
 
 const sitemap = await readFile(path.join(root, "sitemap.xml"), "utf8");
 const expectedLastmod = `<lastmod>${currentPublicationDate}</lastmod>`;
-if (sitemap.split(expectedLastmod).length - 1 !== indexed.length) {
-  errors.push(`sitemap: expected ${indexed.length} lastmod values for ${currentPublicationDate}`);
+const currentDocumentAssets = documentAssets.filter((asset) => asset.lastmod === currentPublicationDate);
+if (sitemap.split(expectedLastmod).length - 1 !== indexed.length + currentDocumentAssets.length) {
+  errors.push(`sitemap: expected ${indexed.length + currentDocumentAssets.length} lastmod values for ${currentPublicationDate}`);
+}
+for (const asset of documentAssets) {
+  const entry = `<url><loc>${asset.canonical}</loc><lastmod>${asset.lastmod}</lastmod></url>`;
+  if (!sitemap.includes(entry)) errors.push(`sitemap: missing document asset ${asset.canonical}`);
+  if (!fileSet.has(asset.output)) errors.push(`site-map: missing document asset file ${asset.output}`);
 }
 
 const deploymentTrigger = await readFile(path.join(root, "pages-deployment-trigger.txt"), "utf8");
@@ -174,6 +190,112 @@ if (!documents.includes('href="/documents/security-observatory-reference-archite
 if (!documents.includes('href="/documents/security-observatory-reference-architecture-v4.1.svg">reference architecture v4.1</a>')) {
   errors.push("documents/index.html: historical v4.1 reference architecture link is missing");
 }
+for (const value of [
+  "<strong>Author</strong><span>Luca Pacini</span>",
+  "<strong>Publisher</strong><span>Fortmilo</span>",
+  "<strong>Version</strong><span>v1.4</span>",
+  "<strong>Publication date</strong><span>29 August 2026</span>",
+  "<strong>Status</strong><span>Current</span>",
+  'href="/documents/evidence-semantics-and-scanner-orchestration.pdf">Read current stable PDF (v1.4)</a>',
+  'href="/documents/evidence-semantics-and-scanner-orchestration-v1.4.pdf">Open immutable v1.4 PDF</a>',
+  '<strong>Superseded:</strong> <a href="/documents/evidence-semantics-and-scanner-orchestration-v1.3.pdf">v1.3, published 1 August 2026</a>'
+]) {
+  if (!documents.includes(value)) errors.push(`documents/index.html: missing whitepaper publication field ${value}`);
+}
+
+const currentWhitepaperPath = path.join(root, "documents", "evidence-semantics-and-scanner-orchestration.pdf");
+const immutableWhitepaperPath = path.join(root, "documents", "evidence-semantics-and-scanner-orchestration-v1.4.pdf");
+const historicalWhitepaperPath = path.join(root, "documents", "evidence-semantics-and-scanner-orchestration-v1.3.pdf");
+const [currentWhitepaper, immutableWhitepaper, historicalWhitepaper] = await Promise.all([
+  readFile(currentWhitepaperPath),
+  readFile(immutableWhitepaperPath),
+  readFile(historicalWhitepaperPath)
+]);
+if (sha256(currentWhitepaper) !== sha256(immutableWhitepaper)) {
+  errors.push("whitepaper: stable current alias is not byte-identical to immutable v1.4");
+}
+if (sha256(historicalWhitepaper) !== "9e8a9faa5ad769bf7f34e7fccaa1524448b1ee690db49299519616ceb56d1804") {
+  errors.push("whitepaper: restored historical v1.3 bytes do not match the promised Git-history edition");
+}
+
+const whitepaper = await PDFDocument.load(immutableWhitepaper, { updateMetadata: false });
+if (whitepaper.getPageCount() !== 8) errors.push(`whitepaper v1.4: expected 8 pages, found ${whitepaper.getPageCount()}`);
+for (const [label, actual, expected] of [
+  ["title", whitepaper.getTitle(), "Evidence Semantics and Scanner Orchestration v1.4"],
+  ["author", whitepaper.getAuthor(), "Luca Pacini"],
+  ["subject", whitepaper.getSubject(), "Security Observatory evidence semantics, scanner planning and bounded licence-assignment retention"],
+  ["creator", whitepaper.getCreator(), "Fortmilo document generation tooling"]
+]) {
+  if (actual !== expected) errors.push(`whitepaper v1.4: incorrect ${label} metadata`);
+}
+if (!whitepaper.getKeywords()?.includes("licence assignments")) errors.push("whitepaper v1.4: keywords metadata is incomplete");
+if (decodePdfString(whitepaper.catalog.get(PDFName.of("Lang"))) !== "en-GB") errors.push("whitepaper v1.4: catalog language is not en-GB");
+if (!whitepaper.catalog.get(PDFName.of("StructTreeRoot"))) errors.push("whitepaper v1.4: structure tree is missing");
+const markInfo = whitepaper.catalog.lookupMaybe(PDFName.of("MarkInfo"), PDFDict);
+if (markInfo?.get(PDFName.of("Marked"))?.toString() !== "true") errors.push("whitepaper v1.4: MarkInfo does not declare marked content");
+if (!whitepaper.catalog.get(PDFName.of("Outlines"))) errors.push("whitepaper v1.4: bookmarks are missing");
+
+const structureRoles = new Map();
+const figureAlternatives = [];
+const embeddedFonts = [];
+for (const [, object] of whitepaper.context.enumerateIndirectObjects()) {
+  if (!(object instanceof PDFDict)) continue;
+  const role = object.get(PDFName.of("S"))?.toString();
+  if (role) structureRoles.set(role, (structureRoles.get(role) || 0) + 1);
+  if (role === "/Figure") figureAlternatives.push(decodePdfString(object.get(PDFName.of("Alt"))));
+  if (object.get(PDFName.of("Type"))?.toString() !== "/Font") continue;
+  const descriptor = object.lookupMaybe(PDFName.of("FontDescriptor"), PDFDict);
+  if (descriptor) {
+    embeddedFonts.push(Boolean(descriptor.get(PDFName.of("FontFile2")) || descriptor.get(PDFName.of("FontFile3"))));
+  }
+}
+for (const role of ["/Document", "/H1", "/H2", "/H3", "/Table", "/TR", "/TH", "/TD", "/L", "/LI", "/Figure", "/Link"]) {
+  if (!structureRoles.get(role)) errors.push(`whitepaper v1.4: semantic structure role ${role} is missing`);
+}
+if (figureAlternatives.length !== 1 || !figureAlternatives[0]?.includes("20-family scanner plan")) {
+  errors.push("whitepaper v1.4: figure alternative text is missing or incorrect");
+}
+if (!embeddedFonts.length || embeddedFonts.some((embedded) => !embedded)) errors.push("whitepaper v1.4: one or more descriptor fonts are not embedded");
+
+const linkUris = [];
+for (const page of whitepaper.getPages()) {
+  const annotations = page.node.lookupMaybe(PDFName.of("Annots"), PDFArray);
+  if (!annotations) continue;
+  for (let index = 0; index < annotations.size(); index += 1) {
+    const annotation = annotations.lookup(index, PDFDict);
+    if (annotation.get(PDFName.of("Subtype"))?.toString() !== "/Link") continue;
+    const action = annotation.lookupMaybe(PDFName.of("A"), PDFDict);
+    const uri = decodePdfString(action?.get(PDFName.of("URI")));
+    if (uri) linkUris.push(uri);
+  }
+}
+for (const uri of [
+  "https://github.com/Fortmilo/fortmilo-site/blob/main/EVIDENCE_TERMINOLOGY_CONTRACT_V1.1.md",
+  "https://fortmilo.co.uk/security-observatory/",
+  "https://fortmilo.co.uk/documents/security-observatory-reference-architecture-v4.2.svg",
+  "https://creativecommons.org/licenses/by/4.0/"
+]) {
+  if (!linkUris.includes(uri)) errors.push(`whitepaper v1.4: hyperlink annotation missing ${uri}`);
+}
+
+const whitepaperSource = await readFile(path.join(root, "document-src", "evidence-semantics-and-scanner-orchestration-v1.4.html"), "utf8");
+for (const claim of [
+  "The same 20-family scanner plan runs at Top Issues, Balanced and Everything.",
+  "Package Licences",
+  "Permission Set Licences",
+  "Salesforce User Licences",
+  "The retained-row maximum remains 1,000 per family, never 1,001.",
+  "The theoretical maximum across all three families is therefore <strong>3,000 retained assignment rows per scan</strong>.",
+  "Zero captured is never enough to claim zero assignments.",
+  "When expected is unknown, leave it unknown.",
+  "sandbox-first",
+  "not yet available for public installation",
+  "Managed 2GP package creation, installation, upgrade and subscriber-org behaviour are not proved",
+  "Source review and document generation are not runtime proof."
+]) {
+  if (!whitepaperSource.includes(claim)) errors.push(`whitepaper source v1.4: missing material claim ${claim}`);
+}
+if (whitepaperSource.includes("The front-matter fields are reference data")) errors.push("whitepaper source v1.4: drafting note remains");
 
 const historicalReferenceSvg = await readFile(path.join(root, "documents/security-observatory-reference-architecture-v4.1.svg"), "utf8");
 if (!historicalReferenceSvg.includes('<title id="soTitle">Security Observatory — reference architecture</title>')) {
@@ -268,4 +390,4 @@ if (errors.length) {
   process.exit(1);
 }
 
-console.log(`Validated ${routes.length} routes, ${indexed.length} indexed lastmod values, shared footer, headings, naming, metadata, links and reference architecture`);
+console.log(`Validated ${routes.length} routes, ${indexed.length} indexed pages, ${documentAssets.length} whitepaper URLs, links, PDF structure/fonts/metadata and reference architecture`);

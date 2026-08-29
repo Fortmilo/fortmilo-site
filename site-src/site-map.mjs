@@ -15,3 +15,9 @@ export const routes = [
   { output: "terms.html", canonical: "https://fortmilo.co.uk/terms.html", lastmod: "2026-08-29" },
   { output: "404.html", canonical: "https://fortmilo.co.uk/404.html", noindex: true }
 ];
+
+export const documentAssets = [
+  { output: "documents/evidence-semantics-and-scanner-orchestration.pdf", canonical: "https://fortmilo.co.uk/documents/evidence-semantics-and-scanner-orchestration.pdf", lastmod: "2026-08-29", status: "current" },
+  { output: "documents/evidence-semantics-and-scanner-orchestration-v1.4.pdf", canonical: "https://fortmilo.co.uk/documents/evidence-semantics-and-scanner-orchestration-v1.4.pdf", lastmod: "2026-08-29", status: "current-immutable" },
+  { output: "documents/evidence-semantics-and-scanner-orchestration-v1.3.pdf", canonical: "https://fortmilo.co.uk/documents/evidence-semantics-and-scanner-orchestration-v1.3.pdf", lastmod: "2026-08-01", status: "superseded-immutable" }
+];

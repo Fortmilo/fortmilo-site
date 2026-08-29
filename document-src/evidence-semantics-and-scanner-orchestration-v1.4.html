@@ -1,0 +1,250 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="author" content="Luca Pacini">
+  <meta name="description" content="Version 1.4 of the Security Observatory evidence semantics and scanner orchestration technical whitepaper.">
+  <meta name="keywords" content="Fortmilo, Security Observatory, Salesforce, evidence semantics, scanner orchestration, licence assignments">
+  <title>Evidence Semantics and Scanner Orchestration v1.4</title>
+  <style>
+    @page { size: A4; margin: 16mm 16mm 18mm; }
+    * { box-sizing: border-box; }
+    html { font-size: 10.4pt; }
+    body {
+      margin: 0;
+      color: #17243a;
+      background: #fff;
+      font-family: Arial, Helvetica, sans-serif;
+      line-height: 1.46;
+    }
+    h1, h2, h3 { color: #0c2442; line-height: 1.14; break-after: avoid; }
+    h1 { margin: 0 0 5mm; font-size: 20pt; letter-spacing: -0.2pt; }
+    h2 { margin: 9mm 0 3mm; padding-top: 2mm; border-top: 1px solid #c9d4e2; font-size: 18pt; }
+    h3 { margin: 5mm 0 2mm; font-size: 13.5pt; }
+    p { margin: 0 0 3.2mm; orphans: 3; widows: 3; }
+    ul, ol { margin: 2mm 0 4mm 6mm; padding-left: 5mm; }
+    li { margin: 0 0 1.6mm; }
+    a { color: #075d8f; text-decoration: underline; text-underline-offset: 1px; }
+    strong { color: #10213a; }
+    .masthead { display: flex; justify-content: space-between; align-items: center; padding-bottom: 4mm; border-bottom: 3px solid #d94b31; }
+    .brand { font-size: 15pt; font-weight: 700; color: #0c2442; }
+    .doc-type { color: #52657d; font-size: 9pt; letter-spacing: 0.08em; text-transform: uppercase; }
+    .title-page { min-height: 247mm; display: flex; flex-direction: column; }
+    .title-block { margin: 26mm 0 10mm; }
+    .kicker { margin-bottom: 4mm; color: #a33f2b; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+    .subtitle { max-width: 150mm; color: #40526a; font-size: 15pt; line-height: 1.38; }
+    .status { display: inline-block; margin-top: 5mm; padding: 2.5mm 4mm; border-radius: 999px; background: #e8f3ed; color: #205938; font-weight: 700; }
+    .meta { width: 100%; margin-top: 8mm; border-collapse: collapse; }
+    .meta th, .meta td { padding: 2.5mm 3mm; border: 1px solid #bbc8d7; vertical-align: top; text-align: left; }
+    .meta th { width: 36%; background: #eef3f8; color: #0c2442; }
+    .proposition { margin-top: auto; padding: 6mm; border-left: 5px solid #d94b31; background: #fff4ef; font-size: 14pt; font-weight: 700; }
+    .abstract { margin-top: 7mm; padding: 6mm; background: #f2f6fa; border-radius: 4mm; }
+    .notice { margin: 4mm 0; padding: 4mm 5mm; border-left: 4px solid #39729f; background: #edf6fc; }
+    .warning { border-left-color: #c2552d; background: #fff4ee; }
+    .table-wrap { margin: 3mm 0 5mm; }
+    .keep-together { break-inside: avoid; }
+    table { width: 100%; border-collapse: collapse; font-size: 9.2pt; }
+    caption { padding: 0 0 2mm; color: #40526a; font-weight: 700; text-align: left; }
+    th, td { padding: 2.2mm 2.5mm; border: 1px solid #aebdce; vertical-align: top; text-align: left; }
+    thead th { background: #183b62; color: #fff; }
+    tbody th { background: #eaf0f6; color: #10213a; }
+    tr { break-inside: avoid; }
+    .figure { margin: 5mm 0 6mm; break-inside: avoid; }
+    .figure img { display: block; width: 100%; height: auto; }
+    .figcaption { margin-top: 2mm; color: #4b5d74; font-size: 9pt; }
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3mm; margin: 4mm 0 5mm; }
+    .card { padding: 4mm; border: 1px solid #bdcad8; border-radius: 3mm; background: #fbfcfe; break-inside: avoid; }
+    .card h3 { margin-top: 0; }
+    .page-break { break-before: page; }
+    .small { color: #4d5f75; font-size: 9pt; }
+    .history { border-left: 4px solid #8190a6; padding-left: 4mm; }
+    .footer-note { margin-top: 9mm; padding-top: 3mm; border-top: 1px solid #c9d4e2; color: #52657d; font-size: 8.5pt; }
+    .publication-section { break-inside: avoid; }
+    code { font-family: "Courier New", monospace; font-size: 0.94em; }
+  </style>
+</head>
+<body>
+  <main>
+    <section class="title-page" aria-labelledby="document-title">
+      <div class="masthead"><span class="brand">Fortmilo</span><span class="doc-type">Technical whitepaper</span></div>
+      <div class="title-block">
+        <p class="kicker">Security Observatory</p>
+        <h1 id="document-title">Evidence Semantics and Scanner Orchestration</h1>
+        <p class="subtitle">A bounded public contract for scanner planning, evidence detail levels and licence-assignment retention.</p>
+        <p class="status">Version 1.4 - current immutable edition</p>
+      </div>
+      <table class="meta">
+        <thead><tr><th scope="col">Field</th><th scope="col">Value</th></tr></thead>
+        <tbody>
+          <tr><th scope="row">Author</th><td>Luca Pacini</td></tr>
+          <tr><th scope="row">Publisher</th><td>Fortmilo</td></tr>
+          <tr><th scope="row">Publication date</th><td>29 August 2026</td></tr>
+          <tr><th scope="row">Status</th><td>Current. This versioned edition is immutable. The stable current alias resolves to identical bytes.</td></tr>
+          <tr><th scope="row">Governing terminology</th><td><a href="https://github.com/Fortmilo/fortmilo-site/blob/main/EVIDENCE_TERMINOLOGY_CONTRACT_V1.1.md">Evidence Terminology Contract v1.1</a></td></tr>
+          <tr><th scope="row">Document licence</th><td>Creative Commons Attribution 4.0 International, subject to third-party material and trademark boundaries.</td></tr>
+        </tbody>
+      </table>
+      <p class="proposition">Nothing found and nothing assessed are not the same result. A retained cap is not an organisation total.</p>
+    </section>
+
+    <section class="abstract" aria-labelledby="abstract-heading">
+      <h2 id="abstract-heading">Abstract</h2>
+      <p>Security Observatory plans the same 20 scanner families at every evidence detail level. Top Issues, Balanced and Everything change the safe detail retained, displayed, compared and exported; they do not change which scanner families are planned. Everything is the only level that retains individual licence-assignment evidence, and that evidence is deliberately bounded.</p>
+      <p>This edition defines the three licence families, the per-family retention maximum, the inspection sentinel, capture statuses, count presentation and publication limits. It keeps source review, controlled tests, Salesforce runtime observations, release-candidate validation, managed-package installation proof and support as separate evidence classes. The document does not upgrade one class into another.</p>
+    </section>
+
+    <section aria-labelledby="scope-heading">
+      <h2 id="scope-heading">1. Claim scope and evidence boundary</h2>
+      <p>This paper is a public technical contract for evidence semantics and scanner orchestration. It describes current owner-approved behaviour and publication boundaries. It is not a security verdict for a Salesforce organisation, a promise that every source is available, or a statement that every environment and persona has been validated.</p>
+      <div class="notice warning"><p><strong>Evidence-class boundary.</strong> Review of implementation source can support a source-established statement. It is not Salesforce runtime observation, clean-install evidence, managed 2GP package-installation proof, Salesforce Security Review, AppExchange availability or environment support.</p></div>
+      <p>Each positive claim must remain at the class actually evidenced. A successful execution in one organisation proves only that bounded execution. It does not establish edition-wide compatibility or complete behaviour under every governor, permission, data-volume and failure condition.</p>
+    </section>
+
+    <section aria-labelledby="semantics-heading">
+      <h2 id="semantics-heading">2. The terminology contract</h2>
+      <p>Evidence Terminology Contract v1.1 keeps rendered evidence state, source availability, completeness, Coverage, evidence detail level and licence-assignment capture status separate. They answer different questions and must not be collapsed.</p>
+      <div class="table-wrap">
+        <table>
+          <caption>Separate evidence dimensions</caption>
+          <thead><tr><th scope="col">Dimension</th><th scope="col">Purpose</th><th scope="col">Current boundary</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Rendered evidence state</th><td>What the product can truthfully show for the available assessment evidence.</td><td>Contextual metric or finding label; None found; Unavailable; Not assessed; Not retained at this evidence level; Not captured; Not applicable.</td></tr>
+            <tr><th scope="row">Source availability</th><td>Whether each required source was accessible and usable.</td><td>An attempted required source that cannot be obtained or used is Unavailable.</td></tr>
+            <tr><th scope="row">Completeness</th><td>Whether otherwise usable evidence covers the intended scope.</td><td>Partial is a general qualifier, not a rendered state and not a licence-assignment capture status.</td></tr>
+            <tr><th scope="row">Coverage</th><td>How far available evidence can assess a mapped question.</td><td>Automated; Partial Evidence; Manual Required; Not Covered; Extended Check. Partial Evidence is Coverage, never an outcome.</td></tr>
+            <tr><th scope="row">Evidence detail level</th><td>How much safe detail is retained and can be used downstream.</td><td>Top Issues; Balanced; Everything.</td></tr>
+            <tr><th scope="row">Licence-assignment capture status</th><td>Whether the assignment population for one licence family was retained.</td><td>Complete; Incomplete; Unavailable. Incomplete is not a rendered evidence state.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p>A successful assessed zero may render as <strong>None found</strong>. An attempted but unusable source is <strong>Unavailable</strong>. Work not performed or outside the assessed scope is <strong>Not assessed</strong>. Intentional omission at a selected level is <strong>Not retained at this evidence level</strong> or <strong>Not captured</strong>, according to the contract.</p>
+    </section>
+
+    <section aria-labelledby="levels-heading">
+      <h2 id="levels-heading">3. One scanner plan, three detail levels</h2>
+      <p>The same 20-family scanner plan runs at Top Issues, Balanced and Everything. The selected evidence detail level changes what safe detail is retained, displayed, compared and exported. It does not change which scanner families are planned.</p>
+      <div class="figure">
+        <img src="evidence-detail-levels-v1.4.svg" alt="Three side-by-side evidence detail levels share one 20-family scanner plan. Top Issues retains neither assignment rows nor assignment-summary rows. Balanced retains holding summaries but not individual assignment identities. Everything retains summaries and bounded individual assignment rows.">
+        <p class="figcaption">Figure 1. The evidence detail level is a retention and presentation choice, not a scanner-family selection mechanism.</p>
+      </div>
+      <div class="table-wrap keep-together">
+        <table>
+          <caption>Detail-level behaviour for licence-assignment evidence</caption>
+          <thead><tr><th scope="col">Level</th><th scope="col">Scanner plan</th><th scope="col">Holding summaries</th><th scope="col">Individual assignments</th></tr></thead>
+          <tbody>
+            <tr><th scope="row">Top Issues</th><td>Same 20 families are planned.</td><td>No assignment-summary rows are retained.</td><td>No assignment rows are retained. The detail is Not retained at this evidence level.</td></tr>
+            <tr><th scope="row">Balanced</th><td>Same 20 families are planned.</td><td>Holding summaries are retained.</td><td>Individual assignment identities are Not captured.</td></tr>
+            <tr><th scope="row">Everything</th><td>Same 20 families are planned.</td><td>Holding summaries are retained.</td><td>Bounded individual assignment capture is attempted for the three defined licence families.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p><strong>Everything means the deepest supported evidence detail level.</strong> It does not mean exhaustive, unlimited or a forensic export of the organisation.</p>
+    </section>
+
+    <section aria-labelledby="assignment-heading">
+      <h2 id="assignment-heading">4. Licence-assignment retention contract</h2>
+      <p>Individual assignment retention at Everything applies to exactly three families:</p>
+      <ol>
+        <li><strong>Package Licences</strong></li>
+        <li><strong>Permission Set Licences</strong></li>
+        <li><strong>Salesforce User Licences</strong></li>
+      </ol>
+      <p>Each family retains at most <strong>1,000 assignment rows</strong>. The theoretical maximum across all three families is therefore <strong>3,000 retained assignment rows per scan</strong>. This is a ceiling, not a target and not an organisation limit.</p>
+      <div class="notice"><p><strong>Inspection sentinel versus retention maximum.</strong> The capture path may inspect one additional candidate row per family, up to 1,001, to establish that more assignments exist than can be retained. That additional row is a sentinel. It is not retained assignment evidence. The retained-row maximum remains 1,000 per family, never 1,001.</p></div>
+      <p>Safe capture can be lower than 1,000 because the scan must preserve Salesforce transaction and DML headroom for status, evidence and orchestration records. A family may therefore retain fewer rows, including zero, even when assignments exist. The cap limits retained evidence only; it does not limit the number of Salesforce users, licences or assignments in the organisation.</p>
+      <p>Licence-capacity totals and holding summaries are separate from individual assignment evidence. Neither a holding summary nor a capped assignment set can be relabelled as the complete organisation population.</p>
+    </section>
+
+    <section aria-labelledby="status-heading">
+      <h2 id="status-heading">5. Capture status and count presentation</h2>
+      <div class="cards">
+        <article class="card"><h3>Complete</h3><p>The full assignment population for that licence family was retained. Complete is not inferred merely because a cap was reached or because expected is unknown.</p></article>
+        <article class="card"><h3>Incomplete</h3><p>The full population could not be retained safely. Captured may be below expected or zero. Sentinel detection, the retention cap and transaction or DML headroom can establish this status.</p></article>
+        <article class="card"><h3>Unavailable</h3><p>Assignment capture was attempted, but required assignment evidence could not be obtained or used. Unavailable remains distinct from Incomplete.</p></article>
+      </div>
+      <p>When the expected population is known, show captured versus expected. When expected is unknown, leave it unknown. Do not substitute captured for expected, and do not infer expected as zero.</p>
+      <div class="table-wrap">
+        <table>
+          <caption>Permitted count presentations</caption>
+          <thead><tr><th scope="col">Captured</th><th scope="col">Expected</th><th scope="col">Status</th><th scope="col">Permitted interpretation</th></tr></thead>
+          <tbody>
+            <tr><td>742</td><td>742</td><td>Complete</td><td>All 742 expected assignments for this family were retained within the bounded capture evidence.</td></tr>
+            <tr><td>1,000</td><td>1,462</td><td>Incomplete</td><td>1,000 of 1,462 were retained. The retained set is not the organisation total.</td></tr>
+            <tr><td>0</td><td>53</td><td>Incomplete</td><td>No rows could be retained safely. This does not mean there are no assignments.</td></tr>
+            <tr><td>380</td><td>Unknown</td><td>Incomplete unless full retention is otherwise established</td><td>Expected remains unknown. The display must not invent 380 of 380 or an organisation total.</td></tr>
+            <tr><td>Not available</td><td>Known or unknown</td><td>Unavailable</td><td>The required assignment evidence could not be obtained or used; no count conclusion is available.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="notice warning"><p><strong>Zero captured is never enough to claim zero assignments.</strong> Where the full population could not be retained safely, zero captured remains Incomplete, not Complete and not None found.</p></div>
+    </section>
+
+    <section aria-labelledby="orchestration-heading">
+      <h2 id="orchestration-heading">6. Orchestration and failure semantics</h2>
+      <p>The 20-family plan is executed through bounded asynchronous work so unrelated evidence does not have to share one transaction and failure boundary. The exact number of asynchronous segments is an implementation detail and is not a universal product contract.</p>
+      <ul>
+        <li>A family that was not assessed cannot receive a successful-zero result.</li>
+        <li>An attempted source that is inaccessible or unusable remains Unavailable.</li>
+        <li>Independently usable evidence may remain available when another portion fails, with the missing portion identified and general completeness qualified as Partial where applicable.</li>
+        <li>A transaction failure outside a safely isolated family boundary cannot be rewritten as a completed scan.</li>
+        <li>Raw exception text, stack traces and query text are not required customer-facing evidence; bounded causes and safe next actions are preferred.</li>
+      </ul>
+      <p>The assignment-capture status is evaluated per licence family. One family can be Complete while another is Incomplete or Unavailable. The theoretical 3,000 maximum is therefore not a single all-or-nothing capture status.</p>
+    </section>
+
+    <section aria-labelledby="downstream-heading">
+      <h2 id="downstream-heading">7. Comparison and export boundaries</h2>
+      <h3>7.1 Comparison</h3>
+      <p>Terminology Contract v1.1 defines a narrow boundary: the selected evidence detail level affects what retained detail can be displayed, compared and exported. Historical retained evidence is not rewritten when terminology changes. This publication does not assert that current runtime scans are terminology-version stamped or automatically comparison-gated.</p>
+      <p>A comparison cannot restore identities or rows that were not retained. A capped or incomplete assignment set must remain capped or incomplete in comparison. This edition makes no universal cross-environment, exact-candidate or every-version comparison claim.</p>
+      <h3>7.2 Export</h3>
+      <p>Server-side collection and retention occur in the subscriber Salesforce organisation. The authenticated-browser LWC prepares the allow-listed CSV in memory. User-initiated download creates a local file outside Salesforce, after which the customer controls storage, sharing and onward handling. No persisted Salesforce CSV artefact is asserted.</p>
+      <p>An export is bounded by the evidence actually retained at the selected level. Exporting 1,000 capped rows does not transform them into the organisation total. Exact retained-data and export shape, including the raw-IP omission or redaction boundary, remains subject to validation for the reviewed path and environment. No universal formula-injection-safe or exhaustive-export claim is made here.</p>
+    </section>
+
+    <section aria-labelledby="limitations-heading">
+      <h2 id="limitations-heading">8. Current validation and publication limitations</h2>
+      <p>The public product status is <strong>sandbox-first</strong> and <strong>not yet available for public installation</strong>. The current reference architecture is a publication view, not managed-package evidence.</p>
+      <ul>
+        <li>This edition adds no new Salesforce runtime observation. Source review and document generation are not runtime proof.</li>
+        <li>Clean installation of the exact public candidate is not established here.</li>
+        <li>Managed 2GP package creation, installation, upgrade and subscriber-org behaviour are not proved by this paper or the reference architecture.</li>
+        <li>Public package availability, AppExchange listing and Salesforce Security Review are not asserted.</li>
+        <li>No universal environment compatibility, data-volume, transaction-headroom or failure-path claim is made.</li>
+        <li>Running-user sharing, CRUD and field-level-security behaviour still requires exact-candidate validation against representative non-administrator personas before an environment-wide claim.</li>
+        <li>Coverage, delivery and validated evidence shape remain release-specific.</li>
+        <li>The product is advisory. It does not perform security remediation or write back to assessed Salesforce configuration.</li>
+      </ul>
+      <p>These boundaries are part of the claim, not optional caveats. A later validation record may raise a claim only for the stated candidate, organisation, persona and prerequisites that were actually exercised.</p>
+    </section>
+
+    <section aria-labelledby="conclusion-heading">
+      <h2 id="conclusion-heading">9. Conclusion</h2>
+      <p>The reliable result is not the largest possible evidence set. It is a bounded result whose missing evidence remains visible. Security Observatory plans the same 20 scanner families at all three evidence detail levels, retains individual licence assignments only at Everything, and refuses to turn a capped or headroom-limited capture into an organisation total.</p>
+      <p>The count contract is deliberately explicit: 1,001 may be inspected as a sentinel, at most 1,000 rows per family may be retained, at most 3,000 may be retained across the three families in theory, and the safe captured total can be lower. Complete, Incomplete and Unavailable preserve the difference.</p>
+    </section>
+
+    <section aria-labelledby="references-heading">
+      <h2 id="references-heading">References and maintained boundaries</h2>
+      <ol>
+        <li><a href="https://github.com/Fortmilo/fortmilo-site/blob/main/EVIDENCE_TERMINOLOGY_CONTRACT_V1.1.md">Fortmilo, Evidence Terminology Contract v1.1</a>.</li>
+        <li><a href="https://fortmilo.co.uk/security-observatory/">Security Observatory product boundaries</a>.</li>
+        <li><a href="https://fortmilo.co.uk/documents/security-observatory-reference-architecture-v4.2.svg">Security Observatory Reference Architecture v4.2</a>.</li>
+        <li><a href="https://developer.salesforce.com/docs/atlas.en-us.apexcode.meta/apexcode/apex_gov_limits.htm">Salesforce Developers, Apex governor limits</a>.</li>
+        <li><a href="https://creativecommons.org/licenses/by/4.0/">Creative Commons Attribution 4.0 International</a>.</li>
+      </ol>
+    </section>
+
+    <section class="publication-section" aria-labelledby="publication-heading">
+      <h2 id="publication-heading">Publication, history and licensing</h2>
+      <div class="history">
+        <p><strong>v1.4, 29 August 2026 - current.</strong> Immutable versioned PDF plus a byte-identical stable current alias.</p>
+        <p><strong>v1.3, 1 August 2026 - superseded.</strong> Restored byte-for-byte from Git history at its previously promised immutable path. Its text is historical and is not rewritten to current terminology.</p>
+      </div>
+      <p>Luca Pacini is the human author and Fortmilo is the publisher. Copyright 2026 Luca Pacini. Fortmilo-authored text and figures in this paper are licensed under Creative Commons Attribution 4.0 International. That licence does not relicense third-party trademarks or cited material.</p>
+      <p>Fortmilo is a Salesforce Partner. Partner status does not imply AppExchange listing, Salesforce Security Review, managed-package availability or endorsement. Security Observatory is independently developed and is not endorsed by Salesforce, Inc. Salesforce is a trademark of Salesforce, Inc.</p>
+      <p class="footer-note">Canonical immutable URL: https://fortmilo.co.uk/documents/evidence-semantics-and-scanner-orchestration-v1.4.pdf<br>Stable current URL: https://fortmilo.co.uk/documents/evidence-semantics-and-scanner-orchestration.pdf</p>
+    </section>
+  </main>
+</body>
+</html>
