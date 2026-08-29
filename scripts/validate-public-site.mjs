@@ -168,13 +168,95 @@ if ((documents.match(/not product documentation/giu) || []).length !== 0) {
 if (!documents.includes("are not Security Observatory product documentation")) {
   errors.push("documents/index.html: section-level product-documentation disclaimer missing");
 }
+if (!documents.includes('href="/documents/security-observatory-reference-architecture-v4.2.svg">View current reference architecture (v4.2)</a>')) {
+  errors.push("documents/index.html: current reference architecture is not v4.2");
+}
+if (!documents.includes('href="/documents/security-observatory-reference-architecture-v4.1.svg">reference architecture v4.1</a>')) {
+  errors.push("documents/index.html: historical v4.1 reference architecture link is missing");
+}
 
-const referenceSvg = await readFile(path.join(root, "documents/security-observatory-reference-architecture-v4.1.svg"), "utf8");
-if (!referenceSvg.includes('<title id="soTitle">Security Observatory — reference architecture</title>')) {
-  errors.push("reference architecture: accessible title is not canonical");
+const historicalReferenceSvg = await readFile(path.join(root, "documents/security-observatory-reference-architecture-v4.1.svg"), "utf8");
+if (!historicalReferenceSvg.includes('<title id="soTitle">Security Observatory — reference architecture</title>')) {
+  errors.push("historical reference architecture v4.1: accessible title changed");
+}
+const referenceSvg = await readFile(path.join(root, "documents/security-observatory-reference-architecture-v4.2.svg"), "utf8");
+if (!referenceSvg.includes('<title id="soTitle">Security Observatory — reference architecture v4.2</title>')) {
+  errors.push("reference architecture v4.2: accessible title is not canonical");
 }
 if (referenceSvg.includes("Security Observatory by Fortmilo")) {
-  errors.push("reference architecture: routine compound title remains");
+  errors.push("reference architecture v4.2: routine compound title remains");
+}
+for (const message of namingErrors(referenceSvg, "documents/security-observatory-reference-architecture-v4.2.svg")) {
+  errors.push(`reference architecture v4.2: ${message}`);
+}
+for (const message of evidenceTerminologyErrors(referenceSvg)) {
+  errors.push(`reference architecture v4.2: ${message}`);
+}
+
+function xmlText(value) {
+  return value
+    .replace(/<[^>]+>/gu, " ")
+    .replaceAll("&amp;", "&")
+    .replaceAll("&lt;", "<")
+    .replaceAll("&gt;", ">")
+    .replaceAll("&quot;", '"')
+    .replaceAll("&apos;", "'")
+    .replace(/\s+/gu, " ")
+    .trim();
+}
+
+const descMatch = /<desc\b[^>]*>([\s\S]*?)<\/desc>/u.exec(referenceSvg);
+const visibleReferenceText = [...referenceSvg.matchAll(/<text\b[^>]*>([\s\S]*?)<\/text>/gu)]
+  .map((match) => xmlText(match[1]))
+  .join(" ")
+  .replace(/\s+/gu, " ")
+  .trim();
+const accessibleReferenceText = descMatch ? xmlText(descMatch[1]) : "";
+if (!descMatch) errors.push("reference architecture v4.2: accessible description is missing");
+
+const materialReferenceClaims = [
+  "No automated evidence transmission to Fortmilo or third-party services.",
+  "No security remediation or write-back to assessed Salesforce configuration.",
+  "Server-side collection and retention occur in the subscriber Salesforce organisation.",
+  "LWC JavaScript prepares the allow-listed CSV in the authenticated browser session.",
+  "Downloading creates a local file outside Salesforce.",
+  "The customer controls storage, sharing and onward handling.",
+  "No persisted Salesforce CSV artefact is asserted.",
+  "Raw IP values are omitted or redacted; exact retained-data and export shape remains subject to validation per environment and reviewed path.",
+  "Contextual metric or finding label",
+  "None found",
+  "Unavailable",
+  "Not assessed",
+  "Not retained at this evidence level",
+  "Not captured",
+  "Not applicable",
+  "The contextual label is bounded by the retained usable evidence.",
+  "These are evidence states, not compliance or pass/fail decisions.",
+  "Partial is a completeness qualifier, not a rendered evidence state.",
+  "Licence-assignment capture status",
+  "Incomplete is not a rendered evidence state.",
+  "Coverage varies by release.",
+  "Salesforce package architecture; delivery and validated coverage remain release-specific.",
+  "Any remediation decision and action remains with the owner.",
+  "Fortmilo operates no hosted evidence service or automated telemetry ingestion.",
+  "Reference architecture only; managed 2GP installation proof and public availability are not asserted.",
+  "v4.1 remains published as a historical architecture."
+];
+for (const claim of materialReferenceClaims) {
+  if (!visibleReferenceText.includes(claim)) errors.push(`reference architecture v4.2: visible text missing material claim ${claim}`);
+  if (!accessibleReferenceText.includes(claim)) errors.push(`reference architecture v4.2: <desc> missing material claim ${claim}`);
+}
+if (visibleReferenceText.includes("1,000") || accessibleReferenceText.includes("1,000")) {
+  errors.push("reference architecture v4.2: numeric licence-assignment limit should remain in maintained Product boundaries");
+}
+for (const match of referenceSvg.matchAll(/<a\b[^>]*\bhref="([^"]+)"/gu)) {
+  const value = match[1];
+  if (/^(?:https?:|mailto:|tel:|#|data:)/u.test(value)) continue;
+  const target = resolvePublicPath(value);
+  if (!fileSet.has(target)) errors.push(`reference architecture v4.2: broken internal reference ${value}`);
+}
+if (!referenceSvg.includes('href="/security-observatory/"')) {
+  errors.push("reference architecture v4.2: maintained Product boundaries link is missing");
 }
 
 for (const image of allFiles.filter((file) => /\.(?:png|jpe?g|ico|svg)$/iu.test(file))) {

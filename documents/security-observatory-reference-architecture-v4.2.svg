@@ -1,0 +1,199 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1500" viewBox="0 0 1600 1500" preserveAspectRatio="xMidYMin meet" role="img" aria-labelledby="soTitle soDesc" style="width:100vw;height:100vh">
+  <title id="soTitle">Security Observatory — reference architecture v4.2</title>
+  <desc id="soDesc">Version 4.2 reference architecture, dated 29 August 2026. Reference architecture only; managed 2GP installation proof and public availability are not asserted. The diagram has three design constraints. No automated evidence transmission to Fortmilo or third-party services. No security remediation or write-back to assessed Salesforce configuration. No pass/fail, compliance or false-clean verdict is inferred from missing evidence. A security reviewer or administrator initiates an assessment, CISO, risk and compliance stakeholders review bounded evidence, and the organisation owner decides and performs any manual remediation outside Security Observatory. Any remediation decision and action remains with the owner. The architecture separates three trust boundaries. First is the subscriber Salesforce organisation server-side trust boundary. Server-side collection and retention occur in the subscriber Salesforce organisation. Representative configuration and metadata sources are read through Apex, asynchronous queueables, SOQL and authenticated same-org Tooling API self-callouts. Coverage varies by release. Security Observatory writes only product-owned retained evidence, findings, states and comparison data; it does not write back to assessed Salesforce configuration. Second is the authenticated browser-session boundary, where an LWC review interface presents retained evidence. The reviewer initiates any export action. LWC JavaScript prepares the allow-listed CSV in the authenticated browser session. No persisted Salesforce CSV artefact is asserted. Third is the local customer environment. Downloading creates a local file outside Salesforce. The customer controls storage, sharing and onward handling. Raw IP values are omitted or redacted; exact retained-data and export shape remains subject to validation per environment and reviewed path. The complete canonical rendered evidence-state vocabulary is: Contextual metric or finding label; None found; Unavailable; Not assessed; Not retained at this evidence level; Not captured; and Not applicable. Unavailable includes a bounded cause, limitation and safe next action where available. The contextual label is bounded by the retained usable evidence. These are evidence states, not compliance or pass/fail decisions. Partial is a completeness qualifier, not a rendered evidence state. Licence-assignment capture status is a separate axis with Complete, Incomplete and Unavailable; Incomplete is not a rendered evidence state. Source availability and Coverage are also separate axes. Coverage values are Automated, Partial Evidence, Manual Required, Not Covered and Extended Check. Salesforce package architecture; delivery and validated coverage remain release-specific. Retention limits and release-specific scope are maintained in the linked Product boundaries; canonical vocabulary definitions are maintained in the linked Evidence Terminology Contract v1.1. Fortmilo operates no hosted evidence service or automated telemetry ingestion. Security Observatory is independently developed and is not endorsed by Salesforce, Inc. v4.1 remains published as a historical architecture.</desc>
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9Z" fill="#31445D"/></marker>
+    <marker id="boundaryArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1L9 5L1 9Z" fill="#B54716"/></marker>
+    <style>
+      .h1{font:700 30px Inter,'Segoe UI',Arial,sans-serif;fill:#0F1B2D}.h2{font:700 16px Inter,'Segoe UI',Arial,sans-serif;fill:#0F1B2D}.h3{font:700 13px Inter,'Segoe UI',Arial,sans-serif;fill:#0F1B2D}.body{font:400 11px Inter,'Segoe UI',Arial,sans-serif;fill:#31445D}.small{font:400 10px Inter,'Segoe UI',Arial,sans-serif;fill:#52677F}.label{font:700 10px Inter,'Segoe UI',Arial,sans-serif;fill:#52677F;letter-spacing:.9px}.strong{font:700 11px Inter,'Segoe UI',Arial,sans-serif;fill:#0F1B2D}.accent{fill:#B54716}.link{font:700 11px Inter,'Segoe UI',Arial,sans-serif;fill:#175A82;text-decoration:underline}.arrow{fill:none;stroke:#31445D;stroke-width:1.8;marker-end:url(#arrow)}.flow{fill:none;stroke:#B54716;stroke-width:2.2;stroke-dasharray:8 5;marker-end:url(#boundaryArrow)}
+    </style>
+  </defs>
+
+  <rect width="1600" height="1500" fill="#FBFCFD"/>
+  <text x="40" y="52" class="h1">Security Observatory</text>
+  <text x="40" y="78" class="body">Reference architecture · subscriber-org evidence · explicit server, browser and local-file boundaries</text>
+  <text x="1560" y="42" class="label" text-anchor="end">VERSION 4.2 · 29 AUG 2026</text>
+  <text x="1560" y="62" class="label" text-anchor="end">STATUS: REFERENCE VIEW — NOT INSTALLATION OR AVAILABILITY PROOF</text>
+  <text x="1560" y="82" class="label accent" text-anchor="end">SERVER-SIDE COLLECTION &amp; RETENTION · AUTHENTICATED-BROWSER CSV PREPARATION</text>
+
+  <g id="design-constraints">
+    <rect x="40" y="104" width="1520" height="154" rx="12" fill="#F4F1FB" stroke="#B9AEDB" stroke-width="1.3"/>
+    <text x="60" y="132" class="h2">Design constraints</text>
+    <rect x="60" y="148" width="470" height="92" rx="9" fill="#EAE5F7" stroke="#66539A" stroke-width="1.3"/>
+    <text x="78" y="170" class="label">EGRESS BOUNDARY</text>
+    <text x="78" y="192" class="h3">No automated evidence transmission</text>
+    <text x="78" y="212" class="body">No automated evidence transmission to Fortmilo</text>
+    <text x="78" y="228" class="body">or third-party services.</text>
+    <rect x="565" y="148" width="470" height="92" rx="9" fill="#EAE5F7" stroke="#66539A" stroke-width="1.3"/>
+    <text x="583" y="170" class="label">ASSESSMENT BOUNDARY</text>
+    <text x="583" y="192" class="h3">Read-only assessment</text>
+    <text x="583" y="212" class="body">No security remediation or write-back to assessed</text>
+    <text x="583" y="228" class="body">Salesforce configuration.</text>
+    <rect x="1070" y="148" width="470" height="92" rx="9" fill="#EAE5F7" stroke="#66539A" stroke-width="1.3"/>
+    <text x="1088" y="170" class="label">EVIDENCE BOUNDARY</text>
+    <text x="1088" y="192" class="h3">No false-clean signal</text>
+    <text x="1088" y="212" class="body">No pass/fail, compliance or false-clean verdict</text>
+    <text x="1088" y="228" class="body">is inferred from missing evidence.</text>
+  </g>
+
+  <g id="server-boundary">
+    <rect x="40" y="290" width="1000" height="742" rx="16" fill="#F2F8FD" stroke="#B54716" stroke-width="2.2" stroke-dasharray="10 6"/>
+    <rect x="58" y="280" width="520" height="22" fill="#FBFCFD"/>
+    <text x="64" y="297" class="label accent">SUBSCRIBER SALESFORCE ORGANISATION — SERVER-SIDE TRUST BOUNDARY</text>
+    <text x="1016" y="320" class="small" text-anchor="end">Server-side collection and retention occur in the subscriber Salesforce organisation.</text>
+
+    <rect x="68" y="342" width="278" height="246" rx="9" fill="#DCEEF9" stroke="#2A6389" stroke-width="1.4"/>
+    <text x="86" y="366" class="label">ASSESSED SOURCES</text>
+    <text x="86" y="390" class="h3">Configuration &amp; metadata</text>
+    <text x="86" y="418" class="body">· Setup Audit Trail</text>
+    <text x="86" y="438" class="body">· Connected apps &amp; OAuth grants</text>
+    <text x="86" y="458" class="body">· Sites &amp; Experience configuration</text>
+    <text x="86" y="478" class="body">· Permission sets, profiles &amp; licences</text>
+    <text x="86" y="498" class="body">· Login History</text>
+    <text x="86" y="518" class="body">· Session &amp; password policies</text>
+    <text x="86" y="548" class="small">Representative surfaces.</text>
+    <text x="86" y="564" class="small">Coverage varies by release.</text>
+
+    <rect x="382" y="342" width="310" height="246" rx="9" fill="#FFFFFF" stroke="#2A6389" stroke-width="1.4"/>
+    <text x="400" y="366" class="label">SERVER EXECUTION</text>
+    <text x="400" y="390" class="h3">Collect and classify evidence</text>
+    <text x="400" y="420" class="body">Apex · asynchronous queueables · SOQL</text>
+    <text x="400" y="440" class="body">Named Credential · authenticated same-org</text>
+    <text x="400" y="456" class="body">Tooling API self-callouts</text>
+    <text x="400" y="486" class="strong">Product-owned writes only</text>
+    <text x="400" y="506" class="body">Retained evidence, findings, states</text>
+    <text x="400" y="522" class="body">and comparison data</text>
+    <text x="400" y="548" class="small">No security remediation or write-back to</text>
+    <text x="400" y="564" class="small">assessed Salesforce configuration.</text>
+
+    <rect x="728" y="342" width="284" height="246" rx="9" fill="#DCEEF9" stroke="#2A6389" stroke-width="1.4"/>
+    <text x="746" y="366" class="label">RETAINED IN SALESFORCE</text>
+    <text x="746" y="390" class="h3">Bounded evidence store</text>
+    <text x="746" y="420" class="body">· Sanitised evidence records</text>
+    <text x="746" y="440" class="body">· Findings and rendered states</text>
+    <text x="746" y="460" class="body">· Control references</text>
+    <text x="746" y="480" class="body">· Retained comparison data</text>
+    <text x="746" y="510" class="small">Retention limits and release scope:</text>
+    <text x="746" y="526" class="small">see maintained Product boundaries.</text>
+    <text x="746" y="556" class="small">No persisted Salesforce CSV artefact</text>
+    <text x="746" y="572" class="small">is asserted.</text>
+
+    <path d="M346 466H378" class="arrow"/>
+    <text x="362" y="452" class="label" text-anchor="middle">READS</text>
+    <path d="M692 466H724" class="arrow"/>
+    <text x="708" y="452" class="label" text-anchor="middle">WRITES</text>
+
+    <rect x="68" y="626" width="590" height="328" rx="9" fill="#FFFFFF" stroke="#89B6D4" stroke-width="1.3"/>
+    <text x="88" y="652" class="label">CANONICAL RENDERED EVIDENCE STATES · CONTRACT V1.1</text>
+    <text x="88" y="680" class="strong">· Contextual metric or finding label</text>
+    <text x="88" y="704" class="strong">· None found</text>
+    <text x="88" y="728" class="strong">· Unavailable</text>
+    <text x="88" y="752" class="strong">· Not assessed</text>
+    <text x="88" y="776" class="strong">· Not retained at this evidence level</text>
+    <text x="88" y="800" class="strong">· Not captured</text>
+    <text x="88" y="824" class="strong">· Not applicable</text>
+    <line x1="88" y1="844" x2="638" y2="844" stroke="#D5E1EA"/>
+    <text x="88" y="868" class="body">Unavailable includes a bounded cause, limitation and safe next</text>
+    <text x="88" y="884" class="body">action where available.</text>
+    <text x="88" y="912" class="body">These are evidence states, not compliance or pass/fail decisions.</text>
+    <text x="88" y="936" class="small">The contextual label is bounded by the retained usable evidence.</text>
+
+    <rect x="686" y="626" width="326" height="328" rx="9" fill="#FFF9E8" stroke="#C6A84A" stroke-width="1.3"/>
+    <text x="706" y="652" class="label">SEPARATE AXES</text>
+    <text x="706" y="682" class="strong">Completeness qualifier</text>
+    <text x="706" y="702" class="body">Partial is a completeness qualifier, not</text>
+    <text x="706" y="718" class="body">a rendered evidence state.</text>
+    <text x="706" y="752" class="strong">Licence-assignment capture status</text>
+    <text x="706" y="772" class="body">Complete · Incomplete · Unavailable</text>
+    <text x="706" y="792" class="body">Incomplete is not a rendered evidence state.</text>
+    <text x="706" y="826" class="strong">Source availability</text>
+    <text x="706" y="846" class="body">Recorded separately from rendered state.</text>
+    <text x="706" y="880" class="strong">Coverage</text>
+    <text x="706" y="900" class="body">Automated · Partial Evidence</text>
+    <text x="706" y="916" class="body">Manual Required · Not Covered</text>
+    <text x="706" y="932" class="body">Extended Check</text>
+
+    <rect x="68" y="974" width="944" height="40" rx="8" fill="#E4F3EA" stroke="#76B48C"/>
+    <text x="88" y="998" class="body">Salesforce package architecture; delivery and validated coverage remain release-specific.</text>
+    <text x="992" y="998" class="small" text-anchor="end">Fortmilo operates no hosted evidence service or automated telemetry ingestion.</text>
+  </g>
+
+  <g id="browser-boundary">
+    <rect x="1072" y="320" width="488" height="398" rx="16" fill="#FDF8E8" stroke="#8A7619" stroke-width="2" stroke-dasharray="8 5"/>
+    <rect x="1092" y="310" width="300" height="22" fill="#FBFCFD"/>
+    <text x="1098" y="327" class="label">AUTHENTICATED BROWSER SESSION</text>
+    <rect x="1100" y="356" width="432" height="142" rx="10" fill="#FFFDF3" stroke="#8A7619" stroke-width="1.3"/>
+    <text x="1120" y="382" class="label">LWC REVIEW INTERFACE</text>
+    <text x="1120" y="408" class="h3">Present bounded evidence</text>
+    <text x="1120" y="432" class="body">Reads retained evidence through the authenticated</text>
+    <text x="1120" y="448" class="body">Salesforce session for customer review.</text>
+    <text x="1120" y="476" class="small">Reviewer initiates any export action.</text>
+    <rect x="1100" y="528" width="432" height="160" rx="10" fill="#FFFDF3" stroke="#8A7619" stroke-width="1.3"/>
+    <text x="1120" y="554" class="label">CLIENT-SIDE CSV PREPARATION</text>
+    <text x="1120" y="580" class="h3">Allow-listed CSV prepared in memory</text>
+    <text x="1120" y="606" class="body">LWC JavaScript prepares the allow-listed CSV in the</text>
+    <text x="1120" y="622" class="body">authenticated browser session.</text>
+    <text x="1120" y="650" class="small">CSV creation is not modelled as a persisted</text>
+    <text x="1120" y="666" class="small">Salesforce artefact.</text>
+  </g>
+
+  <path d="M1012 450H1066" class="flow"/>
+  <text x="1038" y="430" class="label accent" text-anchor="middle">AUTHENTICATED</text>
+  <text x="1038" y="444" class="label accent" text-anchor="middle">READ</text>
+
+  <g id="local-file-boundary">
+    <rect x="1110" y="784" width="412" height="126" rx="10" fill="#F2F3F5" stroke="#788695" stroke-width="1.5"/>
+    <text x="1130" y="810" class="label">LOCAL CUSTOMER ENVIRONMENT · OUTSIDE SALESFORCE</text>
+    <text x="1130" y="840" class="h3">Downloaded CSV file</text>
+    <text x="1130" y="864" class="body">Downloading creates a local file outside Salesforce.</text>
+    <text x="1130" y="886" class="small">The customer controls storage, sharing and onward handling.</text>
+    <path d="M1316 718V778" class="flow"/>
+    <text x="1328" y="750" class="label accent">CUSTOMER-INITIATED DOWNLOAD</text>
+  </g>
+
+  <g id="data-shape-qualification">
+    <rect x="1072" y="944" width="488" height="88" rx="10" fill="#FFF0E8" stroke="#D17A45" stroke-width="1.3"/>
+    <text x="1092" y="968" class="label accent">RETAINED-DATA AND EXPORT QUALIFICATION</text>
+    <text x="1092" y="994" class="strong">Raw IP values are omitted or redacted; exact retained-data and</text>
+    <text x="1092" y="1012" class="strong">export shape remains subject to validation per environment and reviewed path.</text>
+  </g>
+
+  <g id="business-use">
+    <rect x="40" y="1062" width="1520" height="192" rx="12" fill="#FDF8E5" stroke="#D2BE61" stroke-width="1.3"/>
+    <text x="60" y="1090" class="h2">Business use and human authority</text>
+    <rect x="60" y="1110" width="440" height="118" rx="9" fill="#FFFDF3" stroke="#8A7619" stroke-width="1.3"/>
+    <text x="78" y="1134" class="label">SECURITY REVIEWER / ADMINISTRATOR</text>
+    <text x="78" y="1160" class="h3">Initiates assessment</text>
+    <text x="78" y="1184" class="body">Reviews evidence, limitations and causes.</text>
+    <text x="78" y="1204" class="small">Uses an authenticated Salesforce session.</text>
+    <rect x="580" y="1110" width="440" height="118" rx="9" fill="#FFFDF3" stroke="#8A7619" stroke-width="1.3"/>
+    <text x="598" y="1134" class="label">CISO · RISK · COMPLIANCE</text>
+    <text x="598" y="1160" class="h3">Consumes bounded evidence</text>
+    <text x="598" y="1184" class="body">Interprets states without a clean or compliance verdict.</text>
+    <text x="598" y="1204" class="small">Coverage and missing evidence remain visible.</text>
+    <rect x="1100" y="1110" width="440" height="118" rx="9" fill="#F2F3F5" stroke="#788695" stroke-width="1.3"/>
+    <text x="1118" y="1134" class="label">ORGANISATION OWNER · OUT OF SCOPE</text>
+    <text x="1118" y="1160" class="h3">Decides and remediates manually</text>
+    <text x="1118" y="1184" class="body">Any remediation decision and action remains with the owner.</text>
+    <text x="1118" y="1204" class="small">Human authority remains outside the product.</text>
+    <path d="M500 1168H574" class="arrow"/>
+    <path d="M1020 1168H1094" class="arrow"/>
+  </g>
+
+  <g id="publication-boundaries">
+    <rect x="40" y="1274" width="1520" height="138" rx="12" fill="#FFFFFF" stroke="#C9D4DF" stroke-width="1.3"/>
+    <text x="60" y="1302" class="h2">Publication and package boundaries</text>
+    <text x="60" y="1330" class="strong">Reference architecture only; managed 2GP installation proof and public availability are not asserted.</text>
+    <text x="60" y="1356" class="body">For retained-evidence limits and release-specific scope, use the maintained Product boundaries.</text>
+    <a href="/security-observatory/" target="_top" aria-label="Open maintained Security Observatory Product boundaries">
+      <text x="60" y="1382" class="link">Maintained Product boundaries — fortmilo.co.uk/security-observatory/</text>
+    </a>
+    <a href="/EVIDENCE_TERMINOLOGY_CONTRACT_V1.1.md" target="_top" aria-label="Open Evidence Terminology Contract v1.1">
+      <text x="820" y="1382" class="link">Canonical Evidence Terminology Contract v1.1</text>
+    </a>
+  </g>
+
+  <text x="40" y="1444" class="small">© 2026 Luca Pacini, trading as Fortmilo · fortmilo.co.uk</text>
+  <text x="1560" y="1444" class="small" text-anchor="end">Salesforce is a trademark of Salesforce, Inc. Independently developed; not endorsed by Salesforce, Inc.</text>
+  <text x="40" y="1472" class="small">Vector/XML reference view · v4.1 remains published as a historical architecture.</text>
+</svg>
