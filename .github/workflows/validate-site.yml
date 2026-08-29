@@ -33,4 +33,6 @@ jobs:
         run: npm run check
 
       - name: Verify clean generated output
-        run: git diff --exit-code -- . ':!.github/workflows/validate-site.yml'
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=all)"
