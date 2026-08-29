@@ -2,9 +2,16 @@ import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { routes } from "../site-src/site-map.mjs";
-import { evidenceTerminologyErrors, headingErrors, namingErrors } from "./public-site-contract.mjs";
+import {
+  deploymentTriggerPublicationDateErrors,
+  evidenceTerminologyErrors,
+  headingErrors,
+  namingErrors,
+  publicCopyRevisionErrors
+} from "./public-site-contract.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const currentPublicationDate = "2026-08-29";
 const errors = [];
 
 async function walk(directory, prefix = "") {
@@ -67,6 +74,7 @@ for (const route of routes) {
   for (const message of headingErrors(html)) errors.push(`${route.output}: ${message}`);
   for (const message of namingErrors(html, route.output)) errors.push(`${route.output}: ${message}`);
   for (const message of evidenceTerminologyErrors(html)) errors.push(`${route.output}: ${message}`);
+  for (const message of publicCopyRevisionErrors(html, currentPublicationDate)) errors.push(`${route.output}: ${message}`);
 
   if (/<form\b/iu.test(html)) errors.push(`${route.output}: unexpected form`);
   if (/google-analytics|googletagmanager|segment\.com|mixpanel|hotjar/iu.test(html)) errors.push(`${route.output}: analytics/tracking reference found`);
@@ -80,13 +88,19 @@ for (const route of routes) {
 }
 
 const indexed = routes.filter((route) => !route.noindex);
-if (indexed.some((route) => route.lastmod !== "2026-08-29")) {
-  errors.push("site-map: every indexed route must have lastmod 2026-08-29");
+if (indexed.some((route) => route.lastmod !== currentPublicationDate)) {
+  errors.push(`site-map: every indexed route must have lastmod ${currentPublicationDate}`);
 }
 
 const sitemap = await readFile(path.join(root, "sitemap.xml"), "utf8");
-if ((sitemap.match(/<lastmod>2026-08-29<\/lastmod>/gu) || []).length !== indexed.length) {
-  errors.push(`sitemap: expected ${indexed.length} lastmod values for 2026-08-29`);
+const expectedLastmod = `<lastmod>${currentPublicationDate}</lastmod>`;
+if (sitemap.split(expectedLastmod).length - 1 !== indexed.length) {
+  errors.push(`sitemap: expected ${indexed.length} lastmod values for ${currentPublicationDate}`);
+}
+
+const deploymentTrigger = await readFile(path.join(root, "pages-deployment-trigger.txt"), "utf8");
+for (const message of deploymentTriggerPublicationDateErrors(deploymentTrigger, currentPublicationDate)) {
+  errors.push(`pages-deployment-trigger.txt: ${message}`);
 }
 
 const home = await readFile(path.join(root, "index.html"), "utf8");

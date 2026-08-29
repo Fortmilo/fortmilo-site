@@ -1,10 +1,12 @@
 import assert from "node:assert/strict";
 import {
   customerVisibleSurface,
+  deploymentTriggerPublicationDateErrors,
   evidenceTerminologyErrors,
   headingErrors,
   namingErrors,
-  prohibitedEvidenceClaims
+  prohibitedEvidenceClaims,
+  publicCopyRevisionErrors
 } from "./public-site-contract.mjs";
 
 // Regression fixtures for the public naming and heading contract.
@@ -49,5 +51,24 @@ assert.deepEqual(evidenceTerminologyErrors(`
   <p>Coverage tiles, including Partial Evidence, remain separate from control-outcome tiles and filters.</p>
   <p>Collection and retention occur inside the subscriber Salesforce organisation. The LWC prepares the allow-listed CSV in the authenticated browser session; downloading it creates a file outside Salesforce.</p>
 `), []);
+
+const currentPublicationDate = "2026-08-29";
+assert.deepEqual(publicCopyRevisionErrors(
+  `<main data-public-copy-revision="${currentPublicationDate}"></main>`,
+  currentPublicationDate
+), []);
+assert.ok(publicCopyRevisionErrors(
+  '<main data-public-copy-revision="2026-08-19"></main>',
+  currentPublicationDate
+).some((value) => value.includes("does not match current publication date")));
+
+assert.deepEqual(
+  deploymentTriggerPublicationDateErrors(`Fortmilo public site deployment trigger — ${currentPublicationDate}`, currentPublicationDate),
+  []
+);
+assert.ok(deploymentTriggerPublicationDateErrors(
+  "Fortmilo public site deployment trigger — 2026-08-19",
+  currentPublicationDate
+).some((value) => value.includes("does not match current publication date")));
 
 console.log("Validated public-site contract fixtures");

@@ -105,3 +105,21 @@ export function evidenceTerminologyErrors(value) {
 
   return errors;
 }
+
+export function publicCopyRevisionErrors(html, publicationDate) {
+  const revisions = [...html.matchAll(/\bdata-public-copy-revision\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/giu)]
+    .map((match) => match[1] ?? match[2] ?? match[3]);
+
+  return revisions
+    .filter((revision) => revision !== publicationDate)
+    .map((revision) => `data-public-copy-revision ${revision} does not match current publication date ${publicationDate}`);
+}
+
+export function deploymentTriggerPublicationDateErrors(value, publicationDate) {
+  const dates = [...value.matchAll(/\b\d{4}-\d{2}-\d{2}\b/gu)].map((match) => match[0]);
+  if (dates.length !== 1) return [`expected exactly one deployment-trigger publication date, found ${dates.length}`];
+  if (dates[0] !== publicationDate) {
+    return [`deployment-trigger publication date ${dates[0]} does not match current publication date ${publicationDate}`];
+  }
+  return [];
+}
