@@ -7,6 +7,16 @@ export const prohibitedFormalNames = [
 
 export const attributedProductName = "Security Observatory by Fortmilo";
 
+export const prohibitedEvidenceClaims = [
+  ["Coverage type describes evidence", "detail level"].join(" "),
+  ["Partial Evidence outcome", "tiles"].join(" "),
+  ["run, scope or evidence", "detail level"].join(" "),
+  ["CSV generation remains inside", "Salesforce"].join(" "),
+  ["Collection, retention, review and CSV generation occur inside", "the subscriber Salesforce organisation"].join(" "),
+  ["some usable assignment evidence was retained, but", "the full population could not be retained safely"].join(" "),
+  ["Missing scope identified separately as Not assessed or", "Unavailable"].join(" ")
+];
+
 function parseAttributes(tag) {
   const attributes = new Map();
   for (const match of tag.matchAll(/([:\w-]+)\s*=\s*(["'])(.*?)\2/gu)) {
@@ -79,6 +89,18 @@ export function namingErrors(html, route) {
 
   for (const name of prohibitedFormalNames) {
     if (surface.includes(name)) errors.push(`prohibited customer-visible name ${name}`);
+  }
+
+  return errors;
+}
+
+export function evidenceTerminologyErrors(value) {
+  const errors = [];
+
+  for (const claim of prohibitedEvidenceClaims) {
+    if (value.toLowerCase().includes(claim.toLowerCase())) {
+      errors.push(`prohibited evidence-semantics claim ${claim}`);
+    }
   }
 
   return errors;
