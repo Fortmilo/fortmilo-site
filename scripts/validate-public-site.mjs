@@ -79,13 +79,13 @@ for (const route of routes) {
 }
 
 const indexed = routes.filter((route) => !route.noindex);
-if (indexed.some((route) => route.lastmod !== "2026-08-19")) {
-  errors.push("site-map: every indexed route must have lastmod 2026-08-19");
+if (indexed.some((route) => route.lastmod !== "2026-08-29")) {
+  errors.push("site-map: every indexed route must have lastmod 2026-08-29");
 }
 
 const sitemap = await readFile(path.join(root, "sitemap.xml"), "utf8");
-if ((sitemap.match(/<lastmod>2026-08-19<\/lastmod>/gu) || []).length !== indexed.length) {
-  errors.push(`sitemap: expected ${indexed.length} lastmod values for 2026-08-19`);
+if ((sitemap.match(/<lastmod>2026-08-29<\/lastmod>/gu) || []).length !== indexed.length) {
+  errors.push(`sitemap: expected ${indexed.length} lastmod values for 2026-08-29`);
 }
 
 const home = await readFile(path.join(root, "index.html"), "utf8");
@@ -94,6 +94,13 @@ const overview = await readFile(path.join(root, "security-observatory/index.html
 for (const value of ["<h1>Security Observatory</h1>", "Five review areas", "Request access when available"]) {
   if (!overview.includes(value)) errors.push(`security-observatory/index.html: missing ${value}`);
 }
+const req063 = "<strong>Licence assignment evidence:</strong> in V1, each scan retains up to 1,000 assignment evidence records for each of the three licence families — Package Licences, Permission Set Licences and Salesforce User Licences — so at most 3,000 across those families per scan. This limits retained evidence only; it does not limit how many Salesforce users, licences or assignments your org can have. Where the full population cannot be retained safely, that evidence is reported as Incomplete rather than shown as complete.";
+if (overview.split(req063).length - 1 !== 1) errors.push("security-observatory/index.html: REQ-063 disclosure must appear exactly once");
+const evidence = await readFile(path.join(root, "security-observatory/evidence.html"), "utf8");
+for (const value of ["Current Evidence Terminology Contract", "Canonical v1.1", "Frozen v1.0", "Licence-assignment capture status", "evidence detail level"]) {
+  if (!evidence.includes(value)) errors.push(`security-observatory/evidence.html: missing ${value}`);
+}
+if (/evidence depth/iu.test(evidence)) errors.push("security-observatory/evidence.html: obsolete evidence depth wording remains");
 const architecture = await readFile(path.join(root, "architecture-security.html"), "utf8");
 if (!architecture.includes("<strong>Read-only assessment</strong><span>No security remediation or write-back to assessed Salesforce configuration.</span>")) {
   errors.push("architecture-security.html: incorrect read-only assessment boundary");
@@ -110,7 +117,7 @@ const referenceSvg = await readFile(path.join(root, "documents/security-observat
 if (!referenceSvg.includes('<title id="soTitle">Security Observatory — reference architecture</title>')) {
   errors.push("reference architecture: accessible title is not canonical");
 }
-if (referenceSvg.includes("Security Observatory by FortMilo")) {
+if (referenceSvg.includes("Security Observatory by Fortmilo")) {
   errors.push("reference architecture: routine compound title remains");
 }
 

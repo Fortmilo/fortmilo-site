@@ -1,4 +1,4 @@
-# Claude project instructions — FortMilo website
+# Claude project instructions — Fortmilo website
 
 Before reviewing, editing, or advising on this website, read GitHub issue #4 and follow this file as the current owner-approved naming/public-site direction.
 
@@ -6,22 +6,20 @@ Before reviewing, editing, or advising on this website, read GitHub issue #4 and
 
 These decisions are final unless Luca Pacini explicitly reopens them:
 
-- **Brand/company:** `FortMilo`
+- **Brand/company:** `Fortmilo`
 - **Product/app:** `Security Observatory`
-- `FortMilo` is the canonical written brand casing.
-- `FORTMILO` is allowed only as a deliberate visual/logo treatment.
-- `Fortmilo` is not an approved written brand form.
+- `Fortmilo` is the canonical written brand casing.
+- `Security Observatory by Fortmilo` is approved attribution where useful.
 - `Salesforce` is descriptive only and is never part of the formal product name.
-- Do not routinely use `Security Observatory by FortMilo`.
-- Do not use `FortMilo Security Observatory`, `Fortmilo Security Observatory`, `FORTMILO Security Observatory`, or `Salesforce Security Observatory` as the active formal product name.
+- Do not use `FortMilo`, `FORTMILO`, `Fortmilo Security Observatory`, or `Salesforce Security Observatory` as an active formal name.
 
 ## Website hierarchy
 
-- Site/header brand: **FortMilo**
+- Site/header brand: **Fortmilo**
 - Product navigation/item: **Security Observatory**
 - Product page H1: **Security Observatory**
-- FortMilo remains visually and semantically separate as the company/brand.
-- Footer/legal wording may use **Luca Pacini, trading as FortMilo** where appropriate.
+- Fortmilo remains visually and semantically separate as the company/brand.
+- Footer/legal wording may use **Luca Pacini, trading as Fortmilo** where appropriate.
 
 Do not ask Luca to reconfirm any of the above naming decisions.
 

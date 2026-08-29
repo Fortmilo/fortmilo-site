@@ -1,12 +1,11 @@
 export const prohibitedFormalNames = [
-  "FortMilo Security Observatory",
+  "FortMilo",
+  "FORTMILO",
   "Fortmilo Security Observatory",
-  "FORTMILO Security Observatory",
   "Salesforce Security Observatory"
 ];
 
-export const exceptionalProductName = "Security Observatory by FortMilo";
-export const approvedExceptionalNameLocations = new Set();
+export const attributedProductName = "Security Observatory by Fortmilo";
 
 function parseAttributes(tag) {
   const attributes = new Map();
@@ -80,10 +79,6 @@ export function namingErrors(html, route) {
 
   for (const name of prohibitedFormalNames) {
     if (surface.includes(name)) errors.push(`prohibited customer-visible name ${name}`);
-  }
-
-  if (surface.includes(exceptionalProductName) && !approvedExceptionalNameLocations.has(route)) {
-    errors.push(`unapproved routine use of exceptional product name ${exceptionalProductName}`);
   }
 
   return errors;

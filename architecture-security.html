@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Architecture &amp; Security | FortMilo</title>
+  <title>Architecture &amp; Security | Fortmilo</title>
   <meta name="description" content="Salesforce-native architecture, subscriber-owned authentication, sanitised evidence and explicit failure handling for Security Observatory.">
   <link rel="canonical" href="https://fortmilo.co.uk/architecture-security.html">
   <link rel="icon" href="/favicon.ico" sizes="any">
@@ -16,26 +16,26 @@
   <meta name="msapplication-TileColor" content="#07101d">
   <meta name="msapplication-TileImage" content="/mstile-150x150.png">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="Architecture &amp; Security | FortMilo">
+  <meta property="og:title" content="Architecture &amp; Security | Fortmilo">
   <meta property="og:description" content="Salesforce-native architecture, subscriber-owned authentication, sanitised evidence and explicit failure handling for Security Observatory.">
   <meta property="og:url" content="https://fortmilo.co.uk/architecture-security.html">
-  <meta property="og:site_name" content="FortMilo">
+  <meta property="og:site_name" content="Fortmilo">
   <meta property="og:image" content="https://fortmilo.co.uk/assets/fortmilo-security-observatory-og-20260731.jpg">
   <meta property="og:image:type" content="image/jpeg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
-  <meta property="og:image:alt" content="FortMilo — Security Observatory">
+  <meta property="og:image:alt" content="Fortmilo — Security Observatory">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:image" content="https://fortmilo.co.uk/assets/fortmilo-security-observatory-og-20260731.jpg">
-  <meta name="twitter:image:alt" content="FortMilo — Security Observatory">
+  <meta name="twitter:image:alt" content="Fortmilo — Security Observatory">
   <meta property="og:locale" content="en_GB">
   <link rel="stylesheet" href="/assets/site.a02e800f31c0.css">
 </head>
 <body class="architecture-page">
   <a class="skip-link" href="#main">Skip to content</a>
-  <header class="site-header"><div class="container header-inner"><a class="brand" href="/" aria-label="FortMilo home"><img src="/assets/fortmilo-shield-512.png" alt="" width="512" height="512"><span>FortMilo</span></a><nav class="corporate-nav" aria-label="Corporate navigation"><a href="/">Home</a><a href="/security-observatory/">Security Observatory</a><a aria-current="page" href="/architecture-security.html">Architecture & Security</a><a href="/documents/">Documents</a></nav></div></header>
+  <header class="site-header"><div class="container header-inner"><a class="brand" href="/" aria-label="Fortmilo home"><img src="/assets/fortmilo-shield-512.png" alt="" width="512" height="512"><span>Fortmilo</span></a><nav class="corporate-nav" aria-label="Corporate navigation"><a href="/">Home</a><a href="/security-observatory/">Security Observatory</a><a aria-current="page" href="/architecture-security.html">Architecture & Security</a><a href="/documents/">Documents</a></nav></div></header>
   <main id="main" data-public-copy-revision="2026-08-19">
-    <section class="page-hero"><div class="container hero-grid"><div><p class="eyebrow">Architecture &amp; Security</p><h1>Salesforce-native, bounded and explainable.</h1><p class="lead">Security Observatory separates experience, orchestration, collection, evidence and governance so each documented trust boundary stays visible.</p></div><aside class="evidence-panel"><p>Architecture principles</p><ul class="fact-list"><li><strong>In-org runtime</strong><span>Automatic scanning and retained product evidence stay inside Salesforce; user-initiated CSV download is a separate boundary.</span></li><li><strong>Read-only assessment</strong><span>No security remediation or write-back to assessed Salesforce configuration.</span></li><li><strong>Least privilege</strong><span>Subscriber-owned authentication; running-user sharing, CRUD and field-level-security behaviour must be validated against the target release build, environment and user personas before being claimed.</span></li><li><strong>Truthful limitations</strong><span>Unavailable evidence remains visible and explained.</span></li></ul></aside></div></section>
+    <section class="page-hero"><div class="container hero-grid"><div><p class="eyebrow">Architecture &amp; Security</p><h1>Salesforce-native, bounded and explainable.</h1><p class="lead">Security Observatory separates experience, orchestration, collection, evidence and governance so each documented trust boundary stays visible.</p></div><aside class="evidence-panel"><p>Architecture principles</p><ul class="fact-list"><li><strong>In-org runtime</strong><span>Automatic scanning and retained product evidence stay inside Salesforce; user-initiated CSV download is a separate boundary.</span></li><li><strong>Read-only assessment</strong><span>No security remediation or write-back to assessed Salesforce configuration.</span></li><li><strong>Least privilege</strong><span>Subscriber-owned authentication; running-user sharing, CRUD and field-level-security behaviour must be validated against the target release build, environment and user personas before being claimed.</span></li><li><strong>Truthful limitations</strong><span>Source availability, completeness, Coverage, rendered evidence state and licence-assignment capture status remain separate. Unavailable evidence remains visible and explained.</span></li></ul></aside></div></section>
 
     <section class="section"><div class="container"><div class="section-heading"><p class="section-label">Diagram 1</p><h2>Runtime architecture</h2></div><div class="diagram-block"><div class="diagram-card" role="region" aria-label="Scrollable runtime architecture diagram" tabindex="0"><p class="diagram-subtitle">Invocation and retained-evidence paths inside the Salesforce trust boundary</p>
       <svg class="arch-svg" viewBox="0 0 1160 590" role="img" aria-labelledby="runtime-title runtime-desc">
@@ -52,7 +52,7 @@
       </svg>
     </div><p class="diagram-legend"><strong>Diagram key:</strong> Solid arrows show execution or evidence/result relationships, as labelled. Dashed outlines show trust or ownership boundaries.</p><div class="diagram-callouts"><div class="diagram-callout"><strong>What happens</strong><span>The review surface invokes Apex orchestration and scanner families; scanner results return through sanitisation and normalisation into retained review evidence.</span></div><div class="diagram-callout"><strong>Security property</strong><span>Collection, retention, review and CSV generation occur inside the subscriber Salesforce organisation.</span></div><div class="diagram-callout"><strong>Deliberate boundary</strong><span>CSV export is initiated by the user. Once downloaded, the sanitised file is outside the Salesforce trust boundary.</span></div></div></div></div></section>
 
-    <section class="section section-alt"><div class="container"><div class="section-heading"><p class="section-label">Diagram 2</p><h2>Subscriber authentication and trust boundary</h2></div><div class="diagram-block"><div class="diagram-card" role="region" aria-label="Scrollable subscriber authentication diagram" tabindex="0"><p class="diagram-subtitle">Subscriber-owned OAuth configuration for the Tooling API self-callout</p>
+    <section class="section"><div class="container"><div class="section-heading"><p class="section-label">Licence-assignment retention boundary</p><h2>Bounded evidence, not an organisation limit</h2><p>At the Everything evidence detail level, retained assignment evidence is bounded to 1,000 rows for each of Package Licences, Permission Set Licences and Salesforce User Licences. The 3,000-row maximum is theoretical; safe capture can be lower because Salesforce transaction and DML headroom must be preserved. Incomplete is a separate licence-assignment capture status, not a rendered evidence state, and capped retained counts are not exact organisation totals.</p></div></div></section><section class="section section-alt"><div class="container"><div class="section-heading"><p class="section-label">Diagram 2</p><h2>Subscriber authentication and trust boundary</h2></div><div class="diagram-block"><div class="diagram-card" role="region" aria-label="Scrollable subscriber authentication diagram" tabindex="0"><p class="diagram-subtitle">Subscriber-owned OAuth configuration for the Tooling API self-callout</p>
       <svg class="arch-svg" viewBox="0 0 1160 630" role="img" aria-labelledby="auth-title auth-desc">
         <title id="auth-title">Subscriber authentication boundary</title>
         <desc id="auth-desc">Packaged SOQL scanners retain evidence without the Tooling self-callout. Tooling-backed scanners use a Named Credential to call the subscriber Salesforce Tooling API. The Named Credential uses an External Credential; its principal governs access, and its OAuth configuration references an External Auth Identity Provider backed by an External Client App registration. Missing, blocked or insufficient authentication follows an attempted assessment path and renders Tooling evidence Unavailable with a bounded cause and safe next action. It does not render Not assessed.</desc>
@@ -115,6 +115,6 @@
     <section class="section"><div class="container"><article class="card technical-resource"><p class="section-label">Technical whitepaper</p><h2>Evidence Semantics and Scanner Orchestration</h2><p>A deeper explanation of the evidence semantics, scanner orchestration and retained-evidence model behind Security Observatory. The version is recorded inside the PDF.</p><div class="actions"><a class="button button-primary" href="/documents/">Read the technical whitepaper</a></div></article></div></section>
 
   </main>
-  <footer class="site-footer"><div class="container footer-grid"><div><p><strong>Luca Pacini, trading as FortMilo.</strong></p><p>Harpenden, Hertfordshire, United Kingdom.</p><p>FortMilo is a Salesforce Partner. Security Observatory is independently developed and is not endorsed by Salesforce, Inc. Salesforce is a trademark of Salesforce, Inc.</p></div><div><div class="footer-links"><a href="/contact.html">Contact</a><a href="/acknowledgements.html">Acknowledgements</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/documents/">Technical whitepaper</a><a href="/.well-known/security.txt">Security</a></div><p>© 2026 Luca Pacini. All rights reserved.</p></div></div></footer>
+  <footer class="site-footer"><div class="container footer-grid"><div><p><strong>Luca Pacini, trading as Fortmilo.</strong></p><p>Harpenden, Hertfordshire, United Kingdom.</p><p>Fortmilo is a Salesforce Partner. Security Observatory is independently developed and is not endorsed by Salesforce, Inc. Salesforce is a trademark of Salesforce, Inc.</p></div><div><div class="footer-links"><a href="/contact.html">Contact</a><a href="/acknowledgements.html">Acknowledgements</a><a href="/privacy.html">Privacy</a><a href="/terms.html">Terms</a><a href="/documents/">Technical whitepaper</a><a href="/.well-known/security.txt">Security</a></div><p>© 2026 Luca Pacini. All rights reserved.</p></div></div></footer>
 </body>
 </html>
