@@ -4,11 +4,13 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { PDFBool, PDFDict, PDFDocument, PDFName, PDFString } from "pdf-lib";
+import { publicationDateAsUtc, publicationDates } from "../site-src/publication-metadata.mjs";
 
 const root = resolve(new URL("..", import.meta.url).pathname.replace(/^\/(?:([A-Za-z]:))/, "$1"));
 const source = join(root, "document-src", "orchestrating-ai-for-secure-software-delivery.html");
 const output = join(root, "documents", "orchestrating-ai-for-secure-software-delivery.pdf");
-const publicationDate = new Date("2026-08-30T00:00:00Z");
+const publicationDate = publicationDateAsUtc(publicationDates.methodologyPaper);
+const publicationDateIso = `${publicationDates.methodologyPaper}T00:00:00Z`;
 
 const browserCandidates = [
   process.env.FORTMILO_PDF_BROWSER,
@@ -99,8 +101,8 @@ try {
       <dc:creator><rdf:Seq><rdf:li>Luca Pacini</rdf:li></rdf:Seq></dc:creator>
       <dc:publisher><rdf:Bag><rdf:li>Fortmilo</rdf:li></rdf:Bag></dc:publisher>
       <dc:language><rdf:Bag><rdf:li>en-GB</rdf:li></rdf:Bag></dc:language>
-      <xmp:CreateDate>2026-08-30T00:00:00Z</xmp:CreateDate>
-      <xmp:ModifyDate>2026-08-30T00:00:00Z</xmp:ModifyDate>
+      <xmp:CreateDate>${publicationDateIso}</xmp:CreateDate>
+      <xmp:ModifyDate>${publicationDateIso}</xmp:ModifyDate>
       <pdf:Producer>Chromium/Skia tagged PDF with pdf-lib metadata post-processing</pdf:Producer>
       <fortmilo:Version>1.0 accessible edition</fortmilo:Version>
       <fortmilo:Status>Current</fortmilo:Status>

@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import { PDFDocument } from "pdf-lib";
+import { publicationDateAsUtc, publicationDates } from "../site-src/publication-metadata.mjs";
 
 const root = resolve(new URL("..", import.meta.url).pathname.replace(/^\/(?:([A-Za-z]:))/, "$1"));
 const source = join(root, "document-src", "evidence-semantics-and-scanner-orchestration.html");
@@ -69,8 +70,9 @@ try {
   ]);
   document.setCreator("Fortmilo document generation tooling");
   document.setProducer("Chromium/Skia tagged PDF with pdf-lib metadata post-processing");
-  document.setCreationDate(new Date("2026-08-29T00:00:00Z"));
-  document.setModificationDate(new Date("2026-08-29T00:00:00Z"));
+  const publicationDate = publicationDateAsUtc(publicationDates.evidencePaper);
+  document.setCreationDate(publicationDate);
+  document.setModificationDate(publicationDate);
   await writeFile(output, await document.save({ useObjectStreams: false }));
   console.log(`Generated ${output}`);
 } finally {

@@ -2,19 +2,36 @@ import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { PDFArray, PDFDict, PDFDocument, PDFHexString, PDFName, PDFNumber, PDFString } from "pdf-lib";
-import { documentAssets, routes } from "../site-src/site-map.mjs";
+import { documentAssets, renderSitemap, routes, sitemapEntries } from "../site-src/site-map.mjs";
+import { formatPublicationDate, publicationDateAsUtc, publicationDates } from "../site-src/publication-metadata.mjs";
+import { previewImagePath, previewImageUrl, socialImageMetadata } from "../site-src/templates.mjs";
+import { navigationStateErrors } from "./build-contract.mjs";
+import { socialPreviewAsset, staleGovernedAssetPaths } from "./governed-assets.mjs";
 import {
-  deploymentTriggerPublicationDateErrors,
+  canonicalMetadataErrors,
   evidenceTerminologyErrors,
   headingErrors,
+  imageMarkupErrors,
+  landmarkErrors,
   namingErrors,
+  prohibitedPublicClaimErrors,
   publicDocumentPathErrors,
-  publicCopyRevisionErrors
+  publicCopyRevisionErrors,
+  standaloneSvgAccessibilityErrors,
+  uniqueIdErrors
 } from "./public-site-contract.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
-const currentPublicationDate = "2026-08-29";
+const currentPublicationDate = publicationDates.site;
 const errors = [];
+const expectedSocialMetadata = socialImageMetadata().split("\n").map((line) => line.trim()).filter(Boolean);
+
+if (!socialPreviewAsset || previewImagePath !== `/${socialPreviewAsset.path}` || previewImageUrl !== `https://fortmilo.co.uk/${socialPreviewAsset.path}`) {
+  errors.push("social preview template path differs from the authoritative governed-asset manifest");
+}
+if (socialPreviewAsset?.dimensions?.width !== 1200 || socialPreviewAsset?.dimensions?.height !== 630) {
+  errors.push("social preview manifest dimensions must be exactly 1200x630");
+}
 
 async function walk(directory, prefix = "") {
   const entries = await readdir(directory, { withFileTypes: true });
@@ -62,9 +79,15 @@ for (const route of routes) {
 
   if (route.noindex) {
     if (!html.includes('<meta name="robots" content="noindex">')) errors.push(`${route.output}: missing noindex`);
-    if (html.includes('<link rel="canonical"')) errors.push(`${route.output}: noindex page must not declare canonical`);
-  } else if (!html.includes(`<link rel="canonical" href="${route.canonical}">`)) {
-    errors.push(`${route.output}: incorrect canonical`);
+  }
+  for (const message of canonicalMetadataErrors(html, route.canonical, { noindex: route.noindex })) errors.push(`${route.output}: ${message}`);
+
+  for (const metadata of expectedSocialMetadata) {
+    const count = html.split(metadata).length - 1;
+    if (count !== 1) errors.push(`${route.output}: expected exactly one social metadata entry ${metadata}, found ${count}`);
+  }
+  for (const stalePath of staleGovernedAssetPaths) {
+    if (html.includes(stalePath)) errors.push(`${route.output}: stale or deleted social/image path remains ${stalePath}`);
   }
 
   const footer = /<footer class="site-footer">[\s\S]*?<\/footer>/u.exec(html)?.[0] || "";
@@ -82,7 +105,12 @@ for (const route of routes) {
   for (const message of headingErrors(html)) errors.push(`${route.output}: ${message}`);
   for (const message of namingErrors(html, route.output)) errors.push(`${route.output}: ${message}`);
   for (const message of evidenceTerminologyErrors(html)) errors.push(`${route.output}: ${message}`);
+  for (const message of prohibitedPublicClaimErrors(html)) errors.push(`${route.output}: ${message}`);
   for (const message of publicCopyRevisionErrors(html, currentPublicationDate)) errors.push(`${route.output}: ${message}`);
+  for (const message of uniqueIdErrors(html)) errors.push(`${route.output}: ${message}`);
+  for (const message of landmarkErrors(html)) errors.push(`${route.output}: ${message}`);
+  for (const message of imageMarkupErrors(html)) errors.push(`${route.output}: ${message}`);
+  for (const message of navigationStateErrors(html, route)) errors.push(`${route.output}: ${message}`);
 
   if (/<form\b/iu.test(html)) errors.push(`${route.output}: unexpected form`);
   if (/google-analytics|googletagmanager|segment\.com|mixpanel|hotjar/iu.test(html)) errors.push(`${route.output}: analytics/tracking reference found`);
@@ -101,6 +129,11 @@ if (indexed.some((route) => route.lastmod !== currentPublicationDate)) {
 }
 
 const sitemap = await readFile(path.join(root, "sitemap.xml"), "utf8");
+if (sitemap.replace(/\r\n?/gu, "\n") !== renderSitemap()) errors.push("sitemap: bytes differ from authoritative route and publication-date metadata");
+const sitemapLocations = [...sitemap.matchAll(/<loc>(.*?)<\/loc>/gu)].map((match) => match[1]);
+if (sitemapLocations.length !== sitemapEntries.length || new Set(sitemapLocations).size !== sitemapLocations.length) {
+  errors.push(`sitemap: expected ${sitemapEntries.length} exact unique locations, found ${sitemapLocations.length} entries and ${new Set(sitemapLocations).size} unique values`);
+}
 const expectedLastmod = `<lastmod>${currentPublicationDate}</lastmod>`;
 const currentDocumentAssets = documentAssets.filter((asset) => asset.lastmod === currentPublicationDate);
 if (sitemap.split(expectedLastmod).length - 1 !== indexed.length + currentDocumentAssets.length) {
@@ -110,11 +143,6 @@ for (const asset of documentAssets) {
   const entry = `<url><loc>${asset.canonical}</loc><lastmod>${asset.lastmod}</lastmod></url>`;
   if (!sitemap.includes(entry)) errors.push(`sitemap: missing document asset ${asset.canonical}`);
   if (!fileSet.has(asset.output)) errors.push(`site-map: missing document asset file ${asset.output}`);
-}
-
-const deploymentTrigger = await readFile(path.join(root, "pages-deployment-trigger.txt"), "utf8");
-for (const message of deploymentTriggerPublicationDateErrors(deploymentTrigger, currentPublicationDate)) {
-  errors.push(`pages-deployment-trigger.txt: ${message}`);
 }
 
 const home = await readFile(path.join(root, "index.html"), "utf8");
@@ -185,7 +213,7 @@ for (const value of [
   "Engineering methodology",
   "Fortmilo engineering-methodology publications",
   "Security Observatory is used as a bounded case study; no AI product capability is claimed for Security Observatory.",
-  "<strong>Publication date</strong><span>30 August 2026</span>",
+  `<strong>Publication date</strong><span>${formatPublicationDate(publicationDates.methodologyPaper)}</span>`,
   'href="/documents/orchestrating-ai-for-secure-software-delivery.pdf">Read the accessible methodology paper</a>'
 ]) {
   if (!documents.includes(value)) errors.push(`documents/index.html: accessible methodology publication missing ${value}`);
@@ -199,7 +227,7 @@ if (!documents.includes('href="/documents/security-observatory-reference-archite
 for (const value of [
   "<strong>Author</strong><span>Luca Pacini</span>",
   "<strong>Publisher</strong><span>Fortmilo</span>",
-  "<strong>Last updated</strong><span>29 August 2026</span>",
+  `<strong>Last updated</strong><span>${formatPublicationDate(publicationDates.evidencePaper)}</span>`,
   'href="/documents/evidence-semantics-and-scanner-orchestration.pdf">Read the technical whitepaper</a>'
 ]) {
   if (!documents.includes(value)) errors.push(`documents/index.html: missing whitepaper publication field ${value}`);
@@ -223,6 +251,9 @@ for (const [label, actual, expected] of [
   if (actual !== expected) errors.push(`whitepaper: incorrect ${label} metadata`);
 }
 if (!whitepaper.getKeywords()?.includes("licence assignments")) errors.push("whitepaper: keywords metadata is incomplete");
+const expectedWhitepaperDate = publicationDateAsUtc(publicationDates.evidencePaper).toISOString();
+if (whitepaper.getCreationDate()?.toISOString() !== expectedWhitepaperDate) errors.push("whitepaper: creation date is not authoritative");
+if (whitepaper.getModificationDate()?.toISOString() !== expectedWhitepaperDate) errors.push("whitepaper: modification date is not authoritative");
 if (decodePdfString(whitepaper.catalog.get(PDFName.of("Lang"))) !== "en-GB") errors.push("whitepaper: catalog language is not en-GB");
 if (!whitepaper.catalog.get(PDFName.of("StructTreeRoot"))) errors.push("whitepaper: structure tree is missing");
 const markInfo = whitepaper.catalog.lookupMaybe(PDFName.of("MarkInfo"), PDFDict);
@@ -343,6 +374,11 @@ if (/copyFile|immutable|evidence-semantics-and-scanner-orchestration-v\d/iu.test
 }
 
 const referenceSvg = await readFile(path.join(root, "documents/security-observatory-reference-architecture.svg"), "utf8");
+for (const message of uniqueIdErrors(referenceSvg)) errors.push(`reference architecture: ${message}`);
+for (const message of standaloneSvgAccessibilityErrors(referenceSvg)) errors.push(`reference architecture: ${message}`);
+if (!referenceSvg.includes(`LAST UPDATED · ${formatPublicationDate(publicationDates.referenceArchitecture, { uppercase: true, month: "short" })}`)) {
+  errors.push("reference architecture: visible last-updated date differs from publication-date authority");
+}
 if (!referenceSvg.includes('<title id="soTitle">Security Observatory — reference architecture</title>')) {
   errors.push("reference architecture: accessible title is not canonical");
 }

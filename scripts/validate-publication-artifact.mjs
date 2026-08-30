@@ -1,36 +1,36 @@
-import { createHash } from "node:crypto";
-import { isDeepStrictEqual } from "node:util";
 import { lstat, readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import {
   approvedDocumentFiles,
+  explicitlyExcludedUrls,
   getPublicationAllowlist,
   intendedRouteFiles,
+  obsoleteOperationalFiles,
   publicTerminologyContractFiles,
   requiredHiddenFiles
 } from "./publication-allowlist.mjs";
-import { publicDocumentPathErrors } from "./public-site-contract.mjs";
+import {
+  evidenceTerminologyErrors,
+  namingErrors,
+  prohibitedPublicClaimErrors,
+  publicDocumentPathErrors,
+  uniqueIdErrors
+} from "./public-site-contract.mjs";
+import { governedAssetErrors, governedAssets, staleGovernedAssetPaths } from "./governed-assets.mjs";
+import { publicationReferenceErrors } from "./publication-references.mjs";
+import {
+  buildInventoryEvidence,
+  inventoryEvidenceErrors,
+  sha256,
+  verifiedPublicationSourceSha
+} from "./publication-evidence.mjs";
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const artifactRoot = path.resolve(repositoryRoot, "_site");
 const inventoryPath = path.resolve(repositoryRoot, "_publication", "inventory.json");
-const productionOrigin = "https://fortmilo.co.uk";
 const lexicalCompare = (left, right) => left < right ? -1 : left > right ? 1 : 0;
 const errors = [];
-
-const explicitlyExcludedUrls = Object.freeze([
-  "/.github/workflows/validate-site.yml",
-  "/AGENTS.md",
-  "/CLAUDE.md",
-  "/README.md",
-  "/document-src/",
-  "/package-lock.json",
-  "/package.json",
-  "/pages-deployment-trigger.txt",
-  "/scripts/build-site.mjs",
-  "/site-src/"
-]);
 
 const bannedDirectories = new Set([
   ".git",
@@ -50,15 +50,6 @@ const bannedFileNames = new Set([
   "package.json",
   "pages-deployment-trigger.txt"
 ]);
-
-function sha256(bytes) {
-  return createHash("sha256").update(bytes).digest("hex");
-}
-
-function inventorySha256(files) {
-  const canonical = files.map((file) => `${file.sha256}  ${file.bytes}  ${file.path}\n`).join("");
-  return sha256(Buffer.from(canonical, "utf8"));
-}
 
 async function enumerateArtifact(directory, prefix = "") {
   const files = [];
@@ -107,93 +98,6 @@ async function assertRegularSource(relative) {
   }
 
   return true;
-}
-
-function resolveArtifactReference(reference, owner) {
-  const decodedReference = reference.replaceAll("&amp;", "&").trim();
-  if (!decodedReference || /^(?:#|data:|mailto:|tel:|javascript:)/iu.test(decodedReference)) return null;
-
-  let url;
-  try {
-    url = new URL(decodedReference, `${productionOrigin}/${owner}`);
-  } catch {
-    errors.push(`${owner}: invalid internal reference ${reference}`);
-    return null;
-  }
-
-  if (!/^https?:$/u.test(url.protocol) || url.origin !== productionOrigin) return null;
-
-  let pathname;
-  try {
-    pathname = decodeURIComponent(url.pathname);
-  } catch {
-    errors.push(`${owner}: invalid percent encoding in ${reference}`);
-    return null;
-  }
-  if (!pathname.startsWith("/") || pathname.includes("\\")) {
-    errors.push(`${owner}: unsafe internal reference ${reference}`);
-    return null;
-  }
-
-  const relative = pathname.slice(1);
-  if (!relative) return "index.html";
-  return pathname.endsWith("/") ? `${relative}index.html` : relative;
-}
-
-function referencesFromMarkup(value) {
-  const references = [];
-  for (const match of value.matchAll(/\b(?:href|src|poster|action)\s*=\s*(["'])(.*?)\1/giu)) {
-    references.push(match[2]);
-  }
-  for (const match of value.matchAll(/\bsrcset\s*=\s*(["'])(.*?)\1/giu)) {
-    for (const candidate of match[2].split(",")) references.push(candidate.trim().split(/\s+/u, 1)[0]);
-  }
-  for (const match of value.matchAll(/<meta\b[^>]*\bcontent\s*=\s*(["'])(.*?)\1[^>]*>/giu)) {
-    if (/^(?:https?:\/\/fortmilo\.co\.uk\/|\/)/u.test(match[2])) references.push(match[2]);
-  }
-  return references;
-}
-
-function referencesFromMarkdown(value) {
-  return [...value.matchAll(/!?\[[^\]]*\]\(([^)\s]+)(?:\s+["'][^"']*["'])?\)/gu)].map((match) => match[1]);
-}
-
-function referencesFromCss(value) {
-  return [...value.matchAll(/url\(\s*(["']?)(.*?)\1\s*\)/giu)].map((match) => match[2]);
-}
-
-async function validateInternalLinks(files, fileSet) {
-  for (const file of files) {
-    const extension = path.posix.extname(file).toLowerCase();
-    let references = [];
-
-    if (extension === ".html" || extension === ".svg") {
-      references = referencesFromMarkup(await readFile(path.join(artifactRoot, ...file.split("/")), "utf8"));
-    } else if (extension === ".md") {
-      references = referencesFromMarkdown(await readFile(path.join(artifactRoot, ...file.split("/")), "utf8"));
-    } else if (extension === ".css") {
-      references = referencesFromCss(await readFile(path.join(artifactRoot, ...file.split("/")), "utf8"));
-    } else if (file === "site.webmanifest") {
-      const manifest = JSON.parse(await readFile(path.join(artifactRoot, file), "utf8"));
-      references = [manifest.start_url, manifest.scope, ...(manifest.icons || []).map((icon) => icon.src)].filter(Boolean);
-    } else if (file === "sitemap.xml") {
-      const sitemap = await readFile(path.join(artifactRoot, file), "utf8");
-      references = [...sitemap.matchAll(/<loc>(.*?)<\/loc>/gu)].map((match) => match[1]);
-    } else if (file === "robots.txt") {
-      const robots = await readFile(path.join(artifactRoot, file), "utf8");
-      references = [...robots.matchAll(/^Sitemap:\s*(\S+)\s*$/gimu)].map((match) => match[1]);
-    } else if (file === ".well-known/security.txt") {
-      const security = await readFile(path.join(artifactRoot, ...file.split("/")), "utf8");
-      references = [...security.matchAll(/^Canonical:\s*(\S+)\s*$/gimu)].map((match) => match[1]);
-    }
-
-    for (const reference of references) {
-      const target = resolveArtifactReference(reference, file);
-      if (target && !fileSet.has(target)) {
-        errors.push(`${file}: internal reference has no exact case-sensitive artifact target: ${reference}`);
-      }
-    }
-  }
 }
 
 if (artifactRoot !== path.join(repositoryRoot, "_site") || path.dirname(artifactRoot) !== repositoryRoot) {
@@ -254,6 +158,50 @@ for (const urlPath of explicitlyExcludedUrls) {
   }
 }
 
+for (const obsoleteFile of obsoleteOperationalFiles) {
+  try {
+    await lstat(path.join(repositoryRoot, ...obsoleteFile.split("/")));
+    errors.push(`${obsoleteFile}: obsolete operational file must remain deleted`);
+  } catch (error) {
+    if (error?.code !== "ENOENT") errors.push(`${obsoleteFile}: cannot prove obsolete file absence (${error.message})`);
+  }
+}
+
+const governedManifestPaths = governedAssets.map((asset) => asset.path).sort(lexicalCompare);
+const discoveredGovernedPaths = [
+  ...(await readdir(repositoryRoot, { withFileTypes: true }))
+    .filter((entry) => entry.isFile() && /\.(?:png|jpe?g|ico|svg)$/iu.test(entry.name))
+    .map((entry) => entry.name),
+  ...(await readdir(path.join(repositoryRoot, "assets"), { withFileTypes: true }))
+    .filter((entry) => entry.isFile() && /\.(?:png|jpe?g|ico|svg)$/iu.test(entry.name))
+    .map((entry) => `assets/${entry.name}`)
+].sort(lexicalCompare);
+if (JSON.stringify(discoveredGovernedPaths) !== JSON.stringify(governedManifestPaths)) {
+  errors.push(`governed asset manifest paths differ from root icons and assets/ images (manifest: ${governedManifestPaths.join(", ")}; discovered: ${discoveredGovernedPaths.join(", ")})`);
+}
+
+for (const asset of governedAssets) {
+  if (!asset.path || !asset.sha256 || !asset.mediaType || !asset.signature || !asset.bytes || !asset.purpose) {
+    errors.push(`${asset.path || "unnamed governed asset"}: manifest entry is incomplete`);
+    continue;
+  }
+  try {
+    const bytes = await readFile(path.join(repositoryRoot, ...asset.path.split("/")));
+    for (const message of governedAssetErrors(asset, bytes)) errors.push(message);
+  } catch (error) {
+    errors.push(`${asset.path}: governed asset is missing or unreadable (${error.message})`);
+  }
+}
+
+for (const stalePath of staleGovernedAssetPaths) {
+  try {
+    await lstat(path.join(repositoryRoot, ...stalePath.split("/")));
+    errors.push(`${stalePath}: stale or deleted governed asset path must not exist`);
+  } catch (error) {
+    if (error?.code !== "ENOENT") errors.push(`${stalePath}: cannot prove stale path absence (${error.message})`);
+  }
+}
+
 const inventory = [];
 for (const file of expectedFiles) {
   if (!artifactSet.has(file) || !await assertRegularSource(file)) continue;
@@ -269,17 +217,9 @@ for (const file of expectedFiles) {
 }
 
 inventory.sort((left, right) => lexicalCompare(left.path, right.path));
-const totalBytes = inventory.reduce((total, file) => total + file.bytes, 0);
-const digest = inventorySha256(inventory);
-const expectedEvidence = {
-  version: 1,
-  files: inventory,
-  summary: {
-    fileCount: inventory.length,
-    totalBytes,
-    inventorySha256: digest
-  }
-};
+const sourceSha = await verifiedPublicationSourceSha(repositoryRoot);
+const expectedEvidence = buildInventoryEvidence(inventory, sourceSha);
+const { totalBytes, inventorySha256: digest } = expectedEvidence.summary;
 
 try {
   const evidenceDirectoryMetadata = await lstat(path.dirname(inventoryPath));
@@ -290,19 +230,27 @@ try {
     errors.push("_publication/inventory.json must be a regular, non-symlink file");
   } else {
     const recordedEvidence = JSON.parse(await readFile(inventoryPath, "utf8"));
-    if (!isDeepStrictEqual(recordedEvidence, expectedEvidence)) {
-      errors.push("_publication/inventory.json does not match the independently enumerated artifact");
-    }
+    for (const message of inventoryEvidenceErrors(recordedEvidence, inventory, sourceSha)) errors.push(`_publication/inventory.json: ${message}`);
   }
 } catch (error) {
   errors.push(`publication inventory evidence is missing or invalid (${error.message})`);
 }
 
-await validateInternalLinks(artifactFiles, artifactSet);
+const artifactContents = new Map();
+for (const file of artifactFiles) artifactContents.set(file, await readFile(path.join(artifactRoot, ...file.split("/"))));
+for (const message of publicationReferenceErrors(artifactContents)) errors.push(message);
+for (const [file, bytes] of artifactContents) {
+  if (!/\.(?:html|svg|md)$/iu.test(file)) continue;
+  const value = bytes.toString("utf8");
+  for (const message of namingErrors(value, file)) errors.push(`${file}: ${message}`);
+  for (const message of prohibitedPublicClaimErrors(value)) errors.push(`${file}: ${message}`);
+  for (const message of evidenceTerminologyErrors(value)) errors.push(`${file}: ${message}`);
+  if (/\.(?:html|svg)$/iu.test(file)) for (const message of uniqueIdErrors(value)) errors.push(`${file}: ${message}`);
+}
 
 if (errors.length) {
   for (const error of errors) console.error(`ERROR: ${error}`);
   process.exit(1);
 }
 
-console.log(`Validated exact publication artifact: ${inventory.length} files, ${totalBytes} bytes, inventory SHA-256 ${digest}`);
+console.log(`Validated exact publication artifact: ${inventory.length} files, ${governedAssets.length} governed assets, ${totalBytes} bytes, inventory SHA-256 ${digest}`);

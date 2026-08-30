@@ -7,7 +7,9 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: read
   contents: read
+  deployments: read
   pages: write
   id-token: write
 
@@ -17,12 +19,26 @@ concurrency:
 
 jobs:
   build:
+    if: github.ref == 'refs/heads/main' && github.event.repository.default_branch == 'main'
     runs-on: ubuntu-latest
+    outputs:
+      verified_sha: ${{ steps.source.outputs.verified_sha }}
+      inventory_digest: ${{ steps.publication.outputs.inventory_digest }}
+      inventory_file_sha256: ${{ steps.publication.outputs.inventory_file_sha256 }}
     steps:
       - name: Checkout triggering commit
         uses: actions/checkout@v6
         with:
           ref: ${{ github.sha }}
+
+      - name: Prove exact checkout
+        id: source
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual_sha="$(git rev-parse HEAD)"
+          test "$actual_sha" = "$GITHUB_SHA"
+          printf 'verified_sha=%s\n' "$actual_sha" >> "$GITHUB_OUTPUT"
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -34,10 +50,29 @@ jobs:
         run: npm ci --ignore-scripts
 
       - name: Build and validate exact publication artifact
+        env:
+          PUBLICATION_SOURCE_SHA: ${{ steps.source.outputs.verified_sha }}
         run: npm run check
+
+      - name: Record validated private inventory evidence
+        id: publication
+        run: >-
+          node scripts/verify-inventory-evidence.mjs
+          --expected-sha "${{ steps.source.outputs.verified_sha }}"
+          --github-output "$GITHUB_OUTPUT"
 
       - name: Configure GitHub Pages
         uses: actions/configure-pages@v5
+
+      - name: Recheck artifact and inventory immediately before upload
+        env:
+          PUBLICATION_SOURCE_SHA: ${{ steps.source.outputs.verified_sha }}
+        run: |
+          npm run validate:publication
+          node scripts/verify-inventory-evidence.mjs \
+            --expected-sha "${{ steps.source.outputs.verified_sha }}" \
+            --expected-digest "${{ steps.publication.outputs.inventory_digest }}" \
+            --expected-file-sha256 "${{ steps.publication.outputs.inventory_file_sha256 }}"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5
@@ -45,7 +80,18 @@ jobs:
           path: _site
           include-hidden-files: true
 
+      - name: Prove artifact and inventory unchanged after upload
+        env:
+          PUBLICATION_SOURCE_SHA: ${{ steps.source.outputs.verified_sha }}
+        run: |
+          npm run validate:publication
+          node scripts/verify-inventory-evidence.mjs \
+            --expected-sha "${{ steps.source.outputs.verified_sha }}" \
+            --expected-digest "${{ steps.publication.outputs.inventory_digest }}" \
+            --expected-file-sha256 "${{ steps.publication.outputs.inventory_file_sha256 }}"
+
   deploy:
+    if: github.ref == 'refs/heads/main' && github.event.repository.default_branch == 'main'
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -57,19 +103,74 @@ jobs:
         id: deployment
         uses: actions/deploy-pages@v5
 
-      - name: Checkout deployed verification script
+  verify:
+    if: github.ref == 'refs/heads/main' && github.event.repository.default_branch == 'main'
+    needs:
+      - build
+      - deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout verified source commit
         uses: actions/checkout@v6
         with:
-          ref: ${{ github.sha }}
+          ref: ${{ needs.build.outputs.verified_sha }}
+
+      - name: Re-prove verification checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          actual_sha="$(git rev-parse HEAD)"
+          test "$actual_sha" = "${{ needs.build.outputs.verified_sha }}"
+          test "$actual_sha" = "$GITHUB_SHA"
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
           node-version: 22
+          cache: npm
 
-      - name: Verify intended and excluded production URLs
+      - name: Install dependencies
+        run: npm ci --ignore-scripts
+
+      - name: Rebuild exact evidence from verified checkout
+        env:
+          PUBLICATION_SOURCE_SHA: ${{ needs.build.outputs.verified_sha }}
+        run: npm run check
+
+      - name: Match rebuilt evidence to the uploaded artifact
+        run: >-
+          node scripts/verify-inventory-evidence.mjs
+          --expected-sha "${{ needs.build.outputs.verified_sha }}"
+          --expected-digest "${{ needs.build.outputs.inventory_digest }}"
+          --expected-file-sha256 "${{ needs.build.outputs.inventory_file_sha256 }}"
+
+      - name: Verify every live publication byte and exclusion
         run: >-
           npm run verify:publication:http --
           --base-url https://fortmilo.co.uk/
+          --inventory _publication/inventory.json
+          --requested-sha "${{ needs.build.outputs.verified_sha }}"
+          --deployment-sha "${{ needs.build.outputs.verified_sha }}"
+          --inventory-digest "${{ needs.build.outputs.inventory_digest }}"
+          --workflow-run-id "${{ github.run_id }}"
           --attempts 30
           --delay-ms 5000
+
+      - name: Prove successful Pages and environment deployment SHA
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: >-
+          node scripts/deployment-proof.mjs
+          --requested-sha "${{ needs.build.outputs.verified_sha }}"
+          --inventory-digest "${{ needs.build.outputs.inventory_digest }}"
+          --workflow-run-id "${{ github.run_id }}"
+          --output _publication/deployment-proof.json
+
+      - name: Store sanitised publication proof
+        uses: actions/upload-artifact@v4
+        with:
+          name: publication-proof-${{ github.run_id }}
+          path: _publication/deployment-proof.json
+          if-no-files-found: error
+          retention-days: 30
