@@ -4,12 +4,16 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build-site.mjs",
+    "build:publication": "node scripts/build-publication-artifact.mjs",
     "generate:ai-methodology": "node scripts/generate-ai-methodology-paper.mjs",
     "generate:evidence-paper": "node scripts/generate-evidence-paper.mjs",
+    "serve:publication": "node scripts/serve-publication-artifact.mjs",
     "test:contract": "node scripts/test-public-site-contract.mjs",
     "validate:ai-methodology": "node scripts/validate-ai-methodology-paper.mjs",
+    "validate:publication": "node scripts/validate-publication-artifact.mjs",
     "validate": "npm run test:contract && node scripts/validate-public-site.mjs && npm run validate:ai-methodology",
-    "check": "npm run build && npm run validate"
+    "verify:publication:http": "node scripts/verify-publication-http.mjs",
+    "check": "npm run build && npm run validate && npm run build:publication && npm run validate:publication"
   },
   "devDependencies": {
     "pdf-lib": "1.17.1"

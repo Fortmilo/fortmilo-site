@@ -99,12 +99,13 @@ if (documentFiles.length !== 1 || documentFiles[0] !== "orchestrating-ai-for-sec
   errors.push(`expected only the stable methodology PDF path, found ${documentFiles.join(", ") || "none"}`);
 }
 
-const [pdfBytes, source, originalText, generator] = await Promise.all([
+const [pdfBytes, source, originalTextWithPlatformEndings, generator] = await Promise.all([
   readFile(pdfPath),
   readFile(sourcePath, "utf8"),
   readFile(originalTextPath, "utf8"),
   readFile(generatorPath, "utf8"),
 ]);
+const originalText = originalTextWithPlatformEndings.replace(/\r\n?/gu, "\n");
 
 const originalWordCount = whitespaceWordCount(originalText);
 const replacementVisibleText = visibleHtmlText(source);

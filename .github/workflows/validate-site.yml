@@ -35,6 +35,17 @@ jobs:
       - name: Assert accessible methodology publication
         run: npm run validate:ai-methodology
 
+      - name: Preserve first publication inventory
+        run: cp _publication/inventory.json /tmp/publication-inventory-first.json
+
+      - name: Rebuild and revalidate publication artifact
+        run: |
+          npm run build:publication
+          npm run validate:publication
+
+      - name: Verify deterministic publication inventory
+        run: cmp --silent /tmp/publication-inventory-first.json _publication/inventory.json
+
       - name: Verify clean generated output
         run: |
           git diff --exit-code
