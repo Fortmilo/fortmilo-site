@@ -1,6 +1,6 @@
 import { publicationDates } from "./publication-metadata.mjs";
 
-// Significant updates through 19 August 2026: canonical product naming, shared footer discoverability, architecture boundary wording and route-wide accessibility corrections.
+// Canonical authority for public routes, sitemap entries and stable document URLs.
 export const routes = [
   { output: "index.html", canonical: "https://fortmilo.co.uk/", lastmod: publicationDates.site, corporateActive: "home" },
   { output: "security-observatory/index.html", canonical: "https://fortmilo.co.uk/security-observatory/", lastmod: publicationDates.site, corporateActive: "observatory", productActive: "overview" },

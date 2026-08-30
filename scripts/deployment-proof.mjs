@@ -4,13 +4,32 @@ import { fileURLToPath } from "node:url";
 
 const apiVersion = "2026-03-10";
 
-function isCurrentRunStatus(status, workflowRunId) {
-  if (status?.state !== "success" || typeof status.log_url !== "string") return false;
+function workflowRunIdFromLogUrl(logUrl) {
+  if (typeof logUrl !== "string") return null;
   try {
-    return new URL(status.log_url).pathname.includes(`/actions/runs/${workflowRunId}`);
+    const url = new URL(logUrl);
+    if (url.protocol !== "https:" || url.hostname !== "github.com" || url.port || url.username || url.password) return null;
+    return url.pathname.match(/^\/[^/]+\/[^/]+\/actions\/runs\/(\d+)(?:\/.*)?$/u)?.[1] || null;
   } catch {
-    return false;
+    return null;
   }
+}
+
+function isCurrentRunStatus(status, workflowRunId) {
+  return status?.state === "success" && workflowRunIdFromLogUrl(status.log_url) === String(workflowRunId);
+}
+
+function newestDeploymentStatus(statuses) {
+  return [...(statuses || [])].sort((left, right) => {
+    const leftCreatedAt = Date.parse(left?.created_at || "");
+    const rightCreatedAt = Date.parse(right?.created_at || "");
+    const createdAtDifference = (Number.isNaN(rightCreatedAt) ? Number.NEGATIVE_INFINITY : rightCreatedAt)
+      - (Number.isNaN(leftCreatedAt) ? Number.NEGATIVE_INFINITY : leftCreatedAt);
+    if (createdAtDifference) return createdAtDifference;
+    const leftId = /^\d+$/u.test(String(left?.id ?? "")) ? BigInt(left.id) : -1n;
+    const rightId = /^\d+$/u.test(String(right?.id ?? "")) ? BigInt(right.id) : -1n;
+    return rightId > leftId ? 1 : rightId < leftId ? -1 : 0;
+  })[0];
 }
 
 function isNewerIntendedMainRun(run, workflowRunId) {
@@ -44,7 +63,7 @@ export function deploymentProofErrors({
   const newestDeployment = newestMatchingDeployment(deployments, requested);
   if (!newestDeployment) {
     errors.push(`no github-pages deployment exists for SHA ${requested} on main`);
-  } else if (!(statusesByDeployment.get(newestDeployment.id) || []).some((status) => isCurrentRunStatus(status, workflowRunId))) {
+  } else if (!isCurrentRunStatus(newestDeploymentStatus(statusesByDeployment.get(newestDeployment.id)), workflowRunId)) {
     errors.push(`newest github-pages deployment for SHA ${requested} is not a successful deployment from workflow run ${workflowRunId}`);
   }
 
