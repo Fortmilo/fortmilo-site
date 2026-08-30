@@ -1,6 +1,7 @@
 import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
+import { publicDocumentPathErrors } from "./public-site-contract.mjs";
 
 const lexicalCompare = (left, right) => left < right ? -1 : left > right ? 1 : 0;
 
@@ -51,20 +52,15 @@ export const fixedAssetFiles = Object.freeze([
 // These are deliberately public, stable document URLs. Their maintained generation
 // sources remain private to the repository and are not part of the publication set.
 export const approvedDocumentFiles = Object.freeze([
-  "documents/evidence-semantics-and-scanner-orchestration-v1.3.pdf",
-  "documents/evidence-semantics-and-scanner-orchestration-v1.4.pdf",
   "documents/evidence-semantics-and-scanner-orchestration.pdf",
   "documents/orchestrating-ai-for-secure-software-delivery.pdf",
-  "documents/security-observatory-reference-architecture-v4.1.svg",
-  "documents/security-observatory-reference-architecture-v4.2.svg"
+  "documents/security-observatory-reference-architecture.svg"
 ]);
 
-// These three Markdown files have intentional public URLs. No other repository
+// This Markdown contract has one intentional stable public URL. No other repository
 // Markdown file is approved merely because it is tracked beside them.
 export const publicTerminologyContractFiles = Object.freeze([
-  "CURRENT_EVIDENCE_TERMINOLOGY_CONTRACT.md",
-  "EVIDENCE_TERMINOLOGY_CONTRACT.md",
-  "EVIDENCE_TERMINOLOGY_CONTRACT_V1.1.md"
+  "EVIDENCE_TERMINOLOGY_CONTRACT.md"
 ]);
 
 // CSS names are content-addressed by the maintained site build. Only these two
@@ -86,6 +82,9 @@ export const intendedRouteFiles = Object.freeze([
 
 export function validatePublicationPaths(files) {
   const seen = new Set();
+
+  const documentPathErrors = publicDocumentPathErrors(files);
+  if (documentPathErrors.length) throw new Error(documentPathErrors[0]);
 
   for (const file of files) {
     if (typeof file !== "string" || !file) throw new Error("publication paths must be non-empty strings");

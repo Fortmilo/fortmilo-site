@@ -12,6 +12,7 @@ import {
   PDFRawStream,
   PDFString,
 } from "pdf-lib";
+import { publicDocumentPathErrors } from "./public-site-contract.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const pdfPath = path.join(root, "documents", "orchestrating-ai-for-secure-software-delivery.pdf");
@@ -21,6 +22,9 @@ const generatorPath = path.join(root, "scripts", "generate-ai-methodology-paper.
 const originalPdfBaseCommit = "eef726558763129453cada2b184dda527f289d2a";
 const expectedOriginalTextSha256 = "ba9b4457f916a92b57555d157811950913867f3e0c81d1bab0cf789b21a17751";
 const errors = [];
+for (const message of publicDocumentPathErrors(["documents/orchestrating-ai-for-secure-software-delivery.pdf"])) {
+  errors.push(`methodology publication path: ${message}`);
+}
 
 function visibleHtmlText(value) {
   return value

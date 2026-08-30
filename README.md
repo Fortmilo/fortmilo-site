@@ -30,6 +30,10 @@ npm run generate:ai-methodology
 - `scripts/generate-brand-assets.ps1` reproduces the social JPEG from the approved public banner export.
 - `.github/workflows/validate-site.yml` runs the build, site contract and publication-accessibility assertions for pull requests and protected publication branches.
 
+## Stable document publication
+
+Every public document has one stable filename and URL. Updates replace that file in place; versioned, dated, immutable, `CURRENT_` alias, superseded and historical public copies are not published. Git history preserves previous editions. This applies to PDFs, SVGs, Markdown contracts and future downloadable documents.
+
 ## Approved public artwork
 
 - `/assets/fortmilo-brand-banner-1200x675.png`: approved homepage banner export and social-preview source.

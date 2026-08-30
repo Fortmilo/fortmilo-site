@@ -7,23 +7,30 @@ const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url))
 const representativePositiveUrls = Object.freeze([
   "/",
   "/.well-known/security.txt",
-  "/CURRENT_EVIDENCE_TERMINOLOGY_CONTRACT.md",
+  "/EVIDENCE_TERMINOLOGY_CONTRACT.md",
   "/documents/",
   "/documents/evidence-semantics-and-scanner-orchestration.pdf",
   "/documents/orchestrating-ai-for-secure-software-delivery.pdf",
-  "/documents/security-observatory-reference-architecture-v4.2.svg",
+  "/documents/security-observatory-reference-architecture.svg",
   "/security-observatory/",
   "/security-observatory/evidence.html"
 ]);
 
 const excludedUrls = Object.freeze([
   "/.github/workflows/validate-site.yml",
+  "/AGENTS.md",
   "/CLAUDE.md",
+  "/CURRENT_EVIDENCE_TERMINOLOGY_CONTRACT.md",
+  "/EVIDENCE_TERMINOLOGY_CONTRACT_V1.1.md",
   "/README.md",
   "/document-src/",
   "/package-lock.json",
   "/package.json",
   "/pages-deployment-trigger.txt",
+  "/documents/evidence-semantics-and-scanner-orchestration-v1.3.pdf",
+  "/documents/evidence-semantics-and-scanner-orchestration-v1.4.pdf",
+  "/documents/security-observatory-reference-architecture-v4.1.svg",
+  "/documents/security-observatory-reference-architecture-v4.2.svg",
   "/scripts/build-site.mjs",
   "/site-src/"
 ]);
@@ -90,6 +97,7 @@ const positiveUrls = options.all
   ? [...new Set((await getPublicationAllowlist(repositoryRoot)).map(publicUrlForFile))].sort()
   : representativePositiveUrls;
 
+let passed = false;
 for (let attempt = 1; attempt <= options.attempts; attempt += 1) {
   const nonce = `${process.env.GITHUB_RUN_ID || process.pid}-${Date.now()}-${attempt}`;
   const results = await Promise.all([
@@ -108,7 +116,8 @@ for (let attempt = 1; attempt <= options.attempts; attempt += 1) {
 
   if (!failures.length) {
     console.log(`HTTP publication verification passed: ${positiveUrls.length} intended URL(s) returned 200; ${excludedUrls.length} excluded URL(s) returned genuine 404 responses`);
-    process.exit(0);
+    passed = true;
+    break;
   }
 
   if (attempt < options.attempts) {
@@ -117,5 +126,7 @@ for (let attempt = 1; attempt <= options.attempts; attempt += 1) {
   }
 }
 
-console.error(`HTTP publication verification failed after ${options.attempts} attempt(s)`);
-process.exit(1);
+if (!passed) {
+  console.error(`HTTP publication verification failed after ${options.attempts} attempt(s)`);
+  process.exitCode = 1;
+}

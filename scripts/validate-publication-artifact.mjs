@@ -10,6 +10,7 @@ import {
   publicTerminologyContractFiles,
   requiredHiddenFiles
 } from "./publication-allowlist.mjs";
+import { publicDocumentPathErrors } from "./public-site-contract.mjs";
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const artifactRoot = path.resolve(repositoryRoot, "_site");
@@ -20,6 +21,7 @@ const errors = [];
 
 const explicitlyExcludedUrls = Object.freeze([
   "/.github/workflows/validate-site.yml",
+  "/AGENTS.md",
   "/CLAUDE.md",
   "/README.md",
   "/document-src/",
@@ -41,6 +43,7 @@ const bannedDirectories = new Set([
 
 const bannedFileNames = new Set([
   ".gitignore",
+  "AGENTS.md",
   "CLAUDE.md",
   "README.md",
   "package-lock.json",
@@ -211,6 +214,7 @@ const expectedFiles = await getPublicationAllowlist(repositoryRoot);
 const expectedSet = new Set(expectedFiles);
 const artifactFiles = (await enumerateArtifact(artifactRoot)).sort(lexicalCompare);
 const artifactSet = new Set(artifactFiles);
+for (const message of publicDocumentPathErrors(artifactFiles)) errors.push(message);
 
 for (const file of expectedFiles) {
   if (!artifactSet.has(file)) errors.push(`${file}: expected publication file is missing`);
