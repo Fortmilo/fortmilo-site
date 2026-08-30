@@ -32,6 +32,9 @@ jobs:
       - name: Build and validate
         run: npm run check
 
+      - name: Assert accessible methodology publication
+        run: npm run validate:ai-methodology
+
       - name: Verify clean generated output
         run: |
           git diff --exit-code

@@ -17,6 +17,7 @@ export const routes = [
 ];
 
 export const documentAssets = [
+  { output: "documents/orchestrating-ai-for-secure-software-delivery.pdf", canonical: "https://fortmilo.co.uk/documents/orchestrating-ai-for-secure-software-delivery.pdf", lastmod: "2026-08-30", status: "current" },
   { output: "documents/evidence-semantics-and-scanner-orchestration.pdf", canonical: "https://fortmilo.co.uk/documents/evidence-semantics-and-scanner-orchestration.pdf", lastmod: "2026-08-29", status: "current" },
   { output: "documents/evidence-semantics-and-scanner-orchestration-v1.4.pdf", canonical: "https://fortmilo.co.uk/documents/evidence-semantics-and-scanner-orchestration-v1.4.pdf", lastmod: "2026-08-29", status: "current-immutable" },
   { output: "documents/evidence-semantics-and-scanner-orchestration-v1.3.pdf", canonical: "https://fortmilo.co.uk/documents/evidence-semantics-and-scanner-orchestration-v1.3.pdf", lastmod: "2026-08-01", status: "superseded-immutable" }

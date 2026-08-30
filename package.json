@@ -4,9 +4,11 @@
   "type": "module",
   "scripts": {
     "build": "node scripts/build-site.mjs",
+    "generate:ai-methodology": "node scripts/generate-ai-methodology-paper.mjs",
     "generate:evidence-paper": "node scripts/generate-evidence-paper.mjs",
     "test:contract": "node scripts/test-public-site-contract.mjs",
-    "validate": "npm run test:contract && node scripts/validate-public-site.mjs",
+    "validate:ai-methodology": "node scripts/validate-ai-methodology-paper.mjs",
+    "validate": "npm run test:contract && node scripts/validate-public-site.mjs && npm run validate:ai-methodology",
     "check": "npm run build && npm run validate"
   },
   "devDependencies": {

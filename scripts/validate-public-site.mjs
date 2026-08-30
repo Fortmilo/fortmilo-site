@@ -178,11 +178,19 @@ if (!architecture.includes("<strong>Read-only assessment</strong><span>No securi
 const csvTrustBoundary = "Collection and retention occur inside the subscriber Salesforce organisation. The LWC prepares the allow-listed CSV in the authenticated browser session; downloading it creates a file outside Salesforce.";
 if (!architecture.includes(csvTrustBoundary)) errors.push("architecture-security.html: incorrect CSV trust boundary");
 const documents = await readFile(path.join(root, "documents/index.html"), "utf8");
-if ((documents.match(/not product documentation/giu) || []).length !== 0) {
-  errors.push("documents/index.html: duplicate item-level product-documentation disclaimer remains");
+if (documents.includes("Independent engineering research")) errors.push("documents/index.html: independent engineering research wording remains");
+for (const value of [
+  "Engineering methodology",
+  "Fortmilo engineering-methodology publications",
+  "Security Observatory is used as a bounded case study; no AI product capability is claimed for Security Observatory.",
+  "<strong>Version</strong><span>1.0 accessible edition</span>",
+  "<strong>Publication date</strong><span>30 August 2026</span>",
+  'href="/documents/orchestrating-ai-for-secure-software-delivery.pdf">Read the accessible methodology paper</a>'
+]) {
+  if (!documents.includes(value)) errors.push(`documents/index.html: accessible methodology publication missing ${value}`);
 }
-if (!documents.includes("are not Security Observatory product documentation")) {
-  errors.push("documents/index.html: section-level product-documentation disclaimer missing");
+if (/Security Observatory (?:has|includes|offers|uses) AI/iu.test(documents)) {
+  errors.push("documents/index.html: Security Observatory is attributed an AI product capability");
 }
 if (!documents.includes('href="/documents/security-observatory-reference-architecture-v4.2.svg">View current reference architecture (v4.2)</a>')) {
   errors.push("documents/index.html: current reference architecture is not v4.2");
