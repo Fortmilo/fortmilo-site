@@ -1,0 +1,3228 @@
+<!DOCTYPE html>
+<html lang="en-GB">
+ <head>
+  <meta charset="utf-8">
+  <meta content="Luca Pacini" name="author">
+  <meta content="Fortmilo engineering methodology for evidence-gated AI-assisted software delivery, using Security Observatory as a bounded case study." name="description">
+  <meta content="Fortmilo, secure software delivery, AI-assisted engineering, human authority, evidence gates, Security Observatory case study" name="keywords">
+  <title>
+   Orchestrating AI for Secure Software Delivery
+  </title>
+  <style>
+   @page { size: A4; margin: 16mm 16mm 18mm; }
+    * { box-sizing: border-box; }
+    html { font-size: 10.3pt; }
+    body { margin: 0; color: #17243a; background: #fff; font-family: Arial, Helvetica, sans-serif; line-height: 1.46; }
+    main { display: block; }
+    h1, h2, h3 { color: #0c2442; line-height: 1.16; break-after: avoid; }
+    h1 { margin: 0 0 5mm; font-size: 23pt; letter-spacing: -0.25pt; }
+    h2 { margin: 9mm 0 3mm; padding-top: 2mm; border-top: 1px solid #c9d4e2; font-size: 17.5pt; }
+    h3 { margin: 5mm 0 2mm; font-size: 13pt; }
+    p { margin: 0 0 3.1mm; orphans: 3; widows: 3; }
+    ul, ol { margin: 2mm 0 4mm 6mm; padding-left: 5mm; }
+    li { margin: 0 0 1.5mm; }
+    a { color: #075d8f; text-decoration: underline; text-underline-offset: 1px; }
+    strong { color: #10213a; }
+    .title-page { min-height: 247mm; display: flex; flex-direction: column; break-after: page; }
+    .masthead { display: flex; justify-content: space-between; align-items: center; padding-bottom: 4mm; border-bottom: 3px solid #d94b31; }
+    .brand { font-size: 15pt; font-weight: 700; color: #0c2442; }
+    .doc-type { color: #52657d; font-size: 9pt; letter-spacing: .08em; text-transform: uppercase; }
+    .title-block { margin: 24mm 0 9mm; }
+    .kicker { margin-bottom: 4mm; color: #a33f2b; font-weight: 700; letter-spacing: .08em; text-transform: uppercase; }
+    .subtitle { max-width: 160mm; color: #40526a; font-size: 14.5pt; line-height: 1.38; }
+    .status { display: inline-block; margin-top: 5mm; padding: 2.5mm 4mm; border-radius: 999px; background: #e8f3ed; color: #205938; font-weight: 700; }
+    .meta { width: 100%; margin-top: 7mm; border-collapse: collapse; }
+    .meta th, .meta td { padding: 2.4mm 3mm; border: 1px solid #bbc8d7; vertical-align: top; text-align: left; }
+    .meta th { width: 34%; background: #eef3f8; color: #0c2442; }
+    .proposition { margin-top: auto; padding: 6mm; border-left: 5px solid #d94b31; background: #fff4ef; font-size: 14pt; font-weight: 700; }
+    .abstract { padding: 6mm; background: #f2f6fa; border-radius: 4mm; }
+    .notice { margin: 4mm 0; padding: 4mm 5mm; border-left: 4px solid #39729f; background: #edf6fc; }
+    .warning { border-left-color: #c2552d; background: #fff4ee; }
+    .question { margin: 5mm 7mm; padding: 4mm; color: #0c2442; font-size: 13pt; font-weight: 700; text-align: center; }
+    .toc { columns: 2; column-gap: 9mm; }
+    .toc li { break-inside: avoid; }
+    .table-wrap { margin: 3mm 0 5mm; }
+    table { width: 100%; border-collapse: collapse; font-size: 9pt; }
+    caption { padding: 0 0 2mm; color: #40526a; font-weight: 700; text-align: left; }
+    th, td { padding: 2.1mm 2.4mm; border: 1px solid #aebdce; vertical-align: top; text-align: left; }
+    thead { display: table-header-group; }
+    thead th { background: #183b62; color: #fff; }
+    tbody th { background: #eaf0f6; color: #10213a; }
+    tr { break-inside: avoid; }
+    .figure { margin: 5mm 0 6mm; break-inside: avoid; }
+    .figure img { display: block; width: 100%; height: auto; }
+    .figcaption { margin-top: 2mm; color: #4b5d74; font-size: 9pt; }
+    .cards { display: grid; grid-template-columns: repeat(3, 1fr); gap: 3mm; margin: 4mm 0 5mm; }
+    .card { padding: 4mm; border: 1px solid #bdcad8; border-radius: 3mm; background: #fbfcfe; break-inside: avoid; }
+    .card h3 { margin-top: 0; }
+    .page-break { break-before: page; }
+    .small { color: #4d5f75; font-size: 9pt; }
+    .history { border-left: 4px solid #8190a6; padding-left: 4mm; }
+    .publication-section { break-inside: auto; }
+    .template { padding: 4mm 5mm; border: 1px solid #bdcad8; background: #fbfcfe; }
+    .template h3 { margin-top: 3mm; }
+    .references li { margin-bottom: 2.4mm; }
+    .title-page { min-height: 247mm; }
+    .title-block { margin: 13mm 0 6mm; }
+    .title-block h1 { font-size: 21pt; }
+    .subtitle { font-size: 13pt; line-height: 1.32; }
+    .status { margin-top: 3mm; padding: 2mm 3.5mm; }
+    .meta { margin-top: 4mm; font-size: 8.4pt; line-height: 1.26; }
+    .meta th, .meta td { padding: 1.4mm 2mm; }
+    .proposition { padding: 4mm 5mm; font-size: 13pt; }
+    .front-notices { margin: 0 0 8mm; }
+    .front-notices .notice { break-inside: auto; }
+    h3 { break-after: avoid; }
+    thead th strong { color: inherit; }
+    section ul, section ol { columns: 1; display: block; }
+    section li { display: list-item; width: auto; break-inside: avoid; }
+    figure { margin: 5mm 0 6mm; break-inside: avoid; }
+    figcaption { margin-top: 2mm; color: #4b5d74; font-size: 9pt; }
+    td, th { overflow-wrap: anywhere; }
+    .references a, .small a { overflow-wrap: anywhere; }
+  </style>
+ </head>
+ <body>
+  <main>
+   <section aria-labelledby="document-title" class="title-page">
+    <div class="masthead">
+     <span class="brand">
+      Fortmilo
+     </span>
+     <span class="doc-type">
+      Engineering methodology
+     </span>
+    </div>
+    <div class="title-block">
+     <p class="kicker">
+      Evidence-gated delivery
+     </p>
+     <h1 id="document-title">
+      Orchestrating AI for Secure Software Delivery
+     </h1>
+     <p class="subtitle">
+      A Fortmilo engineering-methodology publication using Security Observatory as a bounded case study in human authority, evidence gates and multi-model engineering. It makes no claim that Security Observatory contains, offers or depends on AI product capabilities.
+     </p>
+     <p class="status">
+      Version 1.0 accessible edition - Current
+     </p>
+    </div>
+    <table aria-label="Publication metadata" class="meta">
+     <thead>
+      <tr>
+       <th scope="col">
+        Field
+       </th>
+       <th scope="col">
+        Value
+       </th>
+      </tr>
+     </thead>
+     <tbody>
+      <tr>
+       <th scope="row">
+        Author
+       </th>
+       <td>
+        Luca Pacini
+       </td>
+      </tr>
+      <tr>
+       <th scope="row">
+        Publisher
+       </th>
+       <td>
+        Fortmilo
+       </td>
+      </tr>
+      <tr>
+       <th scope="row">
+        Version
+       </th>
+       <td>
+        1.0 accessible edition
+       </td>
+      </tr>
+      <tr>
+       <th scope="row">
+        Status
+       </th>
+       <td>
+        Current
+       </td>
+      </tr>
+      <tr>
+       <th scope="row">
+        Original publication date
+       </th>
+       <td>
+        11 August 2026
+       </td>
+      </tr>
+      <tr>
+       <th scope="row">
+        Accessible edition date
+       </th>
+       <td>
+        30 August 2026
+       </td>
+      </tr>
+      <tr>
+       <th scope="row">
+        Original review status
+       </th>
+       <td>
+        Owner-adjudicated evidence-boundary and terminology corrections incorporated. The role-separated adversarial challenge of the rebuilt 11 August candidate had not been completed at that publication point.
+       </td>
+      </tr>
+      <tr>
+       <th scope="row">
+        Bounded case study
+       </th>
+       <td>
+        Security Observatory. It is used only as an engineering delivery case study; this publication makes no claim that Security Observatory contains, offers or depends on AI product capabilities.
+       </td>
+      </tr>
+      <tr>
+       <th scope="row">
+        Method status
+       </th>
+       <td>
+        Derived from one bounded project; not independently replicated or validated as a general delivery standard.
+       </td>
+      </tr>
+      <tr>
+       <th scope="row">
+        Document licence
+       </th>
+       <td>
+        CC BY 4.0 for Fortmilo-authored text and figures, subject to third-party material and trademark boundaries.
+       </td>
+      </tr>
+     </tbody>
+    </table>
+    <p class="proposition">
+     AI may extend delivery capacity; it does not acquire delivery authority.
+    </p>
+   </section>
+   <section aria-label="Evidence basis and disclosures" class="front-notices">
+    <div class="notice">
+     <p>
+      <strong>
+       Evidence-basis notice.
+      </strong>
+      This paper proposes a practical delivery method derived from one small, security-sensitive software project and from the cited standards and research. It does not claim causal proof that the method improves productivity, quality or security across all projects. Project-specific implementation, test and release records are partly private and are therefore treated as self-attested unless a public artefact is cited. Public repository state, live-site observations, automated test evidence and external research are kept as distinct evidence classes rather than merged into a single assurance claim.
+     </p>
+    </div>
+    <div class="notice">
+     <p>
+      <strong>
+       Disclosure of AI use and competing interests.
+      </strong>
+      This paper was produced under the method it describes. ChatGPT/GPT contributed synthesis, research, requirements shaping and document production; Codex contributed bounded implementation work in the case-study repositories; Claude and Claude Code were used in role-separated adversarial-challenge roles during technical, customer-facing and publication review. Named tools are described as the concrete implementation of delivery roles, not as an endorsement or comparative product claim. Model agreement was never treated as proof. The author defined the scope and structure, adjudicated findings, owns every claim and retains sole release authority. The author is the founder and sole proprietor of Fortmilo; the bounded case-study product is a Fortmilo product. No external funding was received.
+     </p>
+    </div>
+    <p class="proposition">
+     Core proposition. AI may extend delivery capacity; it does not acquire delivery authority.
+    </p>
+   </section>
+   <nav aria-labelledby="contents-heading">
+    <h2 id="contents-heading">
+     Contents
+    </h2>
+    <ol class="toc">
+     <li>
+      <a href="#introduction">
+       1. Introduction
+      </a>
+     </li>
+     <li>
+      <a href="#scope">
+       2. Scope, definitions and methodological stance
+      </a>
+     </li>
+     <li>
+      <a href="#risk">
+       3. Risk model for AI-assisted delivery
+      </a>
+     </li>
+     <li>
+      <a href="#principles">
+       4. Governance principles
+      </a>
+     </li>
+     <li>
+      <a href="#cycle">
+       5. The evidence-gated delivery cycle
+      </a>
+     </li>
+     <li>
+      <a href="#roles">
+       6. Roles and separation of responsibility
+      </a>
+     </li>
+     <li>
+      <a href="#contract">
+       7. The task contract
+      </a>
+     </li>
+     <li>
+      <a href="#evidence">
+       8. Evidence classes and permitted claims
+      </a>
+     </li>
+     <li>
+      <a href="#security">
+       9. Security and data boundaries
+      </a>
+     </li>
+     <li>
+      <a href="#challenge">
+       10. Role-separated adversarial challenge and human adjudication
+      </a>
+     </li>
+     <li>
+      <a href="#case-study">
+       11. Case study: Security Observatory
+      </a>
+     </li>
+     <li>
+      <a href="#measurement">
+       12. Measuring value without productivity theatre
+      </a>
+     </li>
+     <li>
+      <a href="#antipatterns">
+       13. Anti-patterns
+      </a>
+     </li>
+     <li>
+      <a href="#adoption">
+       14. Proportionate adoption for a small project
+      </a>
+     </li>
+     <li>
+      <a href="#guidance">
+       15. Relationship to established guidance
+      </a>
+     </li>
+     <li>
+      <a href="#limitations">
+       16. Limitations and research agenda
+      </a>
+     </li>
+     <li>
+      <a href="#checklist">
+       17. Practical adoption checklist
+      </a>
+     </li>
+     <li>
+      <a href="#conclusion">
+       18. Conclusion
+      </a>
+     </li>
+     <li>
+      <a href="#appendix-a">
+       Appendix A. Reusable bounded task contract
+      </a>
+     </li>
+     <li>
+      <a href="#appendix-b">
+       Appendix B. Minimal delivery evidence register
+      </a>
+     </li>
+     <li>
+      <a href="#references">
+       References
+      </a>
+     </li>
+     <li>
+      <a href="#publication">
+       Publication and licensing
+      </a>
+     </li>
+    </ol>
+   </nav>
+   <section aria-labelledby="abstract-heading" class="abstract">
+    <h2 id="abstract-heading">
+     Abstract
+    </h2>
+    <p>
+     Small software projects face an uncomfortable asymmetry. They must make architectural, security, quality and release decisions comparable in consequence to those made by larger teams, but they cannot reproduce the same division of labour. Generative artificial intelligence can reduce some of that capacity constraint by accelerating research, drafting, implementation, test construction, documentation and review. Used without an explicit control model, however, the same capability can amplify error: an agent may invent requirements, expand scope, produce insecure code, validate its own assumptions, conceal uncertainty behind fluent prose, or declare completion without evidence.
+    </p>
+    <p>
+     This paper presents evidence-gated AI-assisted delivery, a human-governed method for small security-sensitive software projects. The method separates delivery capacity from delivery authority. Humans retain ownership of intent, security boundaries, public claims and release decisions. AI systems operate within bounded task contracts. Automated checks establish reproducible evidence. Role-separated adversarial challenge is used to expose assumptions, but model or provider separation is not represented as independent third-party assurance. Completion is permitted only when the relevant evidence gate has been satisfied and a human release authority has adjudicated residual uncertainty.
+    </p>
+    <p>
+     The method consists of nine linked states: human-owned intent and constraints; a bounded issue contract; AI-assisted implementation; automated proof; role-separated adversarial challenge; human adjudication; a release gate; live verification; and governance close-out. Each transition requires explicit evidence. The paper defines roles, task-contract requirements, an evidence ladder, data-handling boundaries, release criteria and anti-patterns.
+    </p>
+    <p>
+     The case study documents how the delivery of Security Observatory used this method across three evidence domains: a private Salesforce product repository, a public website repository, and private governance. It records the concrete allocation of ChatGPT/GPT, Codex, Claude/Claude Code and human authority; multi-repository and multi-worktree controls; primary-source web research; product and website release gates; and non-confirming cases in which the method detected defects or publication errors after earlier controls had failed to prevent them.
+    </p>
+    <p>
+     The principal claim is deliberately narrow. AI-assisted delivery can be made more governable when authority, evidence, baseline identity and uncertainty are represented explicitly. The method does not remove the need for engineering judgement, professional independent security review where required, or representative runtime validation. It provides a disciplined way for a small project to use AI without allowing fluency, model consensus or successful automation to substitute for proof.
+    </p>
+   </section>
+   <section aria-labelledby="introduction">
+    <h2 id="introduction">
+     1. Introduction
+    </h2>
+    <h3 id="1-1-the-capacity-problem-in-small-software-projects">
+     1.1 The capacity problem in small software projects
+    </h3>
+    <p>
+     A small software project is not merely a large project with fewer people. It has a different risk structure. The same individual may define requirements, design the architecture, implement the change, review the code, write the tests, update the documentation and decide whether to release. This concentration of responsibility produces speed, continuity and domain coherence, but it also removes many of the natural challenge mechanisms present in a larger engineering organisation.
+    </p>
+    <p>
+     Security-sensitive software sharpens the problem. A seemingly small change can alter authorisation, evidence retention, data exposure, deployment behaviour or the meaning of a customer-facing statement. The cost of an incorrect claim may exceed the cost of an incorrect line of code. A system that reports security posture must therefore protect not only execution integrity, but also epistemic integrity, defined here operationally as the maintained correspondence among four things: what the system observed, what it retained, what the project has verified, and what any public artefact asserts. A project preserves epistemic integrity when no statement in the fourth category exceeds the evidence available in the first three.
+    </p>
+    <p>
+     AI assistance is attractive because it appears to restore missing capacity. A coding agent can implement a bounded change. A language model can review a design, compare documentation, draft tests or challenge a release statement. Yet capacity is not equivalent to accountability. The model does not bear the consequence of an insecure release, a misleading product claim or a corrupted repository. It cannot inherit the owner's duty to decide what is acceptable.
+    </p>
+    <p>
+     The central design question is therefore not whether a small project should use AI. It is:
+    </p>
+    <p>
+     <strong>
+      How can a small project use AI intensively while keeping intent, evidence, accountability and release authority human-owned?
+     </strong>
+    </p>
+    <h3 id="1-2-the-failure-of-informal-ai-assistance">
+     1.2 The failure of informal AI assistance
+    </h3>
+    <p>
+     Informal AI use usually begins with an apparently harmless pattern: describe the desired outcome, accept a plausible implementation, run a few tests and move on. That pattern is insufficient for security-sensitive work because it obscures five separate questions:
+    </p>
+    <ol>
+     <li>
+      <p>
+       Was the requested change actually the authorised change?
+      </p>
+     </li>
+     <li>
+      <p>
+       Did the implementation remain within the permitted security and data boundaries?
+      </p>
+     </li>
+     <li>
+      <p>
+       What evidence demonstrates that the implementation behaves as claimed?
+      </p>
+     </li>
+     <li>
+      <p>
+       Was the evidence subjected to role-separated adversarial challenge, or merely restated by the same reasoning process?
+      </p>
+     </li>
+     <li>
+      <p>
+       Who accepted the residual risk and authorised release?
+      </p>
+     </li>
+    </ol>
+    <p>
+     Without explicit answers, an AI-assisted project can produce a polished but weakly governed result. The danger is not limited to hallucinated code. More common failures include scope laundering, where an unrequested feature is introduced as a tidy-up; evidence inflation, where a passing unit test becomes a universal support claim; review convergence, where two models repeat the same unsupported assumption; and false completion, where a task is called done despite an unverified deployment or customer-facing state.
+    </p>
+    <h3 id="1-3-purpose-and-contribution">
+     1.3 Purpose and contribution
+    </h3>
+    <p>
+     This paper contributes a practical governance method for a small project rather than a new model architecture or a universal software-development lifecycle. It combines four established ideas:
+    </p>
+    <ul>
+     <li>
+      <p>
+       risk management for organisations that develop, deploy or use AI;
+      </p>
+     </li>
+     <li>
+      <p>
+       secure software-development practices;
+      </p>
+     </li>
+     <li>
+      <p>
+       human oversight and assurance;
+      </p>
+     </li>
+     <li>
+      <p>
+       evidence-bounded release governance.
+      </p>
+     </li>
+    </ul>
+    <p>
+     Its distinctive contribution is deliberately narrow: a lightweight operating loop for governing AI contributions to ordinary software delivery, combined with explicit baseline identity, evidence classes, exclusions, role-separated challenge and human release authority. Among the instruments reviewed in Section 15, these elements are not assembled into the same project-level operating procedure for a small team using generative models as delivery contributors.
+    </p>
+    <p>
+     The method is intentionally compatible with ordinary issue trackers, Git repositories, automated tests, static validation, web research and human review. It does not require a dedicated governance platform or a large assurance function. The case study also documents where the process itself failed or had to be hardened, rather than presenting the method as having emerged fully formed.
+    </p>
+   </section>
+   <section aria-labelledby="scope">
+    <h2 id="scope">
+     2. Scope, definitions and methodological stance
+    </h2>
+    <h3 id="2-1-scope">
+     2.1 Scope
+    </h3>
+    <p>
+     The method is intended for small software products and reference implementations where:
+    </p>
+    <ul>
+     <li>
+      <p>
+       one person or a small team owns architecture and delivery;
+      </p>
+     </li>
+     <li>
+      <p>
+       AI systems assist with research, drafting, coding, testing or review;
+      </p>
+     </li>
+     <li>
+      <p>
+       security, privacy, compliance-adjacent or customer-trust claims matter;
+      </p>
+     </li>
+     <li>
+      <p>
+       repository history and release artefacts are available;
+      </p>
+     </li>
+     <li>
+      <p>
+       the project can define explicit human release authority.
+      </p>
+     </li>
+    </ul>
+    <p>
+     It is not a substitute for formal safety engineering, regulated validation, professional penetration testing, legal advice or independent certification. It may support those activities by improving traceability, but it cannot confer assurance that has not been performed.
+    </p>
+    <h3 id="2-2-definitions">
+     2.2 Definitions
+    </h3>
+    <div class="table-wrap">
+     <table>
+      <caption>
+       Terms used in this publication
+      </caption>
+      <thead>
+       <tr>
+        <th scope="col">
+         <strong>
+          Term
+         </strong>
+        </th>
+        <th scope="col">
+         <strong>
+          Meaning in this paper
+         </strong>
+        </th>
+       </tr>
+      </thead>
+      <tbody>
+       <tr>
+        <th scope="row">
+         AI-assisted delivery
+        </th>
+        <td>
+         The use of a generative model or coding agent to contribute to research,
+         <br>
+         design, implementation, test, documentation or review.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Human authority
+        </th>
+        <td>
+         The retained human power to define scope, approve exceptions, accept risk,
+         <br>
+         make public claims and authorise release.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Task contract
+        </th>
+        <td>
+         A bounded statement of authorised work, exclusions, starting state, evidence
+         <br>
+         requirements and stop conditions.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Evidence gate
+        </th>
+        <td>
+         A condition that must be satisfied by inspectable evidence before work may
+         <br>
+         advance to the next delivery state.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Role-separated adversarial challenge
+        </th>
+        <td>
+         Review performed from a deliberately distinct delivery role, model/provider
+         <br>
+         perspective, prompt or evidence set to expose assumptions. It is a challenge
+         <br>
+         mechanism, not third-party assurance.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Baseline identity
+        </th>
+        <td>
+         The repository, worktree, branch, expected commit and clean/dirty state that
+         <br>
+         define which software or publication candidate is actually under review.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Adjudication
+        </th>
+        <td>
+         Human resolution of disagreement, uncertainty or conflicting evidence.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Release evidence
+        </th>
+        <td>
+         Evidence tied to the exact candidate or deployed artefact, not merely to a
+         <br>
+         similar earlier state.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Governance close-out
+        </th>
+        <td>
+         The update of requirements, issue status and retained evidence after live
+         <br>
+         verification.
+        </td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <h3 id="2-3-methodological-stance">
+     2.3 Methodological stance
+    </h3>
+    <p>
+     The method adopts three forms of restraint.
+    </p>
+    <p>
+     First, it is evidence-bounded. A statement may be no stronger than the evidence that supports it. Source inspection, an automated test, a runtime observation and a live deployment check are distinct evidence classes. None silently substitutes for another. The same discipline applies to baseline identity: evidence about one branch, worktree or commit does not silently transfer to another.
+    </p>
+    <p>
+     Second, it is human-governed. Human oversight is not represented by a ceremonial approval at the end. Human authority is embedded at the points where intent, security boundaries, public claims and release risk are decided.
+    </p>
+    <p>
+     Third, it is proportionate. A small project cannot reproduce the bureaucracy of a large regulated organisation. The method therefore concentrates control at the highest-leverage boundaries: task authorisation, sensitive data, role-separated adversarial challenge, release evidence and public claims.
+    </p>
+   </section>
+   <section aria-labelledby="risk">
+    <h2 id="risk">
+     3. Risk model for AI-assisted delivery
+    </h2>
+    <h3 id="3-1-risk-is-introduced-at-the-interaction-boundary">
+     3.1 Risk is introduced at the interaction boundary
+    </h3>
+    <p>
+     An AI model does not act in isolation. Risk emerges from the interaction between the model, the prompt, available tools, repository state, external services and human expectations. The same model can be low-risk when drafting non-sensitive prose and high-risk when given write access to a production-connected repository.
+    </p>
+    <p>
+     The relevant unit of control is therefore not "the model". It is the authorised interaction: what the model may see, what it may change, what evidence it must produce and what decisions remain outside its authority.
+    </p>
+    <h3 id="3-2-principal-failure-modes">
+     3.2 Principal failure modes
+    </h3>
+    <h3 id="requirement-invention">
+     Requirement invention
+    </h3>
+    <p>
+     The model supplies missing requirements from statistical expectation rather than project authority. The output may be plausible and still be wrong for the product.
+    </p>
+    <h3 id="scope-laundering">
+     Scope laundering
+    </h3>
+    <p>
+     A change is introduced as a refactor, tidy-up or best practice although it alters product behaviour, claims, dependencies or security posture. The problem is particularly acute when a vacated design slot is automatically filled rather than deliberately removed.
+    </p>
+    <h3 id="false-completion">
+     False completion
+    </h3>
+    <p>
+     The model reports "done" after local implementation while deployment, visual acceptance, package installation or live verification remains outstanding.
+    </p>
+    <h3 id="evidence-inflation">
+     Evidence inflation
+    </h3>
+    <p>
+     A source-level observation is described as runtime proof. A single runtime execution is treated as edition-wide support. A test fixture is treated as customer-environment validation.
+    </p>
+    <h3 id="review-correlation">
+     Review correlation
+    </h3>
+    <p>
+     A second model agrees because it received the same framing, copied the same assumption or drew from the same incomplete evidence. Apparent consensus may therefore be correlated error rather than separate confirmation.
+    </p>
+    <h3 id="self-review-limitation">
+     Self-review limitation
+    </h3>
+    <p>
+     Language models can often identify superficial problems in their own output, but research has shown that reliable self-correction of reasoning generally requires external feedback. A model's revised answer is not, by itself, independent evidence.[10]
+    </p>
+    <h3 id="security-weakness-propagation">
+     Security weakness propagation
+    </h3>
+    <p>
+     AI-generated code can reproduce insecure patterns, mishandle validation, misunderstand platform-specific authorisation or pass weak tests. Empirical work on generated code found in public repositories has identified a high prevalence of security weaknesses across many weakness categories.[9]
+    </p>
+    <h3 id="sensitive-data-disclosure">
+     Sensitive-data disclosure
+    </h3>
+    <p>
+     Prompts, logs, tool calls or retained transcripts may expose secrets, production evidence, personal data or attacker-useful diagnostics. The risk exists even when the final code is safe.
+    </p>
+    <h3 id="context-collision-and-operator-fatigue">
+     Context collision and operator fatigue
+    </h3>
+    <p>
+     Multiple model conversations, browser tabs, terminals and worktrees can each hold a coherent but different version of the project state. Fatigue makes it easier to paste a challenge into an implementation window, send an implementation prompt to the reviewer, execute a command from the wrong tree or act on a stale baseline. These are ordinary human errors, but in a multi-model workflow they can redirect a correct instruction into the wrong role, repository or authority boundary.
+    </p>
+    <h3 id="automation-bias">
+     Automation bias
+    </h3>
+    <p>
+     A fluent recommendation can receive more weight than its evidence warrants. Experimental work shows that domain experts presented with automated suggestions can accept improper output and take less initiative of their own,[11] and that explanations do not reliably reduce this bias and can increase it.[12]
+    </p>
+    <h3 id="3-3-risk-is-not-reduced-by-model-plurality-alone">
+     3.3 Risk is not reduced by model plurality alone
+    </h3>
+    <p>
+     Using several models can improve challenge coverage, but model plurality is not an assurance mechanism unless roles and evidence are separated. Three agents repeating the same repository claim do not create three independent observations. Different providers may still share public training material, common reasoning patterns or the same mistaken project framing.
+    </p>
+    <p>
+     In this method, provider diversity is therefore treated as role separation, not as an independence guarantee. A useful challenger should have a materially different objective, evidence view or access path from the implementer. The human adjudicator still resolves the result against source, tests, runtime evidence or authoritative external material.
+    </p>
+   </section>
+   <section aria-labelledby="principles">
+    <h2 id="principles">
+     4. Governance principles
+    </h2>
+    <h3 id="4-1-human-owned-intent">
+     4.1 Human-owned intent
+    </h3>
+    <p>
+     The human owner defines the problem, the permitted outcome and the non-negotiable boundaries. AI may propose clarifications, but it does not convert ambiguity into authority. Where a missing decision affects security, legal wording, public claims or release scope, the correct outcome is a recorded blocker or owner decision.
+    </p>
+    <h3 id="4-2-bounded-authority">
+     4.2 Bounded authority
+    </h3>
+    <p>
+     Every AI task should state what may be read, what may be changed, what must remain untouched and when the agent must stop. Tool access should be the minimum needed for the task. A model that can inspect a repository does not automatically need permission to push, deploy or alter connected services.
+    </p>
+    <h3 id="4-3-source-hierarchy">
+     4.3 Source hierarchy
+    </h3>
+    <p>
+     Conflicting statements are resolved against an explicit hierarchy. A typical hierarchy for this case study is:
+    </p>
+    <ol>
+     <li>
+      <p>
+       current owner decision;
+      </p>
+     </li>
+     <li>
+      <p>
+       canonical requirements and decisions;
+      </p>
+     </li>
+     <li>
+      <p>
+       current source and tests;
+      </p>
+     </li>
+     <li>
+      <p>
+       runtime or deployed evidence;
+      </p>
+     </li>
+     <li>
+      <p>
+       historical documentation;
+      </p>
+     </li>
+     <li>
+      <p>
+       model inference or conversational memory.
+      </p>
+     </li>
+    </ol>
+    <p>
+     The exact order may vary, but model inference or chat memory should never outrank current project authority or direct evidence. Where the answer depends on current repository or live-site state, the relevant source is re-read rather than recalled.
+    </p>
+    <h3 id="4-4-evidence-before-acceptance">
+     4.4 Evidence before acceptance
+    </h3>
+    <p>
+     The model's narrative is not proof. Each material claim must be supported by an inspectable artefact: a source path, diff, test result, deployment result, HTTP response, rendered page, checksum or owner acceptance record.
+    </p>
+    <h3 id="4-5-role-separation">
+     4.5 Role separation
+    </h3>
+    <p>
+     Implementation, challenge and release authority should be separated even when the project has one human owner. AI systems can supply additional roles, but the human remains the adjudicator. The agent that implemented the change should not be the sole authority on whether it is correct.
+    </p>
+    <h3 id="4-6-data-minimisation">
+     4.6 Data minimisation
+    </h3>
+    <p>
+     The model receives only the information required to perform the task. Secrets, access tokens, session identifiers, private keys, certificate bodies, production customer evidence and raw sensitive diagnostics are excluded unless a specifically authorised secure process exists.
+    </p>
+    <h3 id="4-7-traceable-state-transitions">
+     4.7 Traceable state transitions
+    </h3>
+    <p>
+     A task does not move from "not done" to "done" because work occurred. It moves because the evidence required for that state exists. The issue, commit and release records should show the transition and the evidence supporting it.
+    </p>
+    <h3 id="4-8-reproducibility">
+     4.8 Reproducibility
+    </h3>
+    <p>
+     A reviewer should be able to identify the exact repository, worktree, branch, starting commit, clean/dirty state, changed files, validation commands, resulting commit and deployed artefact. Reproducibility need not mean complete public source, but it requires unambiguous internal provenance. Correct reasoning about the wrong baseline is still incorrect review.
+    </p>
+    <h3 id="4-9-consensus-is-not-proof">
+     4.9 Consensus is not proof
+    </h3>
+    <p>
+     Agreement between AI systems is a review signal, not a truth criterion. When models disagree, the disagreement is adjudicated against source, requirements, tests or runtime evidence. When models agree, the evidence is still checked.
+    </p>
+    <h3 id="4-10-public-claims-are-release-artefacts">
+     4.10 Public claims are release artefacts
+    </h3>
+    <p>
+     Customer-facing wording, diagrams and whitepapers are part of the release surface. A false hardening claim can be more damaging than a missing marketing claim. Public statements therefore receive the same evidence discipline as code.
+    </p>
+    <h3 id="4-11-operator-state-is-part-of-the-control-boundary">
+     4.11 Operator state is part of the control boundary
+    </h3>
+    <p>
+     Human authority does not make the human infallible. Attention, fatigue and context switching affect the reliability of adjudication and command execution. The method therefore uses visible role and tree labels, one write-capable task per tree, mandatory preflight checks and a simple stop rule: when the operator cannot state which role, repository, worktree and baseline is active without guessing, the task returns to read-only or stops.
+    </p>
+   </section>
+   <section aria-labelledby="cycle">
+    <h2 id="cycle">
+     5. The evidence-gated delivery cycle
+    </h2>
+    <div aria-labelledby="figure-1-caption" class="figure" role="group">
+     <img alt="Nine-state evidence-gated delivery cycle. Human-owned intent and constraints lead to a bounded issue contract, AI-assisted implementation, automated proof, role-separated adversarial challenge, human adjudication, a release gate, live verification and governance close-out. Challenge and adjudication can return work to earlier states." src="evidence-gated-delivery-cycle.svg">
+     <p class="figcaption" id="figure-1-caption">
+      Figure 1. The evidence-gated delivery cycle. Every transition is gated by the minimum evidence for the target state; challenge and adjudication may return work to an earlier state.
+     </p>
+    </div>
+    <p>
+     The method uses nine states. The sequence is not a rigid waterfall; feedback may return work to an earlier state. What matters is that each transition is explicit and evidence-gated.
+    </p>
+    <h3 id="5-1-human-owned-intent-and-constraints">
+     5.1 Human-owned intent and constraints
+    </h3>
+    <p>
+     The owner defines the outcome, security posture, customer boundary and exclusions. For a security product, this may include read-only operation, no automatic remediation, no secret retention and no unsupported compliance claim.
+    </p>
+    <p>
+     Minimum evidence: owner decision or canonical requirement.
+    </p>
+    <h3 id="5-2-bounded-issue-contract">
+     5.2 Bounded issue contract
+    </h3>
+    <p>
+     The requirement is converted into a task contract with scope, exclusions, repository baseline, permitted tools, validation, stop conditions and expected reporting.
+    </p>
+    <p>
+     Minimum evidence: issue or task specification tied to the current baseline.
+    </p>
+    <h3 id="5-3-ai-assisted-implementation">
+     5.3 AI-assisted implementation
+    </h3>
+    <p>
+     The implementation agent edits only the authorised source. It records blockers instead of working around them through unrelated changes. The agent may create tests and validators, but it may not weaken existing controls merely to obtain a pass.
+    </p>
+    <p>
+     Minimum evidence: source diff and changed-file inventory.
+    </p>
+    <h3 id="5-4-automated-proof">
+     5.4 Automated proof
+    </h3>
+    <p>
+     Builds, unit tests, static checks, security validators, content validators and integrity checks are executed. Automated proof should include negative tests for prohibited behaviour, not only positive tests for the desired path.
+    </p>
+    <p>
+     Minimum evidence: command output tied to the exact candidate.
+    </p>
+    <h3 id="5-5-role-separated-adversarial-challenge">
+     5.5 Role-separated adversarial challenge
+    </h3>
+    <p>
+     A challenger reviews the result from an adversarial, customer or assurance perspective. It should search for omissions, scope drift, insecure assumptions, misleading wording and untested failure paths. The challenger does not gain authority to expand the task automatically.
+    </p>
+    <p>
+     Minimum evidence: review findings with source references and explicit uncertainty.
+    </p>
+    <h3 id="5-6-human-adjudication">
+     5.6 Human adjudication
+    </h3>
+    <p>
+     The owner accepts, rejects or modifies review findings. Decisions are recorded, particularly where a review recommendation conflicts with project boundaries or introduces a new claim.
+    </p>
+    <p>
+     Minimum evidence: owner decision and updated task boundary where necessary.
+    </p>
+    <h3 id="5-7-release-gate">
+     5.7 Release gate
+    </h3>
+    <p>
+     The exact candidate is checked against release criteria: clean repository state, correct branch, required tests, visual acceptance, package or deployment evidence, protected secrets and approved public wording.
+    </p>
+    <p>
+     Minimum evidence: release checklist tied to the candidate SHA or immutable artefact.
+    </p>
+    <h3 id="5-8-live-verification">
+     5.8 Live verification
+    </h3>
+    <p>
+     The deployed result is verified separately from the local build. Examples include HTTP status, live content checks, package installation, runtime execution, checksum comparison or customer-facing visual inspection.
+    </p>
+    <p>
+     Minimum evidence: live observations and artefact identity.
+    </p>
+    <h3 id="5-9-governance-close-out">
+     5.9 Governance close-out
+    </h3>
+    <p>
+     The issue and canonical requirements are updated with the released state, evidence and remaining limitations. Deferred work is preserved without being represented as complete.
+    </p>
+    <p>
+     Minimum evidence: closed issue, updated status and retained release record.
+    </p>
+   </section>
+   <section aria-labelledby="roles">
+    <h2 id="roles">
+     6. Roles and separation of responsibility
+    </h2>
+    <div aria-labelledby="figure-2-caption" class="figure" role="group">
+     <img alt="Three separated layers. Human authority owns intent, architecture, security boundaries, public claims, risk acceptance and release. AI contribution supplies orchestration, implementation and role-separated challenge. Evidence supplies source diffs, automated checks, runtime observations, artefact identity and live verification. Contribution and model agreement do not transfer release authority." src="authority-contribution-evidence.svg">
+     <p class="figcaption" id="figure-2-caption">
+      Figure 2. Human authority, AI contribution and evidence remain separate. Tools may contribute work or challenge, but neither contribution nor model agreement transfers release authority.
+     </p>
+    </div>
+    <h3 id="6-1-owner-architect-and-release-authority">
+     6.1 Owner, architect and release authority
+    </h3>
+    <p>
+     The human owner controls intent, architecture, security boundaries, risk acceptance, legal and public wording, visual acceptance and release. In the case study this role was held by Luca Pacini. The same person may perform several human activities, but the authority boundary remains explicit: implementation convenience, reviewer preference or model confidence cannot silently become product policy.
+    </p>
+    <h3 id="6-2-orchestration-synthesis-and-research-role">
+     6.2 Orchestration, synthesis and research role
+    </h3>
+    <p>
+     A general-purpose model can translate owner decisions into bounded tasks, compare competing findings, perform primary-source research and maintain a coherent view across repositories. In the case study this role was performed primarily by ChatGPT/GPT.
+    </p>
+    <p>
+     The orchestration role was not an authoritative project database. When current state mattered, it re-read the canonical requirements, GitHub state or live web surface. Web research was used to verify external claims; it was not allowed to stand in for evidence about the private implementation.
+    </p>
+    <h3 id="6-3-implementation-role">
+     6.3 Implementation role
+    </h3>
+    <p>
+     The implementation role converts a bounded requirement into source changes, tests and validation evidence. In the case study this role was performed primarily by Codex. Codex worked against explicitly identified repository/worktree/branch baselines and was used in both the private Salesforce product tree and the public website tree.
+    </p>
+    <p>
+     For Salesforce product work, implementation and repository inspection were separated from human-controlled deployment and release decisions. A successful Codex report did not constitute deployment proof.
+    </p>
+    <h3 id="6-4-role-separated-adversarial-challenge-role">
+     6.4 Role-separated adversarial-challenge role
+    </h3>
+    <p>
+     The challenger examines the candidate for defects, unsupported claims, scope drift and missing evidence. In the case study Claude and Claude Code were used in this role. Claude Code could challenge repository and source state; web-facing Claude review could challenge the public/customer-facing surface and publication artefacts.
+    </p>
+    <p>
+     This separation increased the chance of finding a different class of error, but it did not create third-party assurance. Findings remained recommendations until the human owner adjudicated them against evidence and scope.
+    </p>
+    <h3 id="6-5-automated-evidence-role">
+     6.5 Automated evidence role
+    </h3>
+    <p>
+     Automated tests, validators, package/build checks, static checks, checksum calculations and HTTP/live checks supplied reproducible observations. Automation could prove only the condition actually exercised. It could not decide whether a requirement was authorised or whether residual risk was acceptable.
+    </p>
+    <h3 id="6-6-external-source-and-live-boundary-verification">
+     6.6 External-source and live-boundary verification
+    </h3>
+    <p>
+     Official documentation, standards bodies, research publishers and the public website supplied external evidence. These sources were deliberately kept separate from private repository evidence. An official Salesforce or NIST page can support a claim about platform guidance or a standard; it cannot prove the current state of private code. Conversely, source inspection cannot prove that a public page is live or indexed.
+    </p>
+    <h3 id="6-7-role-allocation-is-replaceable-authority-rules-are-not">
+     6.7 Role allocation is replaceable; authority rules are not
+    </h3>
+    <p>
+     The method is vendor-neutral even though the case study names the tools actually used. Another project could allocate the same roles to different products or to human reviewers. What must survive a tool change is the separation among authority, contribution, challenge and evidence.
+    </p>
+   </section>
+   <section aria-labelledby="contract">
+    <h2 id="contract">
+     7. The task contract
+    </h2>
+    <p>
+     A strong task contract reduces ambiguity before the model begins work. It also makes review more objective because the candidate can be compared with an authorised specification rather than an inferred intention.
+    </p>
+    <h3 id="7-1-required-elements">
+     7.1 Required elements
+    </h3>
+    <div class="table-wrap">
+     <table>
+      <caption>
+       Required task-contract elements
+      </caption>
+      <thead>
+       <tr>
+        <th scope="col">
+         <strong>
+          Element
+         </strong>
+        </th>
+        <th scope="col">
+         <strong>
+          Required content
+         </strong>
+        </th>
+       </tr>
+      </thead>
+      <tbody>
+       <tr>
+        <th scope="row">
+         Requirement anchor
+        </th>
+        <td>
+         Issue, requirement or decision identifier.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Repository identity
+        </th>
+        <td>
+         Exact repository, worktree and relevant source boundary.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Starting baseline
+        </th>
+        <td>
+         Branch, expected commit and required clean/dirty-state condition.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Objective
+        </th>
+        <td>
+         The smallest complete outcome.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         In scope
+        </th>
+        <td>
+         Exact files, behaviours or artefacts authorised.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Out of scope
+        </th>
+        <td>
+         Explicitly prohibited changes and deferred work.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Security boundaries
+        </th>
+        <td>
+         Secrets, data, authorisation and remediation restrictions.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Evidence requirements
+        </th>
+        <td>
+         Tests, validators, runtime checks and artefact integrity.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Stop conditions
+        </th>
+        <td>
+         Wrong repository, dirty unrelated work, missing source, divergent baseline or
+         <br>
+         absent authority.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Commit and publication rules
+        </th>
+        <td>
+         Commit message, push policy, review gate and live verification.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Final report
+        </th>
+        <td>
+         Evidence required to close the issue.
+        </td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <h3 id="7-2-why-exclusions-matter">
+     7.2 Why exclusions matter
+    </h3>
+    <p>
+     An inclusion list defines the intended result; an exclusion list protects the product from plausible but unauthorised elaboration. In AI-assisted work, exclusions are particularly important because models tend to complete patterns. A removed card may be replaced because the layout appears incomplete. A newly available slot may acquire an unverified security claim. Explicit exclusions prevent design tidiness from becoming product scope.
+    </p>
+    <h3 id="7-3-stop-conditions-as-controls">
+     7.3 Stop conditions as controls
+    </h3>
+    <p>
+     A stop condition is not a failure of productivity. It is a control against operating on the wrong state. Typical stop conditions include:
+    </p>
+    <ul>
+     <li>
+      <p>
+       expected commit not present;
+      </p>
+     </li>
+     <li>
+      <p>
+       wrong repository or worktree;
+      </p>
+     </li>
+     <li>
+      <p>
+       unrelated dirty changes;
+      </p>
+     </li>
+     <li>
+      <p>
+       missing authoritative source;
+      </p>
+     </li>
+     <li>
+      <p>
+       inability to verify a security-sensitive claim;
+      </p>
+     </li>
+     <li>
+      <p>
+       required owner decision absent;
+      </p>
+     </li>
+     <li>
+      <p>
+       deployment target unavailable.
+      </p>
+     </li>
+    </ul>
+    <p>
+     The agent should report the precise blocker and preserve the repository state. A permitted exception - for example, reviewing committed HEAD while unrelated work-in-progress remains excluded - must be explicit and evidence-bound, not inferred.
+    </p>
+   </section>
+   <section aria-labelledby="evidence">
+    <h2 id="evidence">
+     8. Evidence classes and permitted claims
+    </h2>
+    <h3 id="8-1-evidence-is-a-ladder-not-a-binary-label">
+     8.1 Evidence is a ladder, not a binary label
+    </h3>
+    <div class="table-wrap">
+     <table>
+      <caption>
+       Evidence classes and permitted claims
+      </caption>
+      <thead>
+       <tr>
+        <th scope="col">
+         <strong>
+          Evidence class
+         </strong>
+        </th>
+        <th scope="col">
+         <strong>
+          Meaning
+         </strong>
+        </th>
+        <th scope="col">
+         <strong>
+          Permitted claim
+         </strong>
+        </th>
+       </tr>
+      </thead>
+      <tbody>
+       <tr>
+        <th scope="row">
+         Proposed
+        </th>
+        <td>
+         A design or change has been suggested.
+        </td>
+        <td>
+         May be considered; not implemented.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Source-established
+        </th>
+        <td>
+         The behaviour is visible in reviewed source.
+        </td>
+        <td>
+         Implemented in the reviewed source; runtime not
+         <br>
+         implied.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Test-observed
+        </th>
+        <td>
+         A controlled automated test exercised the
+         <br>
+         behaviour.
+        </td>
+        <td>
+         Observed under the stated fixture.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Runtime-observed
+        </th>
+        <td>
+         The behaviour occurred in a reviewed execution.
+        </td>
+        <td>
+         Observed in that execution and environment.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Release-validated
+        </th>
+        <td>
+         The exact candidate passed the defined release
+         <br>
+         gates.
+        </td>
+        <td>
+         Validated for the stated candidate and
+         <br>
+         prerequisites.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Live-verified
+        </th>
+        <td>
+         The deployed artefact was checked after
+         <br>
+         publication.
+        </td>
+        <td>
+         Present and functioning at the checked live
+         <br>
+         boundary.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Supported
+        </th>
+        <td>
+         The project accepts the behaviour as part of its
+         <br>
+         product contract for stated environments.
+        </td>
+        <td>
+         Supported only within the declared scope and
+         <br>
+         prerequisites.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Expected
+        </th>
+        <td>
+         The behaviour is required by design but not yet
+         <br>
+         evidenced at any higher class.
+        </td>
+        <td>
+         May be stated only as an expectation or
+         <br>
+         release-gate requirement, never as implemented or
+         <br>
+         validated behaviour.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         No conclusion available
+        </th>
+        <td>
+         The project does not hold reliable evidence for a
+         <br>
+         project-level conclusion.
+        </td>
+        <td>
+         No positive or negative implementation, validation
+         <br>
+         or support claim.
+        </td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <p>
+     The case-study product's evidence-confidence model is defined in the companion technical paper, Evidence Semantics and Scanner Orchestration.[18] This delivery ladder reuses that progression for project claims, adds Proposed before implementation evidence and Live-verified after release validation, and deliberately names the no-conclusion project state No conclusion available. It does not reuse the subscriber-facing label Not assessed at that layer. The distinction is intentional: the companion paper governs product evidence semantics; this paper governs what the delivery project may claim about its own work. Delivery claims are classified on this ladder and retained in the private delivery evidence register; no entry from that register is published here.
+    </p>
+    <h3 id="8-2-evidence-cannot-be-silently-promoted">
+     8.2 Evidence cannot be silently promoted
+    </h3>
+    <p>
+     Source-established behaviour does not become release-validated because the code appears straightforward. A successful local build does not prove a hosted page is live. A package version does not prove clean-org installation. A runtime result in one organisation does not establish edition-wide compatibility.
+    </p>
+    <h3 id="8-3-claim-classes-are-not-product-vocabulary">
+     8.3 Claim classes are not product vocabulary
+    </h3>
+    <p>
+     The ladder in this section classifies claims made by the project about its own work. It is not the vocabulary the product renders to subscribers. One concrete pair is enough to show the boundary: project-level No conclusion available means the delivery project cannot support a conclusion about its own work; product-level Not assessed means the question was outside the assessed run or scope. The full product presentation model is defined in the companion technical paper.[18] The two layers share one invariant: absence of evidence is never promoted into a favourable conclusion.
+    </p>
+   </section>
+   <section aria-labelledby="security">
+    <h2 id="security">
+     9. Security and data boundaries
+    </h2>
+    <h3 id="9-1-least-information-to-the-model">
+     9.1 Least information to the model
+    </h3>
+    <p>
+     AI assistance should operate on sanitised and task-relevant context. The default prohibited set should include:
+    </p>
+    <ul>
+     <li>
+      <p>
+       access and refresh tokens;
+      </p>
+     </li>
+     <li>
+      <p>
+       session identifiers;
+      </p>
+     </li>
+     <li>
+      <p>
+       client or consumer secrets;
+      </p>
+     </li>
+     <li>
+      <p>
+       passwords and private keys;
+      </p>
+     </li>
+     <li>
+      <p>
+       certificate bodies;
+      </p>
+     </li>
+     <li>
+      <p>
+       raw sensitive headers;
+      </p>
+     </li>
+     <li>
+      <p>
+       production customer evidence;
+      </p>
+     </li>
+     <li>
+      <p>
+       personal data not required for the task;
+      </p>
+     </li>
+     <li>
+      <p>
+       raw security diagnostics that increase attacker usefulness.
+      </p>
+     </li>
+    </ul>
+    <h3 id="9-2-repository-and-context-boundaries">
+     9.2 Repository and context boundaries
+    </h3>
+    <p>
+     The agent should receive access only to the repository, worktree and evidence set required for the task. In the case study, product source, website source and governance were distinct boundaries. Cross-tree reasoning was allowed only when the task required it; cross-tree editing was not assumed.
+    </p>
+    <p>
+     A model was not deliberately supplied with access or refresh tokens, session identifiers, private keys, certificate bodies, customer evidence, raw attacker-useful diagnostics or autonomous remediation authority. Where a task needed platform behaviour or research context, sanitised summaries or authoritative external sources were preferred to raw operational data.
+    </p>
+    <h3 id="9-3-no-autonomous-remediation">
+     9.3 No autonomous remediation
+    </h3>
+    <p>
+     Read-only operation is a product-scope decision, not a property the delivery method can confer. What the method requires is narrower and absolute: an AI-assisted task may not introduce write-back actions, token revocation, permission removal, API blocking or endpoint modification into a product whose contract excludes them, however useful the addition appears. Such changes are owner decisions requiring explicit authorisation, threat modelling and their own release evidence.
+    </p>
+    <h3 id="9-4-prompt-and-transcript-retention">
+     9.4 Prompt and transcript retention
+    </h3>
+    <p>
+     Project governance should assume that prompts and tool outputs may persist. Sensitive values should therefore be excluded before interaction rather than relying on deletion afterwards. When raw diagnostics are needed, they should remain in a controlled engineering channel and be replaced with bounded categories in retained product or publication artefacts.
+    </p>
+    <h3 id="9-5-external-research-and-live-web-boundary">
+     9.5 External research and live-web boundary
+    </h3>
+    <p>
+     External research should use authoritative sources for platform, security, standards and legal-adjacent claims. Search snippets and secondary commentary can identify leads, but load-bearing statements should be checked against primary documentation or research.
+    </p>
+    <p>
+     The case study also used web access for a different purpose: checking the deployed public website and publication URLs. These observations prove only the public boundary checked at that time. They do not prove the repository from which the site was built, just as repository evidence does not prove that a cache, search engine or hosted page has updated.
+    </p>
+   </section>
+   <section aria-labelledby="challenge">
+    <h2 id="challenge">
+     10. Role-separated adversarial challenge and human adjudication
+    </h2>
+    <h3 id="10-1-challenger-objective">
+     10.1 Challenger objective
+    </h3>
+    <p>
+     The challenger is not asked whether the implementation "looks good". It is asked to falsify specific claims:
+    </p>
+    <ul>
+     <li>
+      <p>
+       Does the diff remain within the authorised issue?
+      </p>
+     </li>
+     <li>
+      <p>
+       Is the repository/worktree/commit actually the one named by the task?
+      </p>
+     </li>
+     <li>
+      <p>
+       Can a prohibited state still occur?
+      </p>
+     </li>
+     <li>
+      <p>
+       Does the test prove the claim it is cited for?
+      </p>
+     </li>
+     <li>
+      <p>
+       Has a local observation been described as live or universal?
+      </p>
+     </li>
+     <li>
+      <p>
+       Has customer wording exceeded the product evidence?
+      </p>
+     </li>
+     <li>
+      <p>
+       Has a security boundary been weakened for convenience?
+      </p>
+     </li>
+    </ul>
+    <h3 id="10-2-challenge-without-scope-capture">
+     10.2 Challenge without scope capture
+    </h3>
+    <p>
+     A role-separated adversarial challenge can identify valuable defects and still recommend unauthorised work. Each finding should therefore be classified:
+    </p>
+    <ul>
+     <li>
+      <p>
+       accepted defect;
+      </p>
+     </li>
+     <li>
+      <p>
+       valid but already tracked;
+      </p>
+     </li>
+     <li>
+      <p>
+       deferred improvement;
+      </p>
+     </li>
+     <li>
+      <p>
+       unsupported assertion;
+      </p>
+     </li>
+     <li>
+      <p>
+       regression risk;
+      </p>
+     </li>
+     <li>
+      <p>
+       new owner decision required;
+      </p>
+     </li>
+     <li>
+      <p>
+       leave alone.
+      </p>
+     </li>
+    </ul>
+    <p>
+     This classification protects the project from replacing its roadmap with a reviewer's imagination.
+    </p>
+    <h3 id="10-3-model-provider-separation-is-not-third-party-assurance">
+     10.3 Model/provider separation is not third-party assurance
+    </h3>
+    <p>
+     Using a different provider or model for challenge can reduce direct self-review correlation, but it does not make the review independent in the professional assurance sense. The challenger may share public sources, assumptions or framing with the implementer. The project therefore describes the control as role-separated adversarial challenge and reserves "independent" for genuinely separate external assurance or replication.
+    </p>
+    <h3 id="10-4-resolving-model-disagreement">
+     10.4 Resolving model disagreement
+    </h3>
+    <p>
+     When models disagree, the human should not choose the more confident answer. The disagreement should be decomposed into factual propositions and checked against current owner decisions, source, tests, runtime evidence or authoritative external material. Where evidence remains incomplete, the result stays unresolved rather than being forced into consensus.
+    </p>
+    <h3 id="10-5-human-visual-and-professional-judgement">
+     10.5 Human visual and professional judgement
+    </h3>
+    <p>
+     Some acceptance criteria are not reducible to automated checks. Layout balance, public tone, diagram readability and whether a page appears credible to a customer require human judgement. A manual visual gate is legitimate evidence when it is explicit, bounded to defined surfaces and recorded separately from automated proof.
+    </p>
+   </section>
+   <section aria-labelledby="case-study">
+    <h2 id="case-study">
+     11. Case study: Security Observatory
+    </h2>
+    <aside class="notice">
+     <p>
+      <strong>
+       Bounded case-study statement.
+      </strong>
+      Security Observatory is used only as a bounded case study of the engineering delivery method. This publication makes no claim that Security Observatory contains, offers or depends on AI product capabilities.
+     </p>
+    </aside>
+    <h3 id="11-1-project-context">
+     11.1 Project context
+    </h3>
+    <p>
+     Security Observatory is a Salesforce-native security evidence application operating under the bounded-write product contract defined in the companion technical paper, Evidence Semantics and Scanner Orchestration.[18] Its architecture combines Lightning Web Components, Apex orchestration, scanner families, Salesforce data and setup sources, selected Tooling API evidence and sanitised product-owned records. The product deliberately excludes automatic security remediation and the retention of secrets or attacker-useful raw values.
+    </p>
+    <p>
+     The delivery context concentrates multiple high-consequence responsibilities in a small project: Salesforce architecture, security design, package engineering, evidence semantics, documentation, a public website, licensing and release governance. That concentration made the project a useful bounded environment in which to develop and challenge the method described here.
+    </p>
+    <h3 id="11-2-actual-tool-and-authority-allocation">
+     11.2 Actual tool and authority allocation
+    </h3>
+    <p>
+     The methodology is role-based, but the case study used the following concrete allocation:
+    </p>
+    <div class="table-wrap">
+     <table>
+      <caption>
+       Case-study role allocation and authority boundaries
+      </caption>
+      <thead>
+       <tr>
+        <th scope="col">
+         <strong>
+          Delivery role
+         </strong>
+        </th>
+        <th scope="col">
+         <strong>
+          Case-study implementation
+         </strong>
+        </th>
+        <th scope="col">
+         <strong>
+          Authority boundary
+         </strong>
+        </th>
+       </tr>
+      </thead>
+      <tbody>
+       <tr>
+        <th scope="row">
+         Product owner, architect, adjudicator and release
+         <br>
+         authority
+        </th>
+        <td>
+         Luca Pacini
+        </td>
+        <td>
+         Owns scope, security boundaries, public/legal
+         <br>
+         wording, risk acceptance, visual acceptance and
+         <br>
+         release.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Orchestration, synthesis and primary-source
+         <br>
+         research
+        </th>
+        <td>
+         ChatGPT/GPT
+        </td>
+        <td>
+         May structure tasks, compare evidence and
+         <br>
+         research external claims; does not become
+         <br>
+         repository truth or release authority.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Bounded implementation and source inspection
+        </th>
+        <td>
+         Codex
+        </td>
+        <td>
+         Edits authorised source, creates tests/validators
+         <br>
+         and reports evidence against the named baseline;
+         <br>
+         no implicit product-policy or release authority.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Role-separated adversarial challenge
+        </th>
+        <td>
+         Claude / Claude Code
+        </td>
+        <td>
+         Challenges technical, customer-facing and
+         <br>
+         publication claims; findings require human
+         <br>
+         adjudication and are not third-party assurance.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Automated evidence
+        </th>
+        <td>
+         Salesforce tests, package/build checks, repository
+         <br>
+         validators, static/site builds, checksums and HTTP
+         <br>
+         checks
+        </td>
+        <td>
+         Proves only the exercised condition on the exact
+         <br>
+         candidate or checked surface.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         External/live evidence
+        </th>
+        <td>
+         Official web sources, public site, hosted documents
+         <br>
+         and owner-controlled search/indexing tools
+        </td>
+        <td>
+         Verifies external claims or live state; cannot prove
+         <br>
+         private implementation state.
+        </td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <h3 id="11-3-requirements-and-governance-as-the-control-plane">
+     11.3 Requirements and governance as the control plane
+    </h3>
+    <p>
+     The project moved deliberately away from conversational intent as the authoritative state. Numbered requirements, bounded GitHub issues, explicit statuses and retained owner decisions became the control plane. Typical states included Done, Partial, Not done, Blocked and Deferred, each with a meaning tied to evidence rather than optimism.
+    </p>
+    <p>
+     This matters because chat history and model memory are convenient but lossy. Before implementation guidance, review or status reporting, the relevant canonical requirement and current repository/live state were re-read. When they disagreed with a remembered narrative, the current evidence won.
+    </p>
+    <p>
+     The resulting delivery contract was approximately:
+    </p>
+    <p>
+     Owner decision &rarr; canonical requirement/governance &rarr; bounded issue &rarr; implementation &rarr; automated proof &rarr; role-separated adversarial challenge &rarr; human adjudication &rarr; correction if required &rarr; release gate &rarr; deployment/publication &rarr; live verification &rarr; governance close-out.
+    </p>
+    <h3 id="11-4-multi-repository-and-multi-worktree-orchestration">
+     11.4 Multi-repository and multi-worktree orchestration
+    </h3>
+    <div aria-labelledby="figure-3-caption" class="figure" role="group">
+     <img alt="Security Observatory delivery case-study orchestration. Human authority governs private product source, public website source and private governance. ChatGPT or GPT supports orchestration and research, Codex performs bounded implementation, Claude or Claude Code performs role-separated challenge, and automated and web evidence return to human adjudication before release." src="case-study-orchestration.svg">
+     <p class="figcaption" id="figure-3-caption">
+      Figure 3. The case-study orchestration model. Human authority sits above three project evidence domains. ChatGPT/GPT supports orchestration and research; Codex implements against explicitly identified product and website baselines; Claude/Claude Code challenges source and public surfaces; automated and web evidence return to human adjudication before release.
+     </p>
+    </div>
+    <p>
+     I treated repository identity as part of the evidence boundary, not as incidental Git hygiene. Before a material task or review, I required the expected repository, worktree, branch, HEAD and clean/dirty state to be established. A model can reason perfectly about the wrong branch and still give me a useless answer.
+    </p>
+    <p>
+     One review showed why this matters. My preflight stopped me because the named product worktree was on a different branch from the expected integration branch. The committed HEAD did resolve to the intended baseline, but I only knew that after I checked. The match was not evidence until I verified the commit. I deliberately restricted the audit to committed HEAD so unrelated work-in-progress could not leak into the review. On a separate website task, I initially treated a parent directory as if it were the site repository. It was not. I resolved the real worktree before I accepted any source conclusion.
+    </p>
+    <p>
+     That became a hard rule for me: baseline provenance is a delivery control. If I depart from the expected tree, I must say exactly why, identify the commit I am reviewing, and state what is included and excluded. A correct answer about the wrong software is still wrong.
+    </p>
+    <h3 id="11-5-salesforce-product-delivery-path">
+     11.5 Salesforce product delivery path
+    </h3>
+    <p>
+     For product changes, the typical path was:
+    </p>
+    <ol>
+     <li>
+      <p>
+       the owner defined the security and customer outcome;
+      </p>
+     </li>
+     <li>
+      <p>
+       the requirement was registered in canonical governance with explicit exclusions;
+      </p>
+     </li>
+     <li>
+      <p>
+       Codex inspected and modified only the authorised product baseline;
+      </p>
+     </li>
+     <li>
+      <p>
+       Apex tests, repository validators, package/build checks or runtime checks supplied the required evidence class;
+      </p>
+     </li>
+     <li>
+      <p>
+       Claude/Claude Code challenged implementation, failure handling and public claims;
+      </p>
+     </li>
+     <li>
+      <p>
+       ChatGPT/GPT helped decompose disagreements and cross-check external Salesforce documentation where necessary;
+      </p>
+     </li>
+     <li>
+      <p>
+       the owner adjudicated findings and retained final release authority;
+      </p>
+     </li>
+     <li>
+      <p>
+       deployment, package or runtime proof remained a separate gate and was not inferred from source success.
+      </p>
+     </li>
+    </ol>
+    <p>
+     The process was deliberately conservative about security evidence. A unit test could justify a test-observed claim; it could not establish clean-org installation, edition-wide compatibility or a production runtime state unless those boundaries were actually exercised.
+    </p>
+    <h3 id="11-6-public-website-and-publication-delivery-path">
+     11.6 Public website and publication delivery path
+    </h3>
+    <p>
+     The same method was applied to the public Fortmilo website rather than treating the site as "just content". A typical website/publication sequence was:
+    </p>
+    <ol>
+     <li>
+      <p>
+       owner decision and governance issue;
+      </p>
+     </li>
+     <li>
+      <p>
+       verification of the current public-site baseline;
+      </p>
+     </li>
+     <li>
+      <p>
+       Codex implementation against the website repository;
+      </p>
+     </li>
+     <li>
+      <p>
+       local static build and content/security validators;
+      </p>
+     </li>
+     <li>
+      <p>
+       role-separated challenge from source and, where useful, the public/customer-facing web surface;
+      </p>
+     </li>
+     <li>
+      <p>
+       human adjudication and visual acceptance;
+      </p>
+     </li>
+     <li>
+      <p>
+       publication;
+      </p>
+     </li>
+     <li>
+      <p>
+       live HTTP/content verification and artefact identity checks;
+      </p>
+     </li>
+     <li>
+      <p>
+       owner-controlled search/indexing steps where relevant;
+      </p>
+     </li>
+     <li>
+      <p>
+       governance close-out only after the live boundary matched the approved candidate.
+      </p>
+     </li>
+    </ol>
+    <p>
+     This surface produced useful counterexamples. A source tree can be correct while the live page is stale; a file can exist in GitHub while the landing page still points to stale content; and a search engine can remain out of date after both source and hosted site are correct. Each is a different evidence boundary.
+    </p>
+    <h3 id="11-7-web-research-and-external-source-verification">
+     11.7 Web research and external-source verification
+    </h3>
+    <p>
+     Web access served two distinct roles in the case study.
+    </p>
+    <p>
+     First, ChatGPT/GPT and Claude used authoritative web sources to verify current platform behaviour, standards, research papers and publication details. Primary sources were preferred for load-bearing claims. This prevented a stale citation or remembered product behaviour from silently becoming technical fact.
+    </p>
+    <p>
+     Second, web access was used to inspect the public site and hosted documents after publication. That observation could establish that a URL returned content or that customer-facing wording was present. It could not establish the private source history behind it.
+    </p>
+    <div class="table-wrap">
+     <table>
+      <caption>
+       Evidence domains and their limits
+      </caption>
+      <thead>
+       <tr>
+        <th scope="col">
+         <strong>
+          Evidence domain
+         </strong>
+        </th>
+        <th scope="col">
+         <strong>
+          Can support
+         </strong>
+        </th>
+        <th scope="col">
+         <strong>
+          Cannot by itself prove
+         </strong>
+        </th>
+       </tr>
+      </thead>
+      <tbody>
+       <tr>
+        <th scope="row">
+         Private repository/source
+        </th>
+        <td>
+         Current reviewed implementation, tests and
+         <br>
+         baseline identity
+        </td>
+        <td>
+         Live publication, search indexing or customer
+         <br>
+         runtime behaviour
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Automated validation
+        </th>
+        <td>
+         Behaviour exercised by the test/build/check on the
+         <br>
+         candidate
+        </td>
+        <td>
+         Unexercised requirements, visual quality or
+         <br>
+         universal support
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Official external source
+        </th>
+        <td>
+         Standards, vendor documentation and published
+         <br>
+         research
+        </td>
+        <td>
+         Private implementation state
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Public/live web
+        </th>
+        <td>
+         What a reader can retrieve at the checked URL
+         <br>
+         and time
+        </td>
+        <td>
+         Which private source or local build produced it
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Human adjudication
+        </th>
+        <td>
+         Accepted scope, residual risk and release decision
+        </td>
+        <td>
+         Technical behaviour not otherwise evidenced
+        </td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <h3 id="11-8-complete-trace-evidence-first-website-release">
+     11.8 Complete trace: evidence-first website release
+    </h3>
+    <p>
+     A completed publication-surface trace demonstrates the whole loop without relying on private product details.
+    </p>
+    <p>
+     Human-owned intent. The owner approved a specific evidence-first homepage outcome, exact trust boundaries and prohibited overclaiming.
+    </p>
+    <p>
+     Task contract. Governance captured the permitted copy, layout, source tree and validation rules.
+    </p>
+    <p>
+     Implementation. Codex reapplied the design on the current website baseline rather than forcing a stale earlier change set onto newer source.
+    </p>
+    <p>
+     Automated proof. The static build and validators checked the required copy, navigation, metadata, images and prohibited language.
+    </p>
+    <p>
+     Role-separated challenge. Claude reviewed the public/customer-facing result and source evidence for credibility, scope and claim strength.
+    </p>
+    <p>
+     Human adjudication. Reviewer preferences that changed scope were separated from genuine defects; the owner accepted the final visual and public wording.
+    </p>
+    <p>
+     Release and live verification. The site was published and checked at the live boundary. Search/indexing work remained a distinct owner-controlled activity rather than being inferred from publication.
+    </p>
+    <p>
+     Close-out. Governance was updated only after the replacement path was accepted and the superseded work was explicitly closed.
+    </p>
+    <h3 id="11-9-non-confirming-product-cases-evidence-failures-found-by-challenge">
+     11.9 Non-confirming product cases: evidence failures found by challenge
+    </h3>
+    <p>
+     I do not trust a governance method whose case study contains only successes, so I am keeping the four product failures recorded against EV-01 through EV-04 in the paper.
+    </p>
+    <p>
+     EV-01 and EV-02 were false-zero defects. In the Connected App and Sites/Experience paths, a failed source acquisition could still reach zero-shaped evidence. My tests were green because I had not asserted those failure paths. I had therefore built false-clean paths and proved them green.
+    </p>
+    <p>
+     EV-03 exposed a different problem: scanner exceptions could lose a useful bounded cause before reaching the operator. The fix preserved only approved failure categories and safe next actions; unknown conditions still fail closed rather than retaining raw exception text.
+    </p>
+    <p>
+     EV-04 exposed a retained-evidence read problem. A bounded read failure could collapse family state into an unexplained Unknown presentation. The correction separated read layers, preserved readable retained evidence where possible and added a bounded read-limitation warning. The forced degraded branch is test-observed; I did not manufacture a live failure merely to strengthen the evidence label.
+    </p>
+    <p>
+     The method did not prevent these defects. The challenge stage caught them. I treated the findings as correctness blockers and froze favourable evidence-class upgrades while the affected paths remained unresolved. After remediation and named validation, the companion technical paper recorded the transition against EV-01 through EV-04. The value of the control was not that I avoided the mistakes; it was that the process stopped the claim until the evidence changed.
+    </p>
+    <h3 id="11-10-publication-process-failures-and-hardening">
+     11.10 Publication-process failures and hardening
+    </h3>
+    <p>
+     The documentation and website work forced me to harden the process again. I have kept these failures and near misses in the first person because they are the clearest evidence of what the controls are for:
+    </p>
+    <div class="table-wrap">
+     <table>
+      <caption>
+       Publication-process failures and strengthened controls
+      </caption>
+      <thead>
+       <tr>
+        <th scope="col">
+         <strong>
+          What I got wrong or nearly got wrong
+         </strong>
+        </th>
+        <th scope="col">
+         <strong>
+          Consequence
+         </strong>
+        </th>
+        <th scope="col">
+         <strong>
+          Control I added or strengthened
+         </strong>
+        </th>
+       </tr>
+      </thead>
+      <tbody>
+       <tr>
+        <th scope="row">
+         I targeted a wrong or stale worktree assumption
+        </th>
+        <td>
+         I could have described the wrong software correctly
+        </td>
+        <td>
+         Repository/worktree/branch/HEAD preflight and
+         <br>
+         explicit committed-HEAD exception rules
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         I lost the authoritative editable source for a
+         <br>
+         publication artefact
+        </th>
+        <td>
+         Reconstructing it from extracted text could have
+         <br>
+         introduced silent drift
+        </td>
+        <td>
+         Controlled reconstruction and a delta ledger tied to
+         <br>
+         the public artefact
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         I wrote export-safety wording broader than the
+         <br>
+         tests supported
+        </th>
+        <td>
+         Public wording implied more protection than the
+         <br>
+         enumerated evidence established
+        </td>
+        <td>
+         I narrowed the claim to the reviewed trigger
+         <br>
+         prefixes and control-character handling
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         I allowed a reviewer recommendation to reach
+         <br>
+         beyond authorised scope
+        </th>
+        <td>
+         Review could have become roadmap capture
+        </td>
+        <td>
+         I classify findings as defect, deferred work, new
+         <br>
+         owner decision or leave alone
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         I could not prove visual quality with automation
+        </th>
+        <td>
+         Passing validators could still leave a visibly poor
+         <br>
+         publication
+        </td>
+        <td>
+         I retained an explicit human visual-acceptance gate
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         I changed a publication artefact and its landing
+         <br>
+         page out of sequence
+        </th>
+        <td>
+         The artefact, landing-page link and live URL
+         <br>
+         temporarily diverged
+        </td>
+        <td>
+         I split artefact integrity, landing-page linkage and
+         <br>
+         live-URL verification into separate release checks
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         I found that publication wording no longer matched
+         <br>
+         current product vocabulary
+        </th>
+        <td>
+         Carrying it forward unchanged would have
+         <br>
+         misrepresented the current implementation
+        </td>
+        <td>
+         I compare publication wording with the current
+         <br>
+         implementation and record material wording
+         <br>
+         changes explicitly
+        </td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <p>
+     I do not present these episodes as proof that the method was mature from the outset. They show the opposite: I changed the controls when reality contradicted my assumptions. A method that cannot absorb its own failures is theatre.
+    </p>
+    <h3 id="11-11-human-factors-too-many-windows-one-tired-operator">
+     11.11 Human factors: too many windows, one tired operator
+    </h3>
+    <p>
+     The least glamorous component in the orchestration model was also the most privileged: me. At several points, the most sophisticated failure mode in the stack was a tired human with too many nearly identical browser tabs, chat windows and terminals open.
+    </p>
+    <p>
+     I occasionally pasted a Claude challenge into the Codex window, or a Codex implementation report into the Claude window. Nothing dramatic or mysterious happened. Each system responded sensibly to the context I had given it; I had simply given the right material to the wrong role. I also ran correct diagnostic or validation commands in the wrong worktree before noticing that the path, branch or HEAD did not match the task I thought I was performing. The commands were not necessarily wrong. Their evidential context was.
+    </p>
+    <p>
+     The immediate cost was mostly small delays, repeated checks and a few unglamorous minutes working out which window I had just instructed. The professional lesson was more important: human context switching is part of the threat model. A role-separated process is not truly separated if the operator can silently route one role's material into another role's session or attach a result to the wrong repository baseline.
+    </p>
+    <p>
+     I therefore strengthened the operating discipline in five ways:
+    </p>
+    <ol>
+     <li>
+      <p>
+       every task begins by naming the role, repository, worktree, branch, expected HEAD and permitted write state;
+      </p>
+     </li>
+     <li>
+      <p>
+       pwd, repository-root, branch, HEAD and clean/dirty-state checks precede material work;
+      </p>
+     </li>
+     <li>
+      <p>
+       only one tree is treated as write-enabled at a time, while review sessions remain explicitly read-only unless authorised otherwise;
+      </p>
+     </li>
+     <li>
+      <p>
+       copied material is labelled by destination and purpose rather than pasted as an unmarked block; and
+      </p>
+     </li>
+     <li>
+      <p>
+       when fatigue makes the active context uncertain, publication and write operations stop rather than relying on memory.
+      </p>
+     </li>
+    </ol>
+    <p>
+     The rule that emerged is simple enough to remember late at night: when I have to ask myself which window is which, the release gate is already closed. The controls converted operator slips into visible rework rather than accepted evidence or a silent cross-tree release.
+    </p>
+    <h3 id="11-12-human-only-decisions">
+     11.12 Human-only decisions
+    </h3>
+    <p>
+     Several decisions remained deliberately outside model authority even when models supplied analysis:
+    </p>
+    <ul>
+     <li>
+      <p>
+       scope freezes and backlog priority;
+      </p>
+     </li>
+     <li>
+      <p>
+       security exceptions or any change to the bounded-write product contract;
+      </p>
+     </li>
+     <li>
+      <p>
+       acceptance or rejection of reviewer recommendations;
+      </p>
+     </li>
+     <li>
+      <p>
+       legal and public wording;
+      </p>
+     </li>
+     <li>
+      <p>
+       visual acceptance;
+      </p>
+     </li>
+     <li>
+      <p>
+       package/release readiness;
+      </p>
+     </li>
+     <li>
+      <p>
+       publication of public artefacts;
+      </p>
+     </li>
+     <li>
+      <p>
+       residual-risk acceptance and final release.
+      </p>
+     </li>
+    </ul>
+    <h3 id="11-13-context-deliberately-withheld-from-ai-systems">
+     11.13 Context deliberately withheld from AI systems
+    </h3>
+    <p>
+     The project did not deliberately provide AI systems with secrets, access or refresh tokens, session identifiers, private keys, certificate bodies, raw customer evidence, raw attacker-useful diagnostics or autonomous remediation authority. Sanitised summaries, safe reason categories, repository source and public/official documentation were preferred where they were sufficient for the task.
+    </p>
+    <h3 id="11-14-what-the-case-study-does-not-prove">
+     11.14 What the case study does not prove
+    </h3>
+    <p>
+     The case study does not prove that the method is faster than conventional delivery, that it generalises to larger teams, that model diversity provides independence, or that a human gate is sufficient assurance. It shows a narrower result: one technically experienced owner used AI intensively across implementation, synthesis, research and challenge while keeping authority, evidence classes and release gates explicit - and the controls sometimes stopped the project's own favourable claims.
+    </p>
+   </section>
+   <section aria-labelledby="measurement">
+    <h2 id="measurement">
+     12. Measuring value without productivity theatre
+    </h2>
+    <h3 id="12-1-productivity-evidence-is-context-dependent">
+     12.1 Productivity evidence is context-dependent
+    </h3>
+    <p>
+     Published evidence on AI-assisted programming is heterogeneous in design, population and result, and later evidence can change the interpretation of earlier studies.
+    </p>
+    <p>
+     Cui and colleagues report approximately 26 per cent more completed tasks across three randomised field experiments covering 4,867 developers, with the authors reporting a standard error of 10.3 percentage points.[14] METR, by contrast, studied sixteen experienced open-source maintainers working on their own mature repositories and found that early-2025 AI tools made the sampled tasks take approximately 19 per cent longer.[15]
+    </p>
+    <p>
+     Repository-level work by Song, Agarwal and Wen reports a 5.9 per cent increase in project-level code contributions associated with GitHub Copilot use.[16] Separate mechanism analyses estimate a 3.4 per cent increase in developer coding participation and a 2.1 per cent increase in individual productivity.[16] Those estimates describe different margins and are not arithmetic components that should be expected to reproduce the 5.9 per cent project-level estimate exactly. The same study reports that coordination time increased by 8 per cent because of more code discussion; a cost direction, not a benefit.[16] Its normalised issue and bug measures were statistically unchanged, which the authors interpret cautiously rather than as universal proof of unchanged code quality.
+    </p>
+    <p>
+     METR's February 2026 follow-up is an important caution against freezing the 2025 result into a timeless conclusion. The organisation reported that participants were likely obtaining more benefit from newer tools, but severe selection effects and measurement problems made the new experiment only very weak evidence for the size of any speed-up. Raw estimates suggested faster completion for some later-study groups, but the confidence intervals crossed zero and the study authors explicitly warned against treating those estimates as reliable current effect sizes.[24]
+    </p>
+    <p>
+     These studies are not commensurable. They differ in population, task type, tooling generation, outcome measure and identification strategy. The correct inference is not an average of the headline figures but a recognition that context and date are part of the evidence.
+    </p>
+    <p>
+     A small project should therefore avoid a headline claim such as "AI made delivery 30 per cent faster". The more defensible question is whether the method improved the project's effective assurance-adjusted capacity, defined here as the volume of work that passes the project's evidence gates and release authority within a period, at a residual-risk level the owner has explicitly accepted. Generated output that fails a gate, requires rework after challenge, or cannot be released without weakening a control contributes nothing to that measure.
+    </p>
+    <h3 id="12-2-recommended-measures">
+     12.2 Recommended measures
+    </h3>
+    <p>
+     The table below is proposed instrumentation, not applied measurement: no values are reported in this paper, and Section 16.3 records that absence as a limitation.
+    </p>
+    <div class="table-wrap">
+     <table>
+      <caption>
+       Proposed measurement instrumentation; no values are reported
+      </caption>
+      <thead>
+       <tr>
+        <th scope="col">
+         <strong>
+          Measure
+         </strong>
+        </th>
+        <th scope="col">
+         <strong>
+          What it tests
+         </strong>
+        </th>
+        <th scope="col">
+         <strong>
+          Misuse to avoid
+         </strong>
+        </th>
+       </tr>
+      </thead>
+      <tbody>
+       <tr>
+        <th scope="row">
+         Lead time from authorised issue to live verification
+        </th>
+        <td>
+         Delivery throughput
+        </td>
+        <td>
+         Ignoring increased rework or review debt.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Rework after role-separated adversarial challenge
+        </th>
+        <td>
+         First-pass quality and task clarity
+        </td>
+        <td>
+         Treating all challenge-driven change as model
+         <br>
+         failure.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Scope deviation count
+        </th>
+        <td>
+         Task-contract effectiveness
+        </td>
+        <td>
+         Rewarding under-delivery merely because scope
+         <br>
+         stayed narrow.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Escaped defect count
+        </th>
+        <td>
+         Release effectiveness
+        </td>
+        <td>
+         Comparing releases of very different risk.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Evidence-gate failure count
+        </th>
+        <td>
+         Whether controls are active
+        </td>
+        <td>
+         Treating blockers as wasted time.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Human review time
+        </th>
+        <td>
+         Governance cost
+        </td>
+        <td>
+         Assuming lower review time is always better.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Unsupported-claim corrections
+        </th>
+        <td>
+         Epistemic quality
+        </td>
+        <td>
+         Hiding corrected claims to improve the metric.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Sensitive-data incidents
+        </th>
+        <td>
+         Security boundary effectiveness
+        </td>
+        <td>
+         Counting only confirmed disclosure and ignoring
+         <br>
+         near misses.
+        </td>
+       </tr>
+       <tr>
+        <th scope="row">
+         Live verification failures
+        </th>
+        <td>
+         Local-to-live fidelity
+        </td>
+        <td>
+         Omitting infrastructure or external-service factors.
+        </td>
+       </tr>
+      </tbody>
+     </table>
+    </div>
+    <h3 id="12-3-quality-adjusted-capacity">
+     12.3 Quality-adjusted capacity
+    </h3>
+    <p>
+     The useful outcome is not maximum generated code. It is the amount of correctly scoped, reviewable and releasable work that a small project can complete without increasing residual risk beyond its accepted boundary.
+    </p>
+   </section>
+   <section aria-labelledby="antipatterns">
+    <h2 id="antipatterns">
+     13. Anti-patterns
+    </h2>
+    <h3 id="13-1-the-giant-prompt">
+     13.1 The giant prompt
+    </h3>
+    <p>
+     A single prompt combines product design, implementation, refactoring, documentation, deployment and review. The model loses task boundaries, and the human cannot attribute evidence to a specific decision.
+    </p>
+    <h3 id="13-2-the-self-certifying-agent">
+     13.2 The self-certifying agent
+    </h3>
+    <p>
+     The same agent implements the change, writes the tests, interprets the results and declares release readiness without role-separated adversarial challenge.
+    </p>
+    <h3 id="13-3-model-voting">
+     13.3 Model voting
+    </h3>
+    <p>
+     Several models are asked the same question, and the majority answer is treated as truth. Correlated training data and shared framing make this a weak assurance mechanism.
+    </p>
+    <h3 id="13-4-test-green-absolutism">
+     13.4 Test-green absolutism
+    </h3>
+    <p>
+     Passing tests are treated as proof that the requirement, architecture and public wording are correct. Tests only prove the behaviours they actually exercise. Benchmark research illustrates the point at scale: resolution rates on suites built from real repository issues depend on the tests those repositories happened to contain, and a change that satisfies the available tests has not thereby satisfied the requirement.[17] The false-zero cases in Section 11.9 are the same failure mode in miniature.
+    </p>
+    <h3 id="13-5-validator-weakening">
+     13.5 Validator weakening
+    </h3>
+    <p>
+     An existing guard is relaxed because a new implementation fails it. The correct sequence is to determine whether the guard is obsolete, whether the requirement changed, and whether both source and validation must change together.
+    </p>
+    <h3 id="13-6-unbounded-tidy-up">
+     13.6 Unbounded tidy-up
+    </h3>
+    <p>
+     The agent performs unrelated refactors, dependency upgrades or design additions while implementing a narrow issue. Review becomes larger and causal attribution weaker.
+    </p>
+    <h3 id="13-7-secret-rich-context">
+     13.7 Secret-rich context
+    </h3>
+    <p>
+     The model receives production logs, credentials or raw customer evidence because it is convenient. Sanitisation is attempted after disclosure rather than before interaction.
+    </p>
+    <h3 id="13-8-publication-before-evidence">
+     13.8 Publication before evidence
+    </h3>
+    <p>
+     A product page, whitepaper or diagram claims support, safety or release status before the exact candidate has been verified.
+    </p>
+    <h3 id="13-9-artificial-freshness">
+     13.9 Artificial freshness
+    </h3>
+    <p>
+     Dates, statuses or search metadata are updated merely to appear current, without a substantive change. This damages trust and makes retained evidence less meaningful.
+    </p>
+    <h3 id="13-10-endless-review-churn">
+     13.10 Endless review churn
+    </h3>
+    <p>
+     The project continuously changes sound work to satisfy every reviewer preference. Review becomes a source of scope instability rather than assurance.
+    </p>
+    <h3 id="13-11-the-six-window-cockpit">
+     13.11 The six-window cockpit
+    </h3>
+    <p>
+     The owner keeps several near-identical model chats, browser tabs and terminals open and relies on memory to know which role and tree each one represents. A correct instruction, review or command then lands in the wrong context. This is not a model hallucination; it is operator-induced context collision. The output is unusable as evidence even when its content is technically sound because provenance is part of the evidence. The remedy is not a promise to concentrate harder. It is visible role and tree labelling, one write-capable context at a time, a baseline preflight before every command sequence, and a stop rule when fatigue makes provenance uncertain.
+    </p>
+   </section>
+   <section aria-labelledby="adoption">
+    <h2 id="adoption">
+     14. Proportionate adoption for a small project
+    </h2>
+    <h3 id="14-1-minimum-viable-control-set">
+     14.1 Minimum viable control set
+    </h3>
+    <p>
+     A small project can adopt the method with six artefacts:
+    </p>
+    <ol>
+     <li>
+      <p>
+       a canonical requirements file;
+      </p>
+     </li>
+     <li>
+      <p>
+       bounded issues with exclusions and stop conditions;
+      </p>
+     </li>
+     <li>
+      <p>
+       a protected source repository with identifiable baselines;
+      </p>
+     </li>
+     <li>
+      <p>
+       automated build, test and validation commands;
+      </p>
+     </li>
+     <li>
+      <p>
+       a role-separated adversarial challenge record;
+      </p>
+     </li>
+     <li>
+      <p>
+       a release and live-verification record.
+      </p>
+     </li>
+    </ol>
+    <h3 id="14-2-risk-based-tailoring">
+     14.2 Risk-based tailoring
+    </h3>
+    <p>
+     Low-risk documentation edits may require source diff, link checks and owner review. A change to authorisation, sensitive data, package installation or public security claims requires stronger evidence, role-separated adversarial challenge and exact-candidate validation.
+    </p>
+    <h3 id="14-3-when-the-method-should-become-heavier">
+     14.3 When the method should become heavier
+    </h3>
+    <p>
+     The governance model should be expanded when:
+    </p>
+    <ul>
+     <li>
+      <p>
+       customer or production data is processed;
+      </p>
+     </li>
+     <li>
+      <p>
+       the product can change customer security configuration;
+      </p>
+     </li>
+     <li>
+      <p>
+       regulatory obligations apply;
+      </p>
+     </li>
+     <li>
+      <p>
+       multiple teams or suppliers contribute;
+      </p>
+     </li>
+     <li>
+      <p>
+       the model can deploy autonomously;
+      </p>
+     </li>
+     <li>
+      <p>
+       the cost of failure materially exceeds the owner's ability to absorb it.
+      </p>
+     </li>
+    </ul>
+    <p>
+     At that point, formal threat modelling, segregation of duties, independent security testing, change-management controls and organisational AI governance may be required.
+    </p>
+   </section>
+   <section aria-labelledby="guidance">
+    <h2 id="guidance">
+     15. Relationship to established guidance
+    </h2>
+    <h3 id="15-1-what-the-cited-instruments-govern">
+     15.1 What the cited instruments govern
+    </h3>
+    <p>
+     The method is consistent with, but does not replace, established guidance - and it is important not to narrow those instruments incorrectly.
+    </p>
+    <p>
+     The NIST AI Risk Management Framework addresses organisational risk management for organisations that create, provide, acquire, deploy or operate AI systems across their lifecycle.[1] Its Generative AI Profile applies that framework to risks specific to generative AI products, services and uses.[2] That makes the NIST material relevant to a project that uses generative AI as an engineering contributor, even when the delivered software is not itself an AI product. NIST does not, however, prescribe the small-project task-by-task operating loop defined in this paper.
+    </p>
+    <p>
+     The NIST Secure Software Development Framework organises secure-development practice around organisational readiness, protection of development environments and artefacts, production of secure releases, and vulnerability response.[3] NIST SP 800-218A extends secure-development guidance to AI model development and systems that incorporate models, with responsibilities spanning model producers, system producers and acquirers.[4]
+    </p>
+    <p>
+     The United Kingdom's Guidelines for Secure AI System Development treat security as a lifecycle concern from early design decisions through implementation, release and ongoing operation of AI systems.[5] The AI Cyber Security Code of Practice sets baseline security expectations across the AI lifecycle for organisations involved in building, deploying and operating AI.[6] The Software Security Code of Practice sets fourteen voluntary principles for organisations that develop or sell software, aimed at establishing a baseline of software security and resilience.[8] UK AI-assurance guidance frames assurance as a structured way to gather and communicate evidence about whether AI-related claims are trustworthy.[7]
+    </p>
+    <h3 id="15-2-adjacent-bodies-of-practice">
+     15.2 Adjacent bodies of practice
+    </h3>
+    <p>
+     Adjacent traditions supply components of the present method without assembling the same operating loop. Goal Structuring Notation provides a structured graphical notation for claims, arguments and supporting evidence.[19] The NCSC's Assurance Principles and Claims for the Software Security Code of Practice uses claims-argument-evidence structures to decompose software-security principles into evidence-backed claims.[25]
+    </p>
+    <p>
+     SLSA v1.2 is the closest supply-chain neighbour to the baseline-provenance control in this paper because its Source Track covers the creation, review and management of source revisions and provides source provenance that consumers can inspect.[20] SLSA attests properties of source revisions and build artefacts to consumers; the control here establishes which repository, worktree, branch and commit a task or review is actually operating against before work begins. The two controls are complementary rather than interchangeable. The in-toto framework likewise binds supply-chain steps and artefacts to verifiable metadata.[21] ISO/IEC 42001 defines requirements for an organisational Artificial Intelligence Management System.[22]
+    </p>
+    <p>
+     The OWASP GenAI Security Project publishes security guidance for systems that embed or use generative AI; its current 2025 Top 10 resource is titled OWASP Top 10 for LLM Applications 2025.[23] This paper addresses a different but adjacent problem: governing a generative model as a contributor to conventional software delivery, whether or not the delivered system contains AI.
+    </p>
+    <h3 id="15-3-the-gap-this-method-occupies">
+     15.3 The gap this method occupies
+    </h3>
+    <p>
+     The instruments reviewed here govern AI risk at organisational/system level, secure software development, AI-system cyber security, assurance arguments, supply-chain provenance or GenAI application threats. They provide many of the principles used by this paper.
+    </p>
+    <p>
+     Within the reviewed set, however, they do not specify the same lightweight project-level procedure for a small team in which generative models contribute research, coding and review while repository baseline identity, explicit exclusions, evidence classes, role-separated adversarial challenge, human adjudication and live/publication verification are combined in one delivery loop.
+    </p>
+    <p>
+     That is the bounded gap this method attempts to address. It is not a claim that no comparable practice exists anywhere, nor that the method is a new standard.
+    </p>
+   </section>
+   <section aria-labelledby="limitations">
+    <h2 id="limitations">
+     16. Limitations and research agenda
+    </h2>
+    <h3 id="16-1-single-project-derivation">
+     16.1 Single-project derivation
+    </h3>
+    <p>
+     The method is derived from one project with a technically experienced human owner. It may depend on architectural skill, security judgement and the ability to challenge model output. Results may differ where the human lacks domain expertise.
+    </p>
+    <h3 id="16-2-the-assessor-is-not-independent">
+     16.2 The assessor is not independent
+    </h3>
+    <p>
+     I designed this method. I am its only practitioner to date, and I adjudicated every disputed finding in this case study. That is a real limitation, and I am not going to dress model or provider separation up as independence. Every favourable project-specific statement in Section 11 should therefore be read as self-attested unless I identify a public artefact or external source that supports it. Stronger standing requires independent replication: another project, another owner and an assessor with no stake in the method. None has yet occurred.
+    </p>
+    <h3 id="16-3-no-controlled-productivity-comparison">
+     16.3 No controlled productivity comparison
+    </h3>
+    <p>
+     The case study does not contain a controlled non-AI baseline, and none of the measures proposed in Section 12.2 has yet been instrumented with reported values. The paper cannot quantify speed, cost or defect reduction attributable to AI assistance.
+    </p>
+    <h3 id="16-4-model-and-tool-evolution">
+     16.4 Model and tool evolution
+    </h3>
+    <p>
+     Coding-agent capabilities, context windows, tool controls and data-governance terms change rapidly. Controls must therefore be expressed at the role and evidence level rather than tied permanently to one product.
+    </p>
+    <h3 id="16-5-human-oversight-is-itself-fallible">
+     16.5 Human oversight is itself fallible
+    </h3>
+    <p>
+     The method vests final authority in human adjudication, but empirical work on algorithm-in-the-loop decision-making shows that human overseers frequently fail to correct model error, calibrate poorly to model accuracy, and can introduce their own biases;[13] related work shows that explanations can increase rather than reduce automation bias, [12] and that different models or providers may still share public data, reasoning patterns, project framing or common failure modes. The case study exposed a more mundane version of the same limitation: fatigue, context switching, wrong-window pastes and wrong-tree commands (Section 11.11). Those episodes caused small delays rather than material changes because the surrounding controls stopped them, but they show that operator state belongs in the threat model. Placing a human at the gate is therefore a necessary control, not a sufficient one. The quality of adjudication is bounded by the adjudicator's expertise, attention and incentives, and a project whose owner cannot technically evaluate a challenged claim retains the ceremony of oversight without its substance.
+    </p>
+    <h3 id="16-6-private-evidence">
+     16.6 Private evidence
+    </h3>
+    <p>
+     Some case-study evidence is retained in private repositories. Public readers cannot independently reproduce every source-established statement. The paper therefore distinguishes self-attested project evidence from public standards and published research.
+    </p>
+    <h3 id="16-7-future-research">
+     16.7 Future research
+    </h3>
+    <p>
+     Useful future work includes:
+    </p>
+    <ul>
+     <li>
+      <p>
+       controlled comparison of evidence-gated and informal AI-assisted delivery;
+      </p>
+     </li>
+     <li>
+      <p>
+       measurement of review correlation across models;
+      </p>
+     </li>
+     <li>
+      <p>
+       task-contract patterns for different risk classes;
+      </p>
+     </li>
+     <li>
+      <p>
+       methods for proving context sanitisation;
+      </p>
+     </li>
+     <li>
+      <p>
+       reliable machine-readable evidence registers;
+      </p>
+     </li>
+     <li>
+      <p>
+       assurance of autonomous agent tool use;
+      </p>
+     </li>
+     <li>
+      <p>
+       the relationship between human expertise and effective challenge quality.
+      </p>
+     </li>
+    </ul>
+   </section>
+   <section aria-labelledby="checklist">
+    <h2 id="checklist">
+     17. Practical adoption checklist
+    </h2>
+    <h3 id="before-the-task">
+     Before the task
+    </h3>
+    <ul>
+     <li>
+      <p>
+       Is the owner decision explicit?
+      </p>
+     </li>
+     <li>
+      <p>
+       Are the repository, worktree, branch, expected HEAD and clean/dirty-state conditions known?
+      </p>
+     </li>
+     <li>
+      <p>
+       Are the model, browser and terminal windows visibly labelled by role and tree?
+      </p>
+     </li>
+     <li>
+      <p>
+       Am I sufficiently alert for a write-capable task; if not, should this remain read-only or stop?
+      </p>
+     </li>
+     <li>
+      <p>
+       Are inclusions and exclusions stated?
+      </p>
+     </li>
+     <li>
+      <p>
+       Are secrets and sensitive data excluded?
+      </p>
+     </li>
+     <li>
+      <p>
+       Are stop conditions defined?
+      </p>
+     </li>
+     <li>
+      <p>
+       Is the evidence required for completion known?
+      </p>
+     </li>
+    </ul>
+    <h3 id="during-implementation">
+     During implementation
+    </h3>
+    <ul>
+     <li>
+      <p>
+       Is the agent changing only authorised source?
+      </p>
+     </li>
+     <li>
+      <p>
+       Before each command sequence, does the terminal still show the expected root, branch, HEAD and status?
+      </p>
+     </li>
+     <li>
+      <p>
+       Am I sending this instruction to the intended role, rather than merely the nearest open window?
+      </p>
+     </li>
+     <li>
+      <p>
+       Are new claims tied to source or evidence?
+      </p>
+     </li>
+     <li>
+      <p>
+       Are validators being strengthened rather than bypassed?
+      </p>
+     </li>
+     <li>
+      <p>
+       Are blockers reported without speculative workarounds?
+      </p>
+     </li>
+     <li>
+      <p>
+       Is the working tree state preserved?
+      </p>
+     </li>
+    </ul>
+    <h3 id="before-release">
+     Before release
+    </h3>
+    <ul>
+     <li>
+      <p>
+       Has automated proof passed on the exact candidate?
+      </p>
+     </li>
+     <li>
+      <p>
+       Has role-separated adversarial challenge occurred against the correct baseline?
+      </p>
+     </li>
+     <li>
+      <p>
+       Has the owner adjudicated findings?
+      </p>
+     </li>
+     <li>
+      <p>
+       Has visual or customer-facing acceptance occurred where needed?
+      </p>
+     </li>
+     <li>
+      <p>
+       Are public statements no stronger than the evidence?
+      </p>
+     </li>
+     <li>
+      <p>
+       Are artefact identity and checksums recorded where relevant?
+      </p>
+     </li>
+    </ul>
+    <h3 id="after-release">
+     After release
+    </h3>
+    <ul>
+     <li>
+      <p>
+       Was the live boundary checked?
+      </p>
+     </li>
+     <li>
+      <p>
+       Does the deployed artefact match the committed candidate?
+      </p>
+     </li>
+     <li>
+      <p>
+       Were requirements and issue status updated?
+      </p>
+     </li>
+     <li>
+      <p>
+       Are residual limitations and deferred work recorded?
+      </p>
+     </li>
+     <li>
+      <p>
+       Were stale or abandoned model and terminal sessions closed so they cannot be reused accidentally?
+      </p>
+     </li>
+     <li>
+      <p>
+       Has monitoring been assigned without pretending it is completed implementation?
+      </p>
+     </li>
+    </ul>
+   </section>
+   <section aria-labelledby="conclusion">
+    <h2 id="conclusion">
+     18. Conclusion
+    </h2>
+    <p>
+     AI can materially expand the range of work a small software project can attempt. That expansion is useful only when delivery authority remains distinct from delivery capacity. A model may generate code, tests, prose, research and critique. It cannot inherit responsibility for scope, security, truth or release.
+    </p>
+    <p>
+     Evidence-gated AI-assisted delivery treats every transition as a claim requiring proof. The task contract defines authority and exclusions. Baseline identity establishes which software is actually being changed or reviewed. Automated checks provide reproducible evidence. Role-separated adversarial challenge exposes assumptions without being misrepresented as third-party assurance. Human adjudication resolves uncertainty. Release and live verification establish the state of the exact artefact. Governance close-out preserves what was done, what remains unproven and what must not be claimed.
+    </p>
+    <p>
+     The Security Observatory case study adds a practical observation: multi-model orchestration is useful only when multi-tree provenance is equally explicit. ChatGPT/GPT, Codex and Claude/Claude Code could contribute different forms of capacity, but repository/worktree identity, primary-source verification and human release authority were the controls that kept those contributions attached to the correct evidence boundary.
+    </p>
+    <p>
+     The method is intentionally conservative. It does not promise that AI will make every project faster, nor that several models will eliminate error. It offers a more defensible proposition:
+    </p>
+    <p>
+     A small project can use AI intensively without allowing AI fluency, model consensus or automation success to replace human authority and evidence.
+    </p>
+   </section>
+   <section aria-labelledby="appendix-a" class="page-break">
+    <h2 id="appendix-a">
+     Appendix A. Reusable bounded task contract
+    </h2>
+    <h3 id="requirement-anchor">
+     Requirement anchor
+    </h3>
+    <p>
+     State the authoritative issue, requirement or owner decision.
+    </p>
+    <h3 id="repository-and-baseline">
+     Repository and baseline
+    </h3>
+    <ul>
+     <li>
+      <p>
+       Repository:
+      </p>
+     </li>
+     <li>
+      <p>
+       Worktree:
+      </p>
+     </li>
+     <li>
+      <p>
+       Branch:
+      </p>
+     </li>
+     <li>
+      <p>
+       Expected starting commit / HEAD:
+      </p>
+     </li>
+     <li>
+      <p>
+       Active role and window label:
+      </p>
+     </li>
+     <li>
+      <p>
+       Write-enabled or read-only:
+      </p>
+     </li>
+     <li>
+      <p>
+       Required clean/dirty-state condition:
+      </p>
+     </li>
+     <li>
+      <p>
+       Permitted committed-HEAD-only exception, if any:
+      </p>
+     </li>
+    </ul>
+    <h3 id="objective">
+     Objective
+    </h3>
+    <p>
+     State the smallest complete outcome in customer or system terms.
+    </p>
+    <h3 id="in-scope">
+     In scope
+    </h3>
+    <p>
+     List authorised behaviours, files and artefacts.
+    </p>
+    <h3 id="out-of-scope">
+     Out of scope
+    </h3>
+    <p>
+     List prohibited changes, deferred items and adjacent work that must not be pulled into the task.
+    </p>
+    <h3 id="security-and-data-boundaries">
+     Security and data boundaries
+    </h3>
+    <p>
+     State prohibited secrets, data classes, authorisation changes, remediation actions and external egress.
+    </p>
+    <h3 id="validation">
+     Validation
+    </h3>
+    <p>
+     List exact build, test, static, security, visual, package, runtime and live-verification requirements.
+    </p>
+    <h3 id="stop-conditions">
+     Stop conditions
+    </h3>
+    <p>
+     State the conditions under which the agent must stop without modification.
+    </p>
+    <h3 id="commit-and-publication">
+     Commit and publication
+    </h3>
+    <p>
+     State commit rules, push authority, release gate and live-verification sequence.
+    </p>
+    <h3 id="final-report">
+     Final report
+    </h3>
+    <p>
+     Require starting and ending state, changed-file tree, validation evidence, unresolved risks and final repository status.
+    </p>
+   </section>
+   <section aria-labelledby="appendix-b">
+    <h2 id="appendix-b">
+     Appendix B. Minimal delivery evidence register
+    </h2>
+    <p>
+     Template only. No entries are published in this paper; the completed delivery evidence register is retained privately.
+    </p>
+    <p>
+     <strong>
+      Fields:
+     </strong>
+     Claim; Scope; Evidence class; Artefact; Limitation; Next gate; Owner decision.
+    </p>
+   </section>
+   <section aria-labelledby="references">
+    <h2 id="references">
+     References
+    </h2>
+    <ol class="references">
+     <li>
+      National Institute of Standards and Technology, Artificial Intelligence Risk Management Framework (AI RMF 1.0), NIST AI 100-1, 2023.
+      <a href="https://doi.org/10.6028/NIST.AI.100-1">
+       https://doi.org/10.6028/NIST.AI.100-1
+      </a>
+     </li>
+     <li>
+      National Institute of Standards and Technology, Artificial Intelligence Risk Management Framework: Generative Artificial Intelligence Profile, NIST AI 600-1, 2024.
+      <a href="https://doi.org/10.6028/NIST.AI.600-1">
+       https://doi.org/10.6028/NIST.AI.600-1
+      </a>
+     </li>
+     <li>
+      National Institute of Standards and Technology, Secure Software Development Framework (SSDF) Version 1.1, NIST SP 800-218, 2022.
+      <a href="https://doi.org/10.6028/NIST.SP.800-218">
+       https://doi.org/10.6028/NIST.SP.800-218
+      </a>
+     </li>
+     <li>
+      National Institute of Standards and Technology, Secure Software Development Practices for Generative AI and Dual-Use Foundation Models: An SSDF Community Profile, NIST SP 800-218A, 2024.
+      <a href="https://doi.org/10.6028/NIST.SP.800-218A">
+       https://doi.org/10.6028/NIST.SP.800-218A
+      </a>
+     </li>
+     <li>
+      National Cyber Security Centre, Guidelines for Secure AI System Development, 2023.
+      <a href="https://www.ncsc.gov.uk/collection/guidelines-secure-ai-system-development">
+       https://www.ncsc.gov.uk/collection/guidelines-secure-ai-system-development
+      </a>
+     </li>
+     <li>
+      Department for Science, Innovation and Technology, AI Cyber Security Code of Practice, 2025.
+      <a href="https://www.gov.uk/government/publications/ai-cyber-security-code-of-practice">
+       https://www.gov.uk/government/publications/ai-cyber-security-code-of-practice
+      </a>
+     </li>
+     <li>
+      Department for Science, Innovation and Technology, Introduction to AI Assurance, 2024.
+      <a href="https://www.gov.uk/government/publications/introduction-to-ai-assurance">
+       https://www.gov.uk/government/publications/introduction-to-ai-assurance
+      </a>
+     </li>
+     <li>
+      Department for Science, Innovation and Technology and National Cyber Security Centre, Software Security Code of Practice, published 7 May 2025; GOV.UK publication page last updated 15 January 2026.
+      <a href="https://www.gov.uk/government/publications/software-security-code-of-practice">
+       https://www.gov.uk/government/publications/software-security-code-of-practice
+      </a>
+     </li>
+     <li>
+      Fu, Y., Liang, P., Tahir, A., Li, Z., Shahin, M., Yu, J. and Chen, J., "Security Weaknesses of Copilot-Generated Code in GitHub Projects: An Empirical Study", ACM Transactions on Software Engineering and Methodology, 34(8), Article 218, 2025.
+      <a href="https://doi.org/10.1145/3716848">
+       https://doi.org/10.1145/3716848
+      </a>
+     </li>
+     <li>
+      Huang, J., Chen, X., Mishra, S., Zheng, H. S., Yu, A. W., Song, X. and Zhou, D., "Large Language Models Cannot Self-Correct Reasoning Yet", International Conference on Learning Representations (ICLR), 2024.
+      <a href="https://openreview.net/forum?id=IkmD3fKBPQ">
+       https://openreview.net/forum?id=IkmD3fKBPQ
+      </a>
+     </li>
+     <li>
+      Levy, A., Agrawal, M., Satyanarayan, A. and Sontag, D., "Assessing the Impact of Automated Suggestions on Decision Making: Domain Experts Mediate Model Errors but Take Less Initiative", Proceedings of the 2021 CHI Conference on Human Factors in Computing Systems, ACM, 2021.
+      <a href="https://doi.org/10.1145/3411764.3445522">
+       https://doi.org/10.1145/3411764.3445522
+      </a>
+     </li>
+     <li>
+      Vered, M., Livni, T., Howe, P. D. L., Miller, T. and Sonenberg, L., "The Effects of Explanations on Automation Bias", Artificial Intelligence, 322, 103952, 2023.
+      <a href="https://doi.org/10.1016/j.artint.2023.103952">
+       https://doi.org/10.1016/j.artint.2023.103952
+      </a>
+     </li>
+     <li>
+      Green, B. and Chen, Y., "The Principles and Limits of Algorithm-in-the-Loop Decision Making", Proceedings of the ACM on Human-Computer Interaction, 3 (CSCW), Article 50, 2019.
+      <a href="https://doi.org/10.1145/3359152">
+       https://doi.org/10.1145/3359152
+      </a>
+     </li>
+     <li>
+      Cui, Z. K., Demirer, M., Jaffe, S., Musolff, L., Peng, S. and Salz, T., "The Effects of Generative AI on High-Skilled Work: Evidence from Three Field Experiments with Software Developers", Management Science, 2026.
+      <a href="https://doi.org/10.1287/mnsc.2025.00535">
+       https://doi.org/10.1287/mnsc.2025.00535
+      </a>
+     </li>
+     <li>
+      METR, Measuring the Impact of Early-2025 AI on Experienced Open-Source Developer Productivity, 2025.
+      <a href="https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/">
+       https://metr.org/blog/2025-07-10-early-2025-ai-experienced-os-dev-study/
+      </a>
+     </li>
+     <li>
+      Song, F., Agarwal, A. and Wen, W., "The Impact of Generative AI on Collaborative Open-Source Software Development: Evidence from GitHub Copilot", arXiv:2410.02091, submitted 2024, version 3 revised 14 May 2026.
+      <a href="https://arxiv.org/abs/2410.02091">
+       https://arxiv.org/abs/2410.02091
+      </a>
+     </li>
+     <li>
+      Jimenez, C. E., Yang, J., Wettig, A., Yao, S., Pei, K., Press, O. and Narasimhan, K., "SWE-bench: Can Language Models Resolve Real-World GitHub Issues?", The Twelfth International Conference on Learning Representations (ICLR), 2024.
+      <a href="https://arxiv.org/abs/2310.06770">
+       https://arxiv.org/abs/2310.06770
+      </a>
+     </li>
+     <li>
+      Fortmilo, Evidence Semantics and Scanner Orchestration, 2026.
+      <a href="https://fortmilo.co.uk/documents/evidence-semantics-and-scanner-orchestration.pdf">
+       https://fortmilo.co.uk/documents/evidence-semantics-and-scanner-orchestration.pdf
+      </a>
+     </li>
+     <li>
+      Assurance Case Working Group, Goal Structuring Notation Community Standard, Version 3, Safety-Critical Systems Club, 2021.
+      <a href="https://scsc.uk/gsn-standard">
+       https://scsc.uk/gsn-standard
+      </a>
+     </li>
+     <li>
+      Open Source Security Foundation, Supply-chain Levels for Software Artifacts (SLSA), Version 1.2, 2025.
+      <a href="https://slsa.dev/spec/v1.2/">
+       https://slsa.dev/spec/v1.2/
+      </a>
+     </li>
+     <li>
+      Torres-Arias, S., Afzali, H., Kuppusamy, T. K., Curtmola, R. and Cappos, J., "in-toto: Providing Farm-to-Table Guarantees for Bits and Bytes", Proceedings of the 28th USENIX Security Symposium, 2019.
+      <a href="https://www.usenix.org/conference/usenixsecurity19/presentation/torres-arias">
+       https://www.usenix.org/conference/usenixsecurity19/presentation/torres-arias
+      </a>
+     </li>
+     <li>
+      International Organization for Standardization and International Electrotechnical Commission, ISO/IEC 42001:2023 - Information technology - Artificial intelligence - Management system, 2023.
+      <a href="https://www.iso.org/standard/42001">
+       https://www.iso.org/standard/42001
+      </a>
+     </li>
+     <li>
+      OWASP GenAI Security Project, OWASP Top 10 for LLM Applications 2025, 2025 edition.
+      <a href="https://genai.owasp.org/resource/owasp-top-10-for-llm-applications-2025/">
+       https://genai.owasp.org/resource/owasp-top-10-for-llm-applications-2025/
+      </a>
+     </li>
+     <li>
+      METR, We are Changing our Developer Productivity Experiment Design, 24 February 2026.
+      <a href="https://metr.org/blog/2026-02-24-uplift-update/">
+       https://metr.org/blog/2026-02-24-uplift-update/
+      </a>
+     </li>
+     <li>
+      National Cyber Security Centre, Software Security Code of Practice - Assurance Principles and Claims (APCs), 7 May 2025.
+      <a href="https://www.ncsc.gov.uk/guidance/software-security-code-of-practice-assurance-principles-claims">
+       https://www.ncsc.gov.uk/guidance/software-security-code-of-practice-assurance-principles-claims
+      </a>
+     </li>
+    </ol>
+    <p>
+     Each URL is printed in full so the references remain usable in printed copies.
+    </p>
+   </section>
+   <section aria-labelledby="publication" class="publication-section">
+    <h2 id="publication">
+     Publication and licensing
+    </h2>
+    <div class="history">
+     <p>
+      <strong>
+       Version 1.0 accessible edition, 30 August 2026 - Current.
+      </strong>
+      This accessible edition restores the substantive text first published on 11 August 2026 and regenerates the stable publication path with semantic tagging, en-GB language, bookmarks, linked references, figure alternatives and embedded fonts. The original PDF remains available through Git history only.
+     </p>
+    </div>
+    <p>
+     <strong>
+      Author:
+     </strong>
+     Luca Pacini.
+     <strong>
+      Publisher:
+     </strong>
+     Fortmilo.
+     <strong>
+      Public location:
+     </strong>
+     United Kingdom.
+     <strong>
+      Bounded case-study product:
+     </strong>
+     Security Observatory.
+    </p>
+    <p>
+     <strong>
+      Competing interests.
+     </strong>
+     The author is the founder and sole proprietor of Fortmilo. Security Observatory is the bounded case-study product, and this paper forms part of the Fortmilo publication surface. No external funding was received for this work. Security Observatory is used only as a delivery case study; no AI product capability is attributed to it.
+    </p>
+    <p>
+     <strong>
+      AI-use disclosure.
+     </strong>
+     Generative AI systems contributed research, synthesis, implementation work in the case-study repositories, document production and role-separated adversarial challenge under the authority model described in this paper. The author adjudicated their outputs and retains sole responsibility for the published claims.
+    </p>
+    <p>
+     Source/package availability for the case-study product is defined in the companion technical paper,
+     <a href="https://fortmilo.co.uk/documents/evidence-semantics-and-scanner-orchestration.pdf">
+      Evidence Semantics and Scanner Orchestration
+     </a>
+     .[18]
+    </p>
+    <p>
+     Copyright 2026 Luca Pacini. The Fortmilo-authored text and figures of this paper are licensed under the
+     <a href="https://creativecommons.org/licenses/by/4.0/">
+      Creative Commons Attribution 4.0 International licence (CC BY 4.0)
+     </a>
+     . This licence does not relicense third-party trademarks, standards, publications or cited material, which remain subject to their own rights and licences.
+    </p>
+    <p>
+     Fortmilo is a Salesforce Partner. Partner status does not imply AppExchange listing, Salesforce Security Review, managed-package availability or endorsement. Salesforce is a trademark of Salesforce, Inc. Security Observatory is independently developed by Fortmilo and is not endorsed by Salesforce, Inc. Product and company names used to describe ChatGPT/GPT, Codex, Claude and Claude Code remain the property of their respective owners; their inclusion identifies the case-study tooling only.
+    </p>
+    <p>
+     This paper is not a certification, industry standard, third-party assurance report or universal productivity claim. It is a proposed engineering method derived from one bounded case study and the cited guidance and research.
+    </p>
+    <p class="small">
+     Stable current URL:
+     <a href="https://fortmilo.co.uk/documents/orchestrating-ai-for-secure-software-delivery.pdf">
+      https://fortmilo.co.uk/documents/orchestrating-ai-for-secure-software-delivery.pdf
+     </a>
+    </p>
+   </section>
+  </main>
+ </body>
+</html>
