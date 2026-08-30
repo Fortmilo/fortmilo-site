@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { readdir, readFile, stat } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -25,6 +26,20 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const currentPublicationDate = publicationDates.site;
 const errors = [];
 const expectedSocialMetadata = socialImageMetadata().split("\n").map((line) => line.trim()).filter(Boolean);
+const sharedStyles = (await readFile(path.join(root, "site-src", "styles.css"), "utf8")).replace(/\r\n?/gu, "\n");
+const sharedStylesheetHref = `/assets/site.${createHash("sha256").update(sharedStyles).digest("hex").slice(0, 12)}.css`;
+const tabletStylesStart = sharedStyles.indexOf("@media (max-width: 900px) {");
+const mobileStylesStart = sharedStyles.indexOf("@media (max-width: 620px) {");
+const tabletStyles = tabletStylesStart < 0 || mobileStylesStart < 0 ? "" : sharedStyles.slice(tabletStylesStart, mobileStylesStart);
+const mobileStyles = mobileStylesStart < 0 ? "" : sharedStyles.slice(mobileStylesStart);
+
+for (const [styles, marker, label] of [
+  [sharedStyles, ".hero-grid > * { min-width: 0; }", "direct hero-grid children must be shrinkable"],
+  [tabletStyles, ".hero-grid { grid-template-columns: minmax(0, 1fr); gap: 2.2rem; padding-block: 3rem; }", "narrow hero-grid must use a zero-minimum track"],
+  [mobileStyles, "h1 {\n    max-width: 100%;\n    font-size: clamp(2rem, 10vw, 3.4rem);\n    overflow-wrap: anywhere;\n  }", "narrow H1 typography must safely wrap long headings"]
+]) {
+  if (!styles.includes(marker)) errors.push(`site-src/styles.css: ${label}`);
+}
 
 if (!socialPreviewAsset || previewImagePath !== `/${socialPreviewAsset.path}` || previewImageUrl !== `https://fortmilo.co.uk/${socialPreviewAsset.path}`) {
   errors.push("social preview template path differs from the authoritative governed-asset manifest");
@@ -76,6 +91,13 @@ for (const route of routes) {
   if (!html.startsWith("<!doctype html>")) errors.push(`${route.output}: missing HTML5 doctype`);
   if (!html.includes('<html lang="en-GB">')) errors.push(`${route.output}: missing en-GB language`);
   if (!html.includes('<a class="skip-link" href="#main">Skip to content</a>')) errors.push(`${route.output}: missing skip link`);
+
+  const sharedStylesheetReferences = [...html.matchAll(/<link rel="stylesheet" href="(\/assets\/site\.[a-f0-9]{12}\.css)">/gu)].map((match) => match[1]);
+  if (sharedStylesheetReferences.length !== 1) {
+    errors.push(`${route.output}: expected exactly one hashed shared stylesheet, found ${sharedStylesheetReferences.length}`);
+  } else if (sharedStylesheetReferences[0] !== sharedStylesheetHref) {
+    errors.push(`${route.output}: shared stylesheet is not current (expected ${sharedStylesheetHref})`);
+  }
 
   if (route.noindex) {
     if (!html.includes('<meta name="robots" content="noindex">')) errors.push(`${route.output}: missing noindex`);
