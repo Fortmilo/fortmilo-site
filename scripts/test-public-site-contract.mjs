@@ -88,10 +88,7 @@ for (const rejectedPath of [
 ]) {
   assert.ok(publicDocumentPathErrors([rejectedPath]).length > 0, `expected public document path rejection for ${rejectedPath}`);
 }
-assert.ok(publicDocumentPathErrors([
-  "EVIDENCE_TERMINOLOGY_CONTRACT.md",
-  "CURRENT_EVIDENCE_TERMINOLOGY_CONTRACT.md"
-]).some((value) => value.includes("CURRENT_")));
+assert.ok(publicDocumentPathErrors(["CURRENT_REPORT.md"]).some((value) => value.includes("CURRENT_")));
 assert.deepEqual(publicDocumentPathErrors([
   "documents/report.pdf",
   "documents/reference.svg",

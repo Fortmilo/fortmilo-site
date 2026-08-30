@@ -39,30 +39,19 @@ function downloadableDocumentDetails(value) {
   return { value, fileName, stem: fileName.slice(0, -extension.length) };
 }
 
-function logicalDocumentName(stem) {
-  return stem
-    .replace(/^CURRENT_/iu, "")
-    .replace(/[-_]v\d+(?:\.\d+)*$/iu, "")
-    .toLowerCase();
-}
-
 export function publicDocumentPathErrors(paths) {
   const documents = [...paths].map(downloadableDocumentDetails).filter(Boolean);
   const errors = [];
 
   for (const document of documents) {
+    if (/^CURRENT_/iu.test(document.fileName)) {
+      errors.push(`${document.value}: CURRENT_ public downloadable-document filename is prohibited`);
+    }
     if (/[-_]v\d+(?:\.\d+)*$/iu.test(document.stem)) {
       errors.push(`${document.value}: versioned public downloadable-document filename is prohibited`);
     }
     if (/[-_](?:19|20)\d{2}(?:(?:[-_.]?\d{2}){2})$/u.test(document.stem)) {
       errors.push(`${document.value}: dated public downloadable-document filename is prohibited`);
-    }
-  }
-
-  for (const document of documents.filter((candidate) => /^CURRENT_/iu.test(candidate.fileName))) {
-    const logicalName = logicalDocumentName(document.stem);
-    if (documents.some((candidate) => candidate !== document && logicalDocumentName(candidate.stem) === logicalName)) {
-      errors.push(`${document.value}: CURRENT_ public alias duplicates another logical document path`);
     }
   }
 
