@@ -29,6 +29,16 @@ export const prohibitedEvidenceClaims = [
   ["Missing scope identified separately as Not assessed or", "Unavailable"].join(" ")
 ];
 
+export const prohibitedPublicClaims = Object.freeze([
+  "Salesforce approved",
+  "Salesforce certified",
+  "Salesforce recommended",
+  "Salesforce sponsored Security Observatory",
+  "AppExchange approved",
+  "AppExchange certified",
+  "AppExchange listed"
+]);
+
 function downloadableDocumentDetails(value) {
   if (typeof value !== "string") return null;
   const clean = value.split(/[?#]/u, 1)[0].replaceAll("\\", "/");
@@ -58,7 +68,7 @@ export function publicDocumentPathErrors(paths) {
   return errors;
 }
 
-function parseAttributes(tag) {
+export function parseAttributes(tag) {
   const attributes = new Map();
   for (const match of tag.matchAll(/([:\w-]+)\s*=\s*(["'])(.*?)\2/gu)) {
     attributes.set(match[1].toLowerCase(), match[3]);
@@ -147,6 +157,87 @@ export function evidenceTerminologyErrors(value) {
   return errors;
 }
 
+export function prohibitedPublicClaimErrors(value) {
+  const surface = customerVisibleSurface(value).toLowerCase();
+  return prohibitedPublicClaims
+    .filter((claim) => surface.includes(claim.toLowerCase()))
+    .map((claim) => `prohibited public claim ${claim}`);
+}
+
+export function uniqueIdErrors(markup) {
+  const seen = new Set();
+  const errors = [];
+  for (const match of markup.matchAll(/\bid\s*=\s*(["'])(.*?)\1/giu)) {
+    const id = match[2];
+    if (!id) errors.push("empty id attribute");
+    else if (seen.has(id)) errors.push(`duplicate id ${id}`);
+    else seen.add(id);
+  }
+  return errors;
+}
+
+export function landmarkErrors(html) {
+  const errors = [];
+  const count = (pattern) => [...html.matchAll(pattern)].length;
+  if (count(/<a\b[^>]*class=["'][^"']*\bskip-link\b[^"']*["'][^>]*href=["']#main["'][^>]*>/giu) !== 1) {
+    errors.push("expected exactly one skip link to #main");
+  }
+  if (count(/<main\b[^>]*\bid=["']main["'][^>]*>/giu) !== 1) errors.push("expected exactly one main landmark with id main");
+  if (count(/<header\b[^>]*class=["'][^"']*\bsite-header\b[^"']*["'][^>]*>/giu) !== 1) errors.push("expected exactly one site header landmark");
+  if (count(/<footer\b[^>]*class=["'][^"']*\bsite-footer\b[^"']*["'][^>]*>/giu) !== 1) errors.push("expected exactly one site footer landmark");
+  if (count(/<nav\b[^>]*aria-label=["'][^"']+["'][^>]*>/giu) < 1) errors.push("expected at least one labelled navigation landmark");
+  return errors;
+}
+
+export function imageMarkupErrors(html) {
+  const errors = [];
+  for (const match of html.matchAll(/<img\b[^>]*>/giu)) {
+    const attributes = parseAttributes(match[0]);
+    const source = attributes.get("src") || "unnamed image";
+    if (!attributes.has("alt")) errors.push(`${source}: image is missing alt text`);
+    for (const dimension of ["width", "height"]) {
+      const value = attributes.get(dimension);
+      if (!value || !/^[1-9]\d*$/u.test(value)) errors.push(`${source}: image is missing a positive declared ${dimension}`);
+    }
+  }
+  return errors;
+}
+
+export function canonicalMetadataErrors(html, expectedCanonical, { noindex = false } = {}) {
+  const canonicalLinks = [...html.matchAll(/<link\b[^>]*\brel=["']canonical["'][^>]*>/giu)];
+  if (noindex) return canonicalLinks.length ? ["noindex page must not declare canonical metadata"] : [];
+  if (canonicalLinks.length !== 1) return [`expected exactly one canonical link, found ${canonicalLinks.length}`];
+  const attributes = parseAttributes(canonicalLinks[0][0]);
+  return attributes.get("href") === expectedCanonical ? [] : [`canonical URL must be ${expectedCanonical}`];
+}
+
+function textContent(value) {
+  return value.replace(/<[^>]+>/gu, " ").replace(/\s+/gu, " ").trim();
+}
+
+export function standaloneSvgAccessibilityErrors(svg) {
+  const errors = [];
+  const titles = [...svg.matchAll(/<title\b([^>]*)>([\s\S]*?)<\/title>/giu)];
+  const descriptions = [...svg.matchAll(/<desc\b([^>]*)>([\s\S]*?)<\/desc>/giu)];
+  if (titles.length !== 1) errors.push(`expected exactly one SVG title, found ${titles.length}`);
+  if (descriptions.length !== 1) errors.push(`expected exactly one SVG desc, found ${descriptions.length}`);
+  const root = /<svg\b[^>]*>/iu.exec(svg)?.[0];
+  if (!root) return [...errors, "missing SVG root"];
+  const rootAttributes = parseAttributes(root);
+  if (rootAttributes.get("role") !== "img") errors.push("SVG root must have role img");
+  const labelledBy = (rootAttributes.get("aria-labelledby") || "").split(/\s+/u).filter(Boolean);
+  for (const match of [...titles, ...descriptions]) {
+    const id = parseAttributes(`<node ${match[1]}>`).get("id");
+    if (!id || !labelledBy.includes(id)) errors.push("SVG title and desc IDs must be referenced by aria-labelledby");
+  }
+  if (titles.length === 1) {
+    const title = textContent(titles[0][2]);
+    const visibleText = [...svg.matchAll(/<text\b[^>]*>([\s\S]*?)<\/text>/giu)].map((match) => textContent(match[1])).join(" ");
+    if (!title || !visibleText.includes(title)) errors.push("SVG title must align with visible diagram text");
+  }
+  return errors;
+}
+
 export function publicCopyRevisionErrors(html, publicationDate) {
   const revisions = [...html.matchAll(/\bdata-public-copy-revision\s*=\s*(?:"([^"]*)"|'([^']*)'|([^\s>]+))/giu)]
     .map((match) => match[1] ?? match[2] ?? match[3]);
@@ -154,13 +245,4 @@ export function publicCopyRevisionErrors(html, publicationDate) {
   return revisions
     .filter((revision) => revision !== publicationDate)
     .map((revision) => `data-public-copy-revision ${revision} does not match current publication date ${publicationDate}`);
-}
-
-export function deploymentTriggerPublicationDateErrors(value, publicationDate) {
-  const dates = [...value.matchAll(/\b\d{4}-\d{2}-\d{2}\b/gu)].map((match) => match[0]);
-  if (dates.length !== 1) return [`expected exactly one deployment-trigger publication date, found ${dates.length}`];
-  if (dates[0] !== publicationDate) {
-    return [`deployment-trigger publication date ${dates[0]} does not match current publication date ${publicationDate}`];
-  }
-  return [];
 }

@@ -1,23 +1,14 @@
-import { createHash } from "node:crypto";
 import { copyFile, lstat, mkdir, readFile, readdir, realpath, rm, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { getPublicationAllowlist } from "./publication-allowlist.mjs";
+import { buildInventoryEvidence, sha256, verifiedPublicationSourceSha } from "./publication-evidence.mjs";
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const artifactRoot = path.resolve(repositoryRoot, "_site");
 const evidenceRoot = path.resolve(repositoryRoot, "_publication");
 const inventoryPath = path.join(evidenceRoot, "inventory.json");
 const lexicalCompare = (left, right) => left < right ? -1 : left > right ? 1 : 0;
-
-function sha256(bytes) {
-  return createHash("sha256").update(bytes).digest("hex");
-}
-
-function inventorySha256(files) {
-  const canonical = files.map((file) => `${file.sha256}  ${file.bytes}  ${file.path}\n`).join("");
-  return sha256(Buffer.from(canonical, "utf8"));
-}
 
 function assertInsideRepository(candidate, label) {
   const relative = path.relative(repositoryRoot, candidate);
@@ -97,6 +88,7 @@ try {
 }
 
 const allowlist = await getPublicationAllowlist(repositoryRoot);
+const sourceSha = await verifiedPublicationSourceSha(repositoryRoot);
 const destinations = new Set();
 const inventory = [];
 
@@ -125,17 +117,7 @@ for (const relative of allowlist) {
 }
 
 inventory.sort((left, right) => lexicalCompare(left.path, right.path));
-const totalBytes = inventory.reduce((total, file) => total + file.bytes, 0);
-const digest = inventorySha256(inventory);
-const evidence = {
-  version: 1,
-  files: inventory,
-  summary: {
-    fileCount: inventory.length,
-    totalBytes,
-    inventorySha256: digest
-  }
-};
+const evidence = buildInventoryEvidence(inventory, sourceSha);
 
 await writeFile(inventoryPath, `${JSON.stringify(evidence, null, 2)}\n`, "utf8");
-console.log(`Built publication artifact: ${inventory.length} files, ${totalBytes} bytes, inventory SHA-256 ${digest}`);
+console.log(`Built publication artifact from ${sourceSha}: ${inventory.length} files, ${evidence.summary.totalBytes} bytes, inventory SHA-256 ${evidence.summary.inventorySha256}`);

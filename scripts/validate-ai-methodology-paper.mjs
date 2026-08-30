@@ -12,6 +12,7 @@ import {
   PDFRawStream,
   PDFString,
 } from "pdf-lib";
+import { publicationDateAsUtc, publicationDates } from "../site-src/publication-metadata.mjs";
 import { publicDocumentPathErrors } from "./public-site-contract.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
@@ -320,8 +321,9 @@ if (!publication.getSubject()?.startsWith("Fortmilo engineering methodology")) {
   errors.push("metadata subject does not identify the Fortmilo engineering methodology");
 }
 if (publication.getKeywords()?.includes("FortMilo")) errors.push("metadata keywords retain prohibited FortMilo casing");
-if (publication.getCreationDate()?.toISOString() !== "2026-08-30T00:00:00.000Z") errors.push("creation date is not the publication date");
-if (publication.getModificationDate()?.toISOString() !== "2026-08-30T00:00:00.000Z") errors.push("modification date is not the publication date");
+const expectedPublicationDate = publicationDateAsUtc(publicationDates.methodologyPaper).toISOString();
+if (publication.getCreationDate()?.toISOString() !== expectedPublicationDate) errors.push("creation date is not the publication date");
+if (publication.getModificationDate()?.toISOString() !== expectedPublicationDate) errors.push("modification date is not the publication date");
 
 const infoReference = context.trailerInfo.Info;
 const info = infoReference ? context.lookup(infoReference, PDFDict) : null;

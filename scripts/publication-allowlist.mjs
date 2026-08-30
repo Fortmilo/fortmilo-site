@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { publicDocumentPathErrors } from "./public-site-contract.mjs";
+import { governedAssets } from "./governed-assets.mjs";
 
 const lexicalCompare = (left, right) => left < right ? -1 : left > right ? 1 : 0;
 
@@ -19,13 +20,7 @@ export const rootSupportFiles = Object.freeze([
   ".nojekyll",
   ".well-known/security.txt",
   "CNAME",
-  "apple-touch-icon.png",
-  "favicon-16x16.png",
-  "favicon-32x32.png",
-  "favicon-48x48.png",
-  "favicon.ico",
-  "favicon.svg",
-  "mstile-150x150.png",
+  ...governedAssets.filter((asset) => !asset.path.includes("/")).map((asset) => asset.path),
   "robots.txt",
   "site.webmanifest",
   "sitemap.xml"
@@ -41,12 +36,37 @@ export const customerRouteFiles = Object.freeze([
   "security-observatory/index.html"
 ]);
 
-export const fixedAssetFiles = Object.freeze([
-  "assets/android-chrome-192x192.png",
-  "assets/android-chrome-512x512.png",
-  "assets/fortmilo-brand-banner-1200x675.png",
-  "assets/fortmilo-security-observatory-og-20260731.jpg",
-  "assets/fortmilo-shield-512.png"
+export const fixedAssetFiles = Object.freeze(
+  governedAssets.filter((asset) => asset.path.startsWith("assets/")).map((asset) => asset.path)
+);
+
+export const obsoleteOperationalFiles = Object.freeze([
+  "pages-deployment-trigger.txt",
+  "scripts/validator-payload/part-01.txt",
+  "scripts/validator-payload/part-02.txt",
+  "scripts/validator-payload/part-03.txt",
+  "scripts/validator-payload/part-04.txt"
+]);
+
+export const explicitlyExcludedUrls = Object.freeze([
+  "/.github/workflows/validate-site.yml",
+  "/AGENTS.md",
+  "/CLAUDE.md",
+  "/CURRENT_EVIDENCE_TERMINOLOGY_CONTRACT.md",
+  "/EVIDENCE_TERMINOLOGY_CONTRACT_V1.1.md",
+  "/README.md",
+  "/document-src/",
+  "/package-lock.json",
+  "/package.json",
+  ...obsoleteOperationalFiles.map((file) => `/${file}`),
+  "/documents/evidence-semantics-and-scanner-orchestration-v1.3.pdf",
+  "/documents/evidence-semantics-and-scanner-orchestration-v1.4.pdf",
+  "/documents/orchestrating-ai-for-secure-software-delivery-v1.0.pdf",
+  "/documents/security-observatory-reference-architecture-v4.1.svg",
+  "/documents/security-observatory-reference-architecture-v4.2.svg",
+  "/scripts/build-site.mjs",
+  "/scripts/validator-payload/",
+  "/site-src/"
 ]);
 
 // These are deliberately public, stable document URLs. Their maintained generation
