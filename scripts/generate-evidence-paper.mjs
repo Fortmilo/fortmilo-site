@@ -1,4 +1,4 @@
-import { copyFile, mkdir, mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, rm, stat, writeFile } from "node:fs/promises";
 import { spawn } from "node:child_process";
 import { tmpdir } from "node:os";
 import { dirname, join, resolve } from "node:path";
@@ -6,9 +6,8 @@ import { pathToFileURL } from "node:url";
 import { PDFDocument } from "pdf-lib";
 
 const root = resolve(new URL("..", import.meta.url).pathname.replace(/^\/(?:([A-Za-z]:))/, "$1"));
-const source = join(root, "document-src", "evidence-semantics-and-scanner-orchestration-v1.4.html");
-const immutable = join(root, "documents", "evidence-semantics-and-scanner-orchestration-v1.4.pdf");
-const current = join(root, "documents", "evidence-semantics-and-scanner-orchestration.pdf");
+const source = join(root, "document-src", "evidence-semantics-and-scanner-orchestration.html");
+const output = join(root, "documents", "evidence-semantics-and-scanner-orchestration.pdf");
 
 const browserCandidates = [
   process.env.FORTMILO_PDF_BROWSER,
@@ -33,7 +32,7 @@ for (const candidate of browserCandidates) {
 }
 if (!browser) throw new Error("No supported Chromium browser found. Set FORTMILO_PDF_BROWSER.");
 
-await mkdir(dirname(immutable), { recursive: true });
+await mkdir(dirname(output), { recursive: true });
 const profile = await mkdtemp(join(tmpdir(), "fortmilo-pdf-"));
 
 try {
@@ -44,7 +43,7 @@ try {
     "--export-tagged-pdf",
     "--generate-pdf-document-outline",
     `--user-data-dir=${profile}`,
-    `--print-to-pdf=${immutable}`,
+    `--print-to-pdf=${output}`,
     pathToFileURL(source).href,
   ];
 
@@ -56,8 +55,8 @@ try {
       : rejectProcess(new Error(`PDF browser exited with code ${code}`)));
   });
 
-  const document = await PDFDocument.load(await readFile(immutable), { updateMetadata: false });
-  document.setTitle("Evidence Semantics and Scanner Orchestration v1.4");
+  const document = await PDFDocument.load(await readFile(output), { updateMetadata: false });
+  document.setTitle("Evidence Semantics and Scanner Orchestration");
   document.setAuthor("Luca Pacini");
   document.setSubject("Security Observatory evidence semantics, scanner planning and bounded licence-assignment retention");
   document.setKeywords([
@@ -72,11 +71,8 @@ try {
   document.setProducer("Chromium/Skia tagged PDF with pdf-lib metadata post-processing");
   document.setCreationDate(new Date("2026-08-29T00:00:00Z"));
   document.setModificationDate(new Date("2026-08-29T00:00:00Z"));
-  await writeFile(immutable, await document.save({ useObjectStreams: false }));
-
-  await copyFile(immutable, current);
-  console.log(`Generated ${immutable}`);
-  console.log(`Copied byte-identical current alias ${current}`);
+  await writeFile(output, await document.save({ useObjectStreams: false }));
+  console.log(`Generated ${output}`);
 } finally {
   await rm(profile, { recursive: true, force: true });
 }

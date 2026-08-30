@@ -23,18 +23,17 @@ These decisions are final unless Luca Pacini explicitly reopens them:
 
 Do not ask Luca to reconfirm any of the above naming decisions.
 
-## Current website action queue
+## Stable public document URLs
 
-Implement/review in this order:
+The following is standing owner-approved governance:
 
-1. Architecture product-level `Read-only first` -> **Read-only assessment**.
-2. Scope the body to: **No security remediation or write-back to assessed Salesforce configuration.**
-3. Keep sandbox-validation status on Home and Overview, and use **Request access when available** as the practical availability mechanism. Do not add a global availability banner/footer or repeat availability disclaimers on every technical page.
-4. Correct H1 -> H3 heading gaps on affected review-area pages.
-5. Add heading-order regression validation in `scripts/validate-site.mjs`.
-6. Correct the Overview five-versus-six contradiction: there are five review-area cards plus Overview.
-7. Remove the duplicate item-level `not product documentation` disclaimer from Documents while retaining the section-level disclaimer.
-8. Keep the Acknowledgements page visibly linked from the shared footer on every route.
+- Every public document has exactly one stable filename and one stable URL.
+- An update replaces the existing public file in place.
+- Do not publish versioned, dated, immutable, `CURRENT_` alias, superseded or historical document copies.
+- Git history preserves previous editions; the website does not preserve parallel public editions or redirects to them.
+- This rule applies to PDF, SVG, Markdown contracts and every future downloadable document format.
+- Pull requests must not introduce versioned public document paths.
+- Do not ask Luca to reconfirm this rule.
 
 ## Explicitly deferred / do not invent
 
@@ -46,14 +45,8 @@ Implement/review in this order:
 
 ## Cross-repo authority
 
-The Salesforce product repo has the binding requirement:
+Application requirements and implementation decisions are maintained in the private Security Observatory repository. Do not expose, copy or infer private repository paths in this public website repository.
 
-`docs/requirements/REQ-076-canonical-brand-product-identity.md`
-
-and the detailed Claude handoff:
-
-`docs/handoffs/CLAUDE-FORTMILO-SECURITY-OBSERVATORY-DECISIONS.md`
-
-Related website governance issue: #4.
+Related public website governance issue: #4.
 
 If older website copy, issue history, PDFs, or prior review notes conflict with the naming rule above, treat them as historical/stale and follow the current rule. Do not rewrite historical evidence merely to hide the old decision.

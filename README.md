@@ -1,17 +1,19 @@
 # Fortmilo website
 
-Source for [fortmilo.co.uk](https://fortmilo.co.uk), published from the `main` branch through GitHub Pages.
+Source for [fortmilo.co.uk](https://fortmilo.co.uk), published through a GitHub Actions Pages workflow from a deliberately allow-listed `_site/` artifact.
 
 The site is operated by Luca Pacini, trading as Fortmilo, in Harpenden, Hertfordshire, United Kingdom.
 
 ## Build
 
-The site uses a local Node.js static generator with no external dependencies. Generated HTML and static assets are committed to `main`; GitHub Pages does not run a custom build workflow.
+The site uses a local Node.js static generator. Generated HTML and static assets are committed to `main`, then the deployment workflow validates and copies only approved public files into `_site/`. GitHub Pages never publishes the repository root.
 
 ```bash
 npm run build
 npm run validate
 npm run check
+npm run build:publication
+npm run validate:publication
 npm run generate:ai-methodology
 ```
 
@@ -19,11 +21,18 @@ npm run generate:ai-methodology
 - `site-src/templates.mjs` owns the shared header, product navigation, metadata and footer.
 - `site-src/site-map.mjs` owns routes and active navigation.
 - `scripts/build-site.mjs` applies shared layout, generates the stylesheet asset, sitemap and static hosting files.
+- `scripts/publication-allowlist.mjs` is the single authoritative file-level publication manifest, including content-addressed CSS paths derived from the maintained stylesheet sources.
+- `scripts/build-publication-artifact.mjs` rebuilds `_site/` solely from that manifest and records deterministic inventory evidence outside the public artifact.
+- `scripts/validate-publication-artifact.mjs` independently verifies the exact artifact inventory, source hashes, required public routes, prohibited operational paths and internal links.
 - `document-src/orchestrating-ai-for-secure-software-delivery.html` is the semantic maintained source for the accessible methodology paper; `scripts/generate-ai-methodology-paper.mjs` regenerates its one stable public PDF path.
 - `scripts/validate-ai-methodology-paper.mjs` checks publication metadata, tagging, headings, lists, tables, figure alternatives, bookmarks, URI links, reading-order tabs and embedded fonts.
 - `scripts/validate-site.mjs` checks routes, metadata, shared navigation, product wording and public-safety constraints.
 - `scripts/generate-brand-assets.ps1` reproduces the social JPEG from the approved public banner export.
 - `.github/workflows/validate-site.yml` runs the build, site contract and publication-accessibility assertions for pull requests and protected publication branches.
+
+## Stable document publication
+
+Every public document has one stable filename and URL. Updates replace that file in place; versioned, dated, immutable, `CURRENT_` alias, superseded and historical public copies are not published. Git history preserves previous editions. This applies to PDFs, SVGs, Markdown contracts and future downloadable documents.
 
 ## Approved public artwork
 

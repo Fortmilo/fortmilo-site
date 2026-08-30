@@ -7,6 +7,18 @@ export const prohibitedFormalNames = [
 
 export const attributedProductName = "Security Observatory by Fortmilo";
 
+export const publicDownloadableDocumentExtensions = Object.freeze([
+  ".pdf",
+  ".svg",
+  ".md",
+  ".doc",
+  ".docx",
+  ".xls",
+  ".xlsx",
+  ".ppt",
+  ".pptx"
+]);
+
 export const prohibitedEvidenceClaims = [
   ["Coverage type describes evidence", "detail level"].join(" "),
   ["Partial Evidence outcome", "tiles"].join(" "),
@@ -16,6 +28,35 @@ export const prohibitedEvidenceClaims = [
   ["some usable assignment evidence was retained, but", "the full population could not be retained safely"].join(" "),
   ["Missing scope identified separately as Not assessed or", "Unavailable"].join(" ")
 ];
+
+function downloadableDocumentDetails(value) {
+  if (typeof value !== "string") return null;
+  const clean = value.split(/[?#]/u, 1)[0].replaceAll("\\", "/");
+  const fileName = clean.split("/").at(-1) || "";
+  const lowerName = fileName.toLowerCase();
+  const extension = publicDownloadableDocumentExtensions.find((candidate) => lowerName.endsWith(candidate));
+  if (!extension) return null;
+  return { value, fileName, stem: fileName.slice(0, -extension.length) };
+}
+
+export function publicDocumentPathErrors(paths) {
+  const documents = [...paths].map(downloadableDocumentDetails).filter(Boolean);
+  const errors = [];
+
+  for (const document of documents) {
+    if (/^CURRENT_/iu.test(document.fileName)) {
+      errors.push(`${document.value}: CURRENT_ public downloadable-document filename is prohibited`);
+    }
+    if (/[-_]v\d+(?:\.\d+)*$/iu.test(document.stem)) {
+      errors.push(`${document.value}: versioned public downloadable-document filename is prohibited`);
+    }
+    if (/[-_](?:19|20)\d{2}(?:(?:[-_.]?\d{2}){2})$/u.test(document.stem)) {
+      errors.push(`${document.value}: dated public downloadable-document filename is prohibited`);
+    }
+  }
+
+  return errors;
+}
 
 function parseAttributes(tag) {
   const attributes = new Map();

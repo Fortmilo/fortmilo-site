@@ -1,133 +1,79 @@
 # Security Observatory Evidence Terminology Contract
 
-**Contract version:** 1.0  
-**Status:** Canonical  
-**Effective date:** 11 August 2026
+**Contract version:** 1.1
+**Status:** Canonical
+**Effective date:** 29 August 2026
 
-This document is the authoritative terminology contract for Security Observatory evidence states, coverage, severity and completeness language.
-
-The Salesforce implementation, public website, diagrams, validators and any technical publication that uses these terms must conform to this contract. Older wording that conflicts with this contract is superseded.
+This document is the authoritative terminology contract for Security Observatory evidence states, source availability, completeness, Coverage and licence-assignment capture status. These are separate axes and must not be collapsed.
 
 ## 1. Rendered evidence state
 
-Rendered evidence state answers one question: **what state can the product truthfully show for the evidence available for this assessment?**
-
-The canonical rendered states are:
+Rendered evidence state answers: **what state can the product truthfully show for the evidence available for this assessment?**
 
 | State | Meaning |
 | --- | --- |
-| **Contextual metric or finding label** | The assessment completed with usable evidence and the product has retained a metric, finding or other bounded contextual result supported by that evidence. |
-| **None found** | The required evidence was successfully assessed and no matching records were observed in the assessed scope. This is not a pass, compliance decision or proof that exposure cannot exist outside the assessed sources. |
-| **Unavailable** | The assessment was attempted, but required evidence could not be obtained or used. The result must carry a bounded cause, limitation and safe next action where available. An attempted source, authentication or read failure is Unavailable, not Not assessed and not None found. |
-| **Not assessed** | The question was not assessed for the relevant run, scope or evidence level. This state is for non-assessment, not for an attempted source failure. |
-| **Not retained at this evidence level** | The evidence may have been assessed, but the relevant detail was intentionally not retained at the selected evidence level. |
+| **Contextual metric or finding label** | The assessment completed with usable evidence and retained a bounded result supported by that evidence. |
+| **None found** | The required evidence was successfully assessed and no matching records were observed in scope. This is not a pass or compliance decision. |
+| **Unavailable** | Assessment was attempted, but a required source could not be obtained or used. Include a bounded cause, limitation and safe next action where available. |
+| **Not assessed** | The question was not assessed for the run or assessed scope. |
+| **Not retained at this evidence level** | Evidence may have been assessed, but the detail was intentionally not retained at the selected evidence detail level. |
 | **Not captured** | The product does not capture the relevant evidence or field for this result. |
 | **Not applicable** | The question does not apply to the assessed context. |
 
-### Decision rule
+Decision rule: an attempted but inaccessible or unusable required source is **Unavailable**; a question not assessed is **Not assessed**; a successful assessment returning no matching records is **None found**. **Incomplete** is not a rendered evidence state.
 
-Use these distinctions consistently:
+## 2. Source availability
 
-1. **Assessment attempted and required source/read failed → Unavailable.**
-2. **Question not assessed for the run, scope or evidence level → Not assessed.**
-3. **Assessment completed successfully and returned zero matching records → None found.**
+Source availability records whether each required source was accessible and usable. An attempted required source that is inaccessible or unusable is **Unavailable**. Availability must remain distinct from completeness, Coverage, capture status and rendered evidence state.
 
-These states must never be collapsed into one another.
+## 3. Completeness qualifier
 
-## 2. Reserved warning token
+**Partial** is the general completeness qualifier, not a rendered evidence state or licence-assignment capture status. A usable result may be Partial when required scope is incomplete. Identify each missing portion separately:
 
-**Unknown** is not a general rendered evidence state and must not be used as a substitute for Unavailable.
+- **Not assessed** — work was not performed or the question was outside the assessed scope.
+- **Unavailable** — a required attempted source was inaccessible or unusable.
+- **Not retained at this evidence level** — detail was intentionally not retained at the selected evidence detail level.
+- **Not captured** — the product intentionally does not capture that detail.
 
-It is reserved only for the bounded retained-evidence read warning used when a retained-evidence read itself cannot establish the expected value. This is the **EV-04** condition in the supporting assurance record. Any such use must remain explicitly scoped to that warning condition.
+**Incomplete** remains a separate licence-assignment capture status for bounded or truncated assignment capture; it is not a general completeness qualifier or rendered evidence state.
 
-Generic **Unknown/Error** wording is not part of the canonical rendered vocabulary.
+## 4. Licence-assignment capture status
 
-## 3. Coverage
+Licence-assignment capture status is a separate axis used only for retained assignment evidence:
 
-Coverage is a separate axis from rendered evidence state. It describes how far available evidence can assess a mapped question.
+- **Complete** — the full assignment population for that licence family was retained.
+- **Incomplete** — the full licence-assignment population could not be retained safely. The captured count may be lower than expected or zero when safe Salesforce transaction/DML headroom is exhausted.
+- **Unavailable** — assignment capture was attempted, but required assignment evidence could not be obtained or used.
 
-The canonical Coverage values are:
+Zero captured must not be inferred as zero assignments and must not be shown as Complete. When the expected count is unknown, the unknown expected count remains unknown. Incomplete remains a separate licence-assignment capture status, not a rendered evidence state. A capped retained count is not an exact organisation total.
 
-- **Automated**
-- **Partial Evidence**
-- **Manual Required**
-- **Not Covered**
-- **Extended Check**
+## 5. Coverage
 
-Coverage must not be presented as a confidence score, compliance decision or rendered evidence state.
+Coverage type describes how far available evidence can assess the mapped question. It is neither confidence nor the selected evidence detail level. Its values are **Automated**, **Partial Evidence**, **Manual Required**, **Not Covered** and **Extended Check**. Coverage, availability, completeness, capture status, compliance, rendered evidence state and the Top Issues/Balanced/Everything evidence detail levels are different axes. **Partial Evidence** is always Coverage, never an outcome or evidence state.
 
-## 4. Severity
+## 6. Severity and reserved warning
 
-Severity is a separate axis from rendered evidence state and Coverage.
+Severity values are **Critical**, **High** and **Moderate**. Severity is prioritisation, not a pass/fail decision. **Unknown** is reserved only for the bounded EV-04 retained-evidence read warning and is not a general rendered evidence state.
 
-The canonical Severity values are:
+## 7. Evidence detail levels and licence assignments
 
-- **Critical**
-- **High**
-- **Moderate**
+The evidence detail levels are **Top Issues**, **Balanced** and **Everything**.
 
-Severity describes prioritisation of a retained finding or risk context. It does not mean that a control passed or failed.
+The same 20-family scanner plan runs at Top Issues, Balanced and Everything. The selected evidence detail level changes what safe detail is retained, displayed, compared and exported; it does not change which scanner families are planned. Everything is the deepest supported level, not exhaustive or unlimited.
 
-## 5. Completeness qualifier
+- Top Issues retains no licence-assignment rows or assignment-summary rows; the omitted assignment detail is Not retained at this evidence level.
+- Balanced retains holding summaries only; individual assignment identities are Not captured.
+- Everything performs bounded assignment capture for Package Licences, Permission Set Licences and Salesforce User Licences. It retains at most 1,000 assignment rows per family. The theoretical maximum is 3,000 rows, but safe capture can be lower because Salesforce transaction and DML headroom must be preserved.
+- Licence-capacity totals and holding summaries are separate from individual assignment evidence.
 
-**Partial** is a completeness qualifier, not a rendered evidence state.
+Use “evidence detail level”, not “evidence depth”, for these levels.
 
-Where a usable count is retained but required scope is incomplete:
+## 8. Historical evidence and comparison
 
-- the usable count may be shown as **Partial**; and
-- the missing scope must be identified separately using **Not assessed** or **Unavailable**, according to the decision rule in section 1.
+Historical retained evidence is not rewritten when terminology changes. Public claims that runtime scans are terminology-version stamped or comparison-gated require source evidence. Until that evidence exists, those capabilities are future behaviour and must not be described as current.
 
-Partial must never be used to hide an unavailable source or to convert incomplete evidence into a zero.
+## 9. Publication and change rule
 
-## 6. Historical evidence and comparison
+This contract defines terminology; it does not prove scanner coverage, installation compatibility, release validation, compliance, security or evidence in a particular Salesforce organisation.
 
-Historical retained evidence is not rewritten when this contract changes.
-
-- Scans created before terminology-contract version stamping are **pre-contract / unversioned** evidence.
-- A legacy `Not assessed` value is not silently reinterpreted as v1.0 `Unavailable`.
-- New scans retain the terminology contract version used for their comparison semantics.
-- Comparison is available only when both scans carry the same supported terminology contract version, in addition to any separate like-for-like evidence-depth and source-organisation requirements.
-- If either terminology version is missing, differs or is unsupported, comparison is **Unavailable** and must not imply improvement, resolution, worsening or newly observed evidence.
-- Existing pre-contract scans are not backfilled merely to make them comparable.
-
-The deliberate consequence is that scans created before terminology version stamping become unavailable for v1.0 comparison once the version gate ships. Preserving historical meaning takes precedence over manufacturing a comparison across incompatible semantics.
-
-## 7. Consumer surfaces
-
-The following public website surfaces consume this contract and must be checked together whenever the contract changes:
-
-1. Home
-2. Security Observatory Overview
-3. Findings
-4. Identity & Access
-5. External Connections
-6. Entitlements & Assets
-7. Evidence & Coverage
-8. Architecture & Security, including all diagrams and accompanying prose
-9. Documents
-
-The Salesforce application, validators and technical whitepapers are also conforming artefacts and must be checked before publication or release.
-
-Terms, Privacy, Contact and Acknowledgements are included in whole-site regression because they share navigation, footer and partner-status presentation, but they are not terminology consumers.
-
-## 8. Change procedure
-
-This contract is frozen at the version shown above.
-
-A terminology change is permitted only when all of the following occur:
-
-1. The contract version is incremented.
-2. The meaning of the changed term is updated here first.
-3. Every conforming artefact identified in section 7 is audited against the new contract.
-4. The Salesforce implementation and validators are checked for conformity.
-5. Technical publications identified as conforming artefacts in section 7 are checked for conformity.
-6. The conformity determination for each artefact is recorded before the changed terminology is published or released.
-7. All identified deltas are resolved before the changed terminology is published as current.
-
-No consuming surface may silently introduce, redefine or retire a canonical term.
-
-## 9. Publication rule
-
-This contract defines terminology. It does not by itself prove scanner coverage, installation compatibility, release validation, compliance, security, or the existence of evidence in a particular Salesforce organisation.
-
-Product and publication claims must remain bounded by the evidence that supports them.
+A later approved terminology revision replaces this stable public file after the required conformity audit. Earlier text remains recoverable through Git history, while historical scan semantics retain their recorded terminology version. No parallel public versioned filename is created.

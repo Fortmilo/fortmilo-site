@@ -6,6 +6,7 @@ import {
   headingErrors,
   namingErrors,
   prohibitedEvidenceClaims,
+  publicDocumentPathErrors,
   publicCopyRevisionErrors
 } from "./public-site-contract.mjs";
 
@@ -70,5 +71,31 @@ assert.ok(deploymentTriggerPublicationDateErrors(
   "Fortmilo public site deployment trigger — 2026-08-19",
   currentPublicationDate
 ).some((value) => value.includes("does not match current publication date")));
+
+// Rejection fixtures for public downloadable-document filenames.
+for (const rejectedPath of [
+  "documents/report-v1.pdf",
+  "documents/report-v2.svg",
+  "documents/report-v12.4.docx",
+  "documents/report_V1.1.md",
+  "documents/report-2026-08-30.xlsx",
+  "documents/report-20260830.pptx",
+  "documents/evidence-semantics-and-scanner-orchestration-v1.3.pdf",
+  "documents/evidence-semantics-and-scanner-orchestration-v1.4.pdf",
+  "documents/security-observatory-reference-architecture-v4.1.svg",
+  "documents/security-observatory-reference-architecture-v4.2.svg",
+  "EVIDENCE_TERMINOLOGY_CONTRACT_V1.1.md"
+]) {
+  assert.ok(publicDocumentPathErrors([rejectedPath]).length > 0, `expected public document path rejection for ${rejectedPath}`);
+}
+assert.ok(publicDocumentPathErrors(["CURRENT_REPORT.md"]).some((value) => value.includes("CURRENT_")));
+assert.deepEqual(publicDocumentPathErrors([
+  "documents/report.pdf",
+  "documents/reference.svg",
+  "EVIDENCE_TERMINOLOGY_CONTRACT.md",
+  "document-src/report-v2.html",
+  "assets/preview-2026-08-30.jpg",
+  "assets/site.a02e800f31c0.css"
+]), []);
 
 console.log("Validated public-site contract fixtures");
