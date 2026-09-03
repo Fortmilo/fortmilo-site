@@ -1,5 +1,12 @@
 # Codex repository guidance
 
+## Current authority
+
+- Current implementation/review issue: `Fortmilo/fortmilo-site#32`.
+- Binding private-governance records: `WEB-019` and `DEC-026`.
+- Issue #33 is closed as not planned and is historical only.
+- Do not place private claim-evidence sources, paths, branches or SHAs in this public repository.
+
 ## Binding identity
 
 - `Fortmilo` is the company and brand.

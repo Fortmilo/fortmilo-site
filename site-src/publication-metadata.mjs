@@ -1,11 +1,11 @@
-const primaryPublicationDate = "2026-08-29";
+const primaryPublicationDate = "2026-09-03";
 
 export const publicationDates = Object.freeze({
   site: primaryPublicationDate,
-  evidencePaper: primaryPublicationDate,
+  evidencePaper: "2026-08-29",
   methodologyPaper: "2026-08-30",
-  referenceArchitecture: primaryPublicationDate,
-  terminologyContract: primaryPublicationDate
+  referenceArchitecture: "2026-08-29",
+  terminologyContract: "2026-08-29"
 });
 
 export function publicationDateAsUtc(date) {

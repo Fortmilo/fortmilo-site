@@ -11,6 +11,8 @@ import {
   evidenceTerminologyErrors,
   headingErrors,
   imageMarkupErrors,
+  issue32Contract,
+  issue32PositioningErrors,
   landmarkErrors,
   namingErrors,
   prohibitedEvidenceClaims,
@@ -98,6 +100,42 @@ assert.deepEqual(imageMarkupErrors('<img src="/asset.png" alt="" width="10" heig
 assert.deepEqual(landmarkErrors('<a class="skip-link" href="#main">Skip</a><header class="site-header"></header><nav aria-label="Main"></nav><main id="main"><h1>Title</h1></main><footer class="site-footer"></footer>'), []);
 assert.ok(prohibitedPublicClaimErrors("<p>AppExchange certified</p>").length > 0);
 
+const issue32Fixture = (content) => `<main>${content}</main><footer>${issue32Contract.partnerFooter} Email: ${issue32Contract.visibleEmail}</footer>`;
+for (const [claim, expected] of [
+  ["Security Center Essentials", "named Security Center"],
+  ["full Security Center", "named Security Center"],
+  ["Compare capabilities", "Compare capabilities"],
+  ["comparison table", "comparison-table"],
+  ["Security Observatory is better than Salesforce", "superiority"],
+  ["Salesforce product pricing", "Salesforce pricing"],
+  ["Security Observatory is a replacement for Salesforce", "replacement"],
+  ["Security Observatory includes External Client Apps", "External Client App"],
+  ["Frozen-user session coverage is available", "frozen-user session"],
+  ["SBS is release-complete", "release-complete SBS"],
+  ["Security Observatory provides comprehensive coverage", "unsupported absolute"],
+  ["Security Observatory is currently available for public installation", "public-installation"],
+  ["The product passed Salesforce Security Review", "Security Review completion"],
+  ["Internal application branch origin/release-private", "private application identifier"],
+  ['<table class="comparison"><tr><td>One</td></tr></table>', "comparison table markup"]
+]) {
+  assert.ok(
+    issue32PositioningErrors(issue32Fixture(claim), "fixture.html").some((value) => value.includes(expected)),
+    `expected issue #32 contract failure for ${claim}`
+  );
+}
+
+for (const qualifiedClaim of [
+  issue32Contract.neutralRelationship,
+  "External Client App inventory is not included in V1.",
+  "No dedicated frozen-user session finding is claimed.",
+  "SBS mapping is not promoted as release-complete while work remains partial and open.",
+  "Missing evidence must never become a clean result.",
+  "This is not a complete installed-package inventory."
+]) {
+  const qualifiedErrors = issue32PositioningErrors(issue32Fixture(qualifiedClaim), "fixture.html");
+  assert.ok(!qualifiedErrors.some((value) => value.startsWith("prohibited") || value.includes("unapproved Salesforce product-relationship")), `qualified wording must remain valid: ${qualifiedClaim}`);
+}
+
 const duplicateNavigation = '<nav class="corporate-nav" aria-label="Corporate"><a aria-current="page"></a><a aria-current="page"></a></nav>';
 assert.ok(navigationStateErrors(duplicateNavigation, { corporateActive: "home" }).some((value) => value.includes("found 2")));
 
@@ -120,5 +158,10 @@ assert.ok(governedAssetErrors(pngAsset, alteredBytes).length > 0, "altered gover
 const alteredDimensions = Buffer.from(pngBytes);
 alteredDimensions.writeUInt32BE(17, 16);
 assert.ok(governedAssetErrors(pngAsset, alteredDimensions).length > 0, "altered PNG dimensions must fail");
+
+for (const route of ["index.html", "security-observatory/index.html", "security-observatory/entitlements-assets.html", "security-observatory/evidence.html"]) {
+  const html = await readFile(path.join(root, route), "utf8");
+  assert.deepEqual(issue32PositioningErrors(html, route), [], `${route} must satisfy the issue #32 positioning contract`);
+}
 
 console.log("Validated public-site contract fixtures");

@@ -9,8 +9,10 @@ The site is operated by Luca Pacini, trading as Fortmilo, in Harpenden, Hertford
 The site uses a local Node.js static generator. Generated HTML and static assets are committed to `main`, then the deployment workflow validates and copies only approved public files into `_site/`. GitHub Pages never publishes the repository root.
 
 ```bash
+npm ci --ignore-scripts
 npm run build
 npm run validate
+npm run test:contract
 npm run check
 npm run build:publication
 npm run validate:publication
@@ -27,6 +29,7 @@ npm run generate:ai-methodology
 - `document-src/orchestrating-ai-for-secure-software-delivery.html` is the semantic maintained source for the accessible methodology paper; `scripts/generate-ai-methodology-paper.mjs` regenerates its one stable public PDF path.
 - `scripts/validate-ai-methodology-paper.mjs` checks publication metadata, tagging, headings, lists, tables, figure alternatives, bookmarks, URI links, reading-order tabs and embedded fonts.
 - `scripts/validate-site.mjs` checks routes, metadata, shared navigation, product wording and public-safety constraints.
+- `scripts/public-site-contract.mjs` is the shared customer-visible claim contract used by validation and focused contract fixtures.
 - `scripts/generate-brand-assets.ps1` reproduces the social JPEG from the approved public banner export.
 - `.github/workflows/validate-site.yml` runs the build, site contract and publication-accessibility assertions for pull requests and protected publication branches.
 
