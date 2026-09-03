@@ -1,6 +1,6 @@
 # Claude project instructions — Fortmilo website
 
-Before reviewing, editing, or advising on this website, read GitHub issue #4 and follow this file as the current owner-approved naming/public-site direction.
+For the current implementation and adversarial review, read GitHub issue #32. Issue #4 remains the binding naming authority where its decisions still apply; it is not the sole current implementation authority. Issue #33 is closed as not planned and must not be revived.
 
 ## Binding naming rule
 
@@ -47,6 +47,8 @@ The following is standing owner-approved governance:
 
 Application requirements and implementation decisions are maintained in the private Security Observatory repository. Do not expose, copy or infer private repository paths in this public website repository.
 
-Related public website governance issue: #4.
+Current public website implementation/review issue: #32. Naming authority: #4.
+
+The private governance requirement and decision for this slice are `WEB-019` and `DEC-026`. Do not copy private claim records, repository paths, branch names or application SHAs into this public repository.
 
 If older website copy, issue history, PDFs, or prior review notes conflict with the naming rule above, treat them as historical/stale and follow the current rule. Do not rewrite historical evidence merely to hide the old decision.

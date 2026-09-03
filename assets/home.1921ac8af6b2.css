@@ -8,4 +8,5 @@
 
 @media (max-width: 680px) {
   .home-page .home-differentiator-grid { grid-template-columns: 1fr; }
+  .home-page h1 { font-size: clamp(2.25rem, 11vw, 3rem); }
 }

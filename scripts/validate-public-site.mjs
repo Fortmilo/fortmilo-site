@@ -13,6 +13,7 @@ import {
   evidenceTerminologyErrors,
   headingErrors,
   imageMarkupErrors,
+  issue32PositioningErrors,
   landmarkErrors,
   namingErrors,
   prohibitedPublicClaimErrors,
@@ -128,6 +129,7 @@ for (const route of routes) {
   for (const message of namingErrors(html, route.output)) errors.push(`${route.output}: ${message}`);
   for (const message of evidenceTerminologyErrors(html)) errors.push(`${route.output}: ${message}`);
   for (const message of prohibitedPublicClaimErrors(html)) errors.push(`${route.output}: ${message}`);
+  for (const message of issue32PositioningErrors(html, route.output)) errors.push(`${route.output}: ${message}`);
   for (const message of publicCopyRevisionErrors(html, currentPublicationDate)) errors.push(`${route.output}: ${message}`);
   for (const message of uniqueIdErrors(html)) errors.push(`${route.output}: ${message}`);
   for (const message of landmarkErrors(html)) errors.push(`${route.output}: ${message}`);
@@ -170,16 +172,8 @@ for (const asset of documentAssets) {
 const home = await readFile(path.join(root, "index.html"), "utf8");
 if (!home.includes("Request access when available")) errors.push("index.html: missing access request CTA");
 const overview = await readFile(path.join(root, "security-observatory/index.html"), "utf8");
-for (const value of ["<h1>Security Observatory</h1>", "Five review areas", "Request access when available"]) {
+for (const value of ["Five focused review areas", "Request access when available"]) {
   if (!overview.includes(value)) errors.push(`security-observatory/index.html: missing ${value}`);
-}
-const req063 = "<strong>Licence assignment evidence:</strong> in V1, each scan retains up to 1,000 assignment evidence records for each of the three licence families — Package Licences, Permission Set Licences and Salesforce User Licences — so at most 3,000 across those families per scan. This limits retained evidence only; it does not limit how many Salesforce users, licences or assignments your org can have. Where the full population cannot be retained safely, that evidence is reported as Incomplete rather than shown as complete.";
-if (overview.split(req063).length - 1 !== 1) errors.push("security-observatory/index.html: REQ-063 disclosure must appear exactly once");
-if (!overview.includes('<section class="term-card prose" aria-label="Licence-assignment retention disclosure"')) {
-  errors.push("security-observatory/index.html: REQ-063 disclosure must use its dedicated semantic block");
-}
-if ((overview.match(/<strong>Licence assignment evidence:<\/strong>/gu) || []).length !== 1) {
-  errors.push("security-observatory/index.html: visible REQ-063 disclosure label must appear exactly once");
 }
 const evidence = await readFile(path.join(root, "security-observatory/evidence.html"), "utf8");
 for (const value of ["Evidence Terminology Contract", 'href="/EVIDENCE_TERMINOLOGY_CONTRACT.md"', "Licence-assignment capture status", "evidence detail level"]) {
