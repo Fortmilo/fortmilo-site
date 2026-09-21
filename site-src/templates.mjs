@@ -8,8 +8,8 @@ const corporateItems = [
 const productItems = [
   ["overview", "Overview", "/security-observatory/"],
   ["findings", "Findings", "/security-observatory/findings.html"],
-  ["identity", "Identity & Access", "/security-observatory/identity-access.html"],
   ["connections", "External Connections", "/security-observatory/external-connections.html"],
+  ["identity", "Identity & Access", "/security-observatory/identity-access.html"],
   ["entitlements", "Entitlements & Assets", "/security-observatory/entitlements-assets.html"],
   ["evidence", "Evidence & Coverage", "/security-observatory/evidence.html"]
 ];

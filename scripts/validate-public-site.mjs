@@ -135,6 +135,21 @@ for (const route of routes) {
   for (const message of landmarkErrors(html)) errors.push(`${route.output}: ${message}`);
   for (const message of imageMarkupErrors(html)) errors.push(`${route.output}: ${message}`);
   for (const message of navigationStateErrors(html, route)) errors.push(`${route.output}: ${message}`);
+  if (route.productActive) {
+    const productNavOrder = [
+      "/security-observatory/",
+      "/security-observatory/findings.html",
+      "/security-observatory/external-connections.html",
+      "/security-observatory/identity-access.html",
+      "/security-observatory/entitlements-assets.html",
+      "/security-observatory/evidence.html"
+    ];
+    const productNavigation = /<nav\b[^>]*class=["'][^"']*\bproduct-nav\b[^"']*["'][^>]*>[\s\S]*?<\/nav>/iu.exec(html)?.[0] || "";
+    const positions = productNavOrder.map((href) => productNavigation.indexOf(`href="${href}"`));
+    if (positions.some((position) => position < 0) || !positions.every((position, index) => index === 0 || position > positions[index - 1])) {
+      errors.push(`${route.output}: product navigation is not in the approved order`);
+    }
+  }
 
   if (/<form\b/iu.test(html)) errors.push(`${route.output}: unexpected form`);
   if (/google-analytics|googletagmanager|segment\.com|mixpanel|hotjar/iu.test(html)) errors.push(`${route.output}: analytics/tracking reference found`);
@@ -181,7 +196,18 @@ for (const value of ["Evidence Terminology Contract", 'href="/EVIDENCE_TERMINOLO
 }
 if (/evidence depth/iu.test(evidence)) errors.push("security-observatory/evidence.html: obsolete evidence depth wording remains");
 const same20FamilyRule = "The same 20-family scanner plan runs at Top Issues, Balanced and Everything. The selected evidence detail level changes what safe detail is retained, displayed, compared and exported; it does not change which scanner families are planned. Everything is the deepest supported level, not exhaustive or unlimited.";
-if (!evidence.includes(same20FamilyRule)) errors.push("security-observatory/evidence.html: missing same 20-family scanner-plan rule");
+if (evidence.includes("same 20-family scanner plan")) errors.push("security-observatory/evidence.html: internal scanner-family count remains in customer-facing copy");
+for (const value of [
+  "Top Issues retains no licence-assignment rows or assignment-summary rows",
+  "Balanced retains holding summaries only",
+  "Everything performs bounded assignment capture",
+  "1,000 rows per family",
+  "The theoretical maximum is 3,000 retained rows per scan",
+  "Salesforce transaction and DML headroom",
+  "Zero captured is not zero assignments"
+]) {
+  if (!evidence.includes(value)) errors.push(`security-observatory/evidence.html: missing consolidated licence boundary ${value}`);
+}
 const coverageRule = "Coverage type describes how far available evidence can assess the mapped question. It is neither confidence nor the selected evidence detail level.";
 if (!evidence.includes(coverageRule)) errors.push("security-observatory/evidence.html: missing Coverage-axis rule");
 const coverageTileRule = "Coverage tiles, including Partial Evidence, remain separate from control-outcome tiles and filters.";
@@ -194,10 +220,11 @@ const completenessRules = [
   "Incomplete: separate licence-assignment capture status for bounded or truncated capture"
 ];
 const findings = await readFile(path.join(root, "security-observatory/findings.html"), "utf8");
-for (const [route, html] of [["security-observatory/evidence.html", evidence], ["security-observatory/findings.html", findings]]) {
-  for (const value of completenessRules) {
-    if (!html.includes(value)) errors.push(`${route}: missing completeness boundary ${value}`);
-  }
+for (const value of completenessRules) {
+  if (!evidence.includes(value)) errors.push(`security-observatory/evidence.html: missing completeness boundary ${value}`);
+}
+for (const value of ["Prioritise", "Inspect safe detail", "Record advisory review", "Finding anatomy", "Evidence Terminology Contract"]) {
+  if (!findings.includes(value)) errors.push(`security-observatory/findings.html: missing streamlined finding content ${value}`);
 }
 const terminologyContract = await readFile(path.join(root, "EVIDENCE_TERMINOLOGY_CONTRACT.md"), "utf8");
 for (const message of evidenceTerminologyErrors(terminologyContract)) errors.push(`EVIDENCE_TERMINOLOGY_CONTRACT.md: ${message}`);

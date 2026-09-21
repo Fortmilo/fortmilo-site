@@ -101,9 +101,68 @@ assert.deepEqual(landmarkErrors('<a class="skip-link" href="#main">Skip</a><head
 assert.ok(prohibitedPublicClaimErrors("<p>AppExchange certified</p>").length > 0);
 
 const issue32Fixture = (content) => `<main>${content}</main><footer>${issue32Contract.partnerFooter} Email: ${issue32Contract.visibleEmail}</footer>`;
+const homepageFixture = await readFile(path.join(root, "index.html"), "utf8");
+const overviewFixture = await readFile(path.join(root, "security-observatory/index.html"), "utf8");
+
+assert.deepEqual(issue32PositioningErrors(homepageFixture, "index.html"), [], "approved exact homepage Security Center paragraph must pass");
+
+for (const [change, expected] of [
+  [homepageFixture.replace("</main>", "<p>Security Center also provides another capability.</p></main>"), "approved neutral homepage section"],
+  [homepageFixture.replace(issue32Contract.securityCenterParagraph, "Salesforce Security Center provides inadequate security management for Salesforce orgs."), "approved Security Center paragraph"],
+  [homepageFixture.replace("</main>", "<p>Salesforce Security Center pricing</p></main>"), "Salesforce pricing"],
+  [homepageFixture.replace("</main>", "<p>Security Center Essentials feature comparison</p></main>"), "named Security Center product comparison"],
+  [homepageFixture.replace("</main>", "<p>Compare capabilities in a tier comparison.</p></main>"), "Compare capabilities"],
+  [homepageFixture.replace("</main>", "<p>Security Observatory is better than Salesforce.</p></main>"), "superiority"],
+  [homepageFixture.replace("</main>", "<p>Security Observatory is a replacement for Salesforce.</p></main>"), "replacement"]
+]) {
+  assert.ok(
+    issue32PositioningErrors(change, "index.html").some((value) => value.includes(expected)),
+    `expected homepage contract failure containing ${expected}`
+  );
+}
+
+assert.ok(
+  issue32PositioningErrors(issue32Fixture("Salesforce Security Center provides a dashboard"), "security-observatory/findings.html")
+    .some((value) => value.includes("only on the homepage")),
+  "Security Center mention on another product page must fail"
+);
+
+for (const encodedSecurityCenter of ["Security Cent&#101;r", "Security&nbsp;Center"]) {
+  assert.ok(
+    issue32PositioningErrors(issue32Fixture(encodedSecurityCenter), "security-observatory/findings.html")
+      .some((value) => value.includes("only on the homepage")),
+    `encoded Security Center reference must fail: ${encodedSecurityCenter}`
+  );
+}
+
+for (const relationshipClaim of [
+  "Security Observatory complements Salesforce.",
+  "Salesforce is an alternative to Security Observatory.",
+  "Security Observatory is a substitute for Salesforce."
+]) {
+  assert.ok(
+    issue32PositioningErrors(issue32Fixture(relationshipClaim), "fixture.html")
+      .some((value) => value === "unapproved Salesforce product-relationship claim"),
+    `unapproved Salesforce relationship must fail: ${relationshipClaim}`
+  );
+}
+
+assert.ok(
+  issue32PositioningErrors(homepageFixture.replace(issue32Contract.trustStrip, ""), "index.html")
+    .some((value) => value.includes("homepage trust strip")),
+  "removing the Home trust strip must fail"
+);
+assert.deepEqual(issue32PositioningErrors(overviewFixture, "security-observatory/index.html"), [], "Overview trust strip must pass");
+assert.ok(
+  issue32PositioningErrors(overviewFixture.replace(issue32Contract.trustStrip, ""), "security-observatory/index.html")
+    .some((value) => value.includes("Overview trust strip")),
+  "removing the Overview trust strip must fail"
+);
+
 for (const [claim, expected] of [
   ["Security Center Essentials", "named Security Center"],
   ["full Security Center", "named Security Center"],
+  ["Salesforce Security Center provides a dashboard", "only on the homepage"],
   ["Compare capabilities", "Compare capabilities"],
   ["comparison table", "comparison-table"],
   ["Security Observatory is better than Salesforce", "superiority"],
@@ -112,6 +171,11 @@ for (const [claim, expected] of [
   ["Security Observatory includes External Client Apps", "External Client App"],
   ["Frozen-user session coverage is available", "frozen-user session"],
   ["SBS is release-complete", "release-complete SBS"],
+  ["SBS-compliant", "SBS compliance"],
+  ["SBS certified", "SBS certification"],
+  ["85% compliant", "SBS percentage"],
+  ["12 of 20 controls passed", "SBS passed-controls"],
+  ["benchmark score", "benchmark score"],
   ["Security Observatory provides comprehensive coverage", "unsupported absolute"],
   ["Security Observatory is currently available for public installation", "public-installation"],
   ["The product passed Salesforce Security Review", "Security Review completion"],
@@ -125,15 +189,14 @@ for (const [claim, expected] of [
 }
 
 for (const qualifiedClaim of [
-  issue32Contract.neutralRelationship,
   "External Client App inventory is not included in V1.",
   "No dedicated frozen-user session finding is claimed.",
-  "SBS mapping is not promoted as release-complete while work remains partial and open.",
+  "A control reference is a version-bound pointer to retained evidence, not a compliance decision.",
   "Missing evidence must never become a clean result.",
   "This is not a complete installed-package inventory."
 ]) {
   const qualifiedErrors = issue32PositioningErrors(issue32Fixture(qualifiedClaim), "fixture.html");
-  assert.ok(!qualifiedErrors.some((value) => value.startsWith("prohibited") || value.includes("unapproved Salesforce product-relationship")), `qualified wording must remain valid: ${qualifiedClaim}`);
+  assert.ok(!qualifiedErrors.some((value) => value.startsWith("prohibited") || value === "unapproved Salesforce product-relationship claim"), `qualified wording must remain valid: ${qualifiedClaim}`);
 }
 
 const duplicateNavigation = '<nav class="corporate-nav" aria-label="Corporate"><a aria-current="page"></a><a aria-current="page"></a></nav>';

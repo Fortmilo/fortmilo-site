@@ -8,17 +8,19 @@ export const prohibitedFormalNames = [
 export const attributedProductName = "Security Observatory by Fortmilo";
 
 export const issue32Contract = Object.freeze({
-  homepageTitle: "Security Observatory by Fortmilo | Read-only Salesforce evidence",
-  homepageDescription: "Review application, identity and integration exposure with read-only, sanitised security evidence retained in your Salesforce org.",
-  homepageSchemaDescription: "Fortmilo develops Security Observatory for read-only review of application, identity and integration exposure with sanitised evidence retained in Salesforce.",
+  homepageTitle: "Security Observatory by Fortmilo | Application &amp; integration governance",
+  homepageDescription: "Govern Salesforce applications, OAuth access, credentials and endpoints with durable review records and traceable read-only evidence in your Salesforce org.",
+  homepageSchemaDescription: "Fortmilo develops Security Observatory to govern Salesforce applications, integrations and access with durable review records and traceable, read-only evidence retained in Salesforce.",
   homepageHeadline: "See what can reach your Salesforce org — and keep the evidence needed to review it.",
-  homepageSupport: "Free, read-only visibility into application, identity and integration exposure, with sanitised evidence retained in your Salesforce org.",
-  applicationGovernance: "Every application we observe gets a durable record you can own, review and trace back to evidence.",
+  homepageSupport: "Security Observatory turns observed application, OAuth, credential and endpoint evidence into durable records with ownership, purpose and review context — and keeps the evidence behind each one.",
+  applicationGovernance: "Supported observed applications and integrations can become durable governed records that remain useful across rescans.",
   trustStrip: "No tokens · No session IDs · No secrets · No certificate bodies · No raw IPs",
-  neutralRelationship: "Designed to complement Salesforce's native security capabilities, not replace them.",
+  securityCenterHeading: "Alongside Salesforce Security Center",
+  securityCenterParagraph: "Salesforce Security Center provides native security posture monitoring and security management for Salesforce orgs. Security Observatory is built around a different job: recording the applications, integrations and access that can reach your org, giving them accountable review context and keeping the evidence behind each entry. It is designed to complement Salesforce's native security capabilities, not replace them.",
   overviewTitle: "Security Observatory overview | Fortmilo",
-  overviewDescription: "Review application governance, OAuth exposure, identity and integration evidence with a read-only, evidence-bounded Salesforce assessment.",
-  v1Date: "V1 scope current as of 3 September 2026.",
+  overviewDescription: "Govern observed Salesforce applications and integrations, correlate OAuth access, and review credentials, endpoints and public exposure with traceable evidence.",
+  externalConnectionsDescription: "Review governed applications, OAuth access, Named Credentials, External Credentials, Remote Site Settings, CSP Trusted Sites and public Salesforce surfaces.",
+  v1Date: "V1 scope current as of 21 September 2026.",
   futureDirection: "Paid extensions for continuous monitoring, longer evidence history and estate-wide governance are under consideration for a later release.",
   packageLicenceBoundary: "Package Licence capacity evidence is available for managed packages that expose a Salesforce PackageLicense record. This is not a complete installed-package inventory.",
   partnerFooter: "Fortmilo participates in the Salesforce Partner Program. Partner status does not imply Salesforce endorsement, AppExchange listing or completion of Salesforce Security Review. Security Observatory is independently developed and is not endorsed by Salesforce, Inc. Salesforce is a trademark of Salesforce, Inc.",
@@ -129,10 +131,31 @@ export function customerVisibleSurface(html) {
     .replace(/<style\b[\s\S]*?<\/style>/giu, " ");
   const textNodes = withoutScriptsAndStyles.replace(/<[^>]+>/gu, " ");
 
-  return [textNodes, ...metadataValues(withoutComments), ...jsonLd]
-    .join(" ")
+  return decodeHtmlEntities([textNodes, ...metadataValues(withoutComments), ...jsonLd]
+    .join(" "))
     .replace(/\s+/gu, " ")
     .trim();
+}
+
+function decodeHtmlEntities(value) {
+  const namedEntities = new Map([
+    ["amp", "&"],
+    ["apos", "'"],
+    ["gt", ">"],
+    ["lt", "<"],
+    ["nbsp", " "],
+    ["quot", '"']
+  ]);
+
+  return value.replace(/&(?:#(\d+)|#x([0-9a-f]+)|([a-z]+));/giu, (entity, decimal, hexadecimal, named) => {
+    if (decimal || hexadecimal) {
+      const codePoint = Number.parseInt(decimal || hexadecimal, decimal ? 10 : 16);
+      return Number.isSafeInteger(codePoint) && codePoint <= 0x10ffff
+        ? String.fromCodePoint(codePoint)
+        : entity;
+    }
+    return namedEntities.get(named.toLowerCase()) ?? entity;
+  });
 }
 
 export function headingErrors(html) {
@@ -217,8 +240,9 @@ export function issue32PositioningErrors(html, route) {
   if (surface.includes(issue32Contract.futureDirection) && route !== "security-observatory/index.html") {
     errors.push("future-direction statement is allowed only on the product Overview");
   }
-  if (surface.includes(issue32Contract.trustStrip) && !["index.html", "security-observatory/index.html"].includes(route)) {
-    errors.push("exact trust strip is allowed only on Home and product Overview");
+  const trustStripRoutes = new Set(["index.html", "security-observatory/index.html"]);
+  if (surface.includes(issue32Contract.trustStrip) && !trustStripRoutes.has(route)) {
+    errors.push("exact trust strip is allowed only on Home and the Security Observatory Overview");
   }
 
   requiredOccurrence(errors, surface, issue32Contract.partnerFooter, 1, "qualified Partner Program footer");
@@ -233,6 +257,12 @@ export function issue32PositioningErrors(html, route) {
   ];
   for (const pattern of privateIdentifierPatterns) {
     if (pattern.test(surface)) errors.push(`private application identifier matches ${pattern}`);
+  }
+
+  const firstSbs = surface.search(/\bSBS\b/u);
+  const firstExpandedSbs = surface.indexOf("Security Benchmark for Salesforce (SBS)");
+  if (firstSbs >= 0 && (firstExpandedSbs < 0 || firstExpandedSbs > firstSbs)) {
+    errors.push("SBS must be expanded on first use");
   }
 
   const prohibitedPatterns = [
@@ -251,6 +281,11 @@ export function issue32PositioningErrors(html, route) {
     [/\bfrozen-user session (?:findings?|coverage)\s+(?:is|are)\s+(?:included|available|supported)/iu, "frozen-user session claim"],
     [/\b(?:finds?|flags?|detects?|surfaces?)\s+(?:current\s+)?sessions?\s+(?:for|held by)\s+frozen/iu, "frozen-user session claim"],
     [/\bSBS\b[^.]{0,80}\b(?:is|are)\s+(?:now\s+)?release-complete/iu, "release-complete SBS claim"],
+    [/\bSBS[- ]compliant\b/iu, "SBS compliance claim"],
+    [/\bSBS\s+certified\b/iu, "SBS certification claim"],
+    [/\b\d+(?:\.\d+)?%\s+(?:SBS\s+)?compliant\b/iu, "SBS percentage claim"],
+    [/\b\d+\s+of\s+\d+\s+controls?\s+passed\b/iu, "SBS passed-controls claim"],
+    [/\bbenchmark\s+(?:score|grade|percentage)\b/iu, "benchmark score claim"],
     [/\b(?:Security Observatory|the product|Free V1|V1)\s+(?:is|provides|offers|delivers|ensures|guarantees)\s+(?:fully\s+)?(?:compliant|certified|complete|comprehensive|exhaustive|real[- ]?time)\b/iu, "unsupported absolute product claim"],
     [/\b(?:guarantees?|proves?)\s+(?:a\s+)?clean\s+(?:result|state|bill of health)\b/iu, "unsupported clean-result claim"],
     [/\b(?:now|currently)\s+available for public installation\b/iu, "public-installation claim"],
@@ -260,9 +295,27 @@ export function issue32PositioningErrors(html, route) {
     if (pattern.test(html) || pattern.test(surface)) errors.push(`prohibited ${label}`);
   }
 
-  const withoutNeutralRelationship = surface.replaceAll(issue32Contract.neutralRelationship, "");
-  if (/\b(?:complements?|replaces?|replacement|alternative|substitute)\b.{0,80}\bSalesforce\b/iu.test(withoutNeutralRelationship) || /\bSalesforce\b.{0,80}\b(?:complements?|replaces?|replacement|alternative|substitute)\b/iu.test(withoutNeutralRelationship)) {
+  const relationshipSurface = route === "index.html"
+    ? surface.replace(issue32Contract.securityCenterParagraph, "")
+    : surface;
+  if (
+    /\b(?:complements?|replaces?|replacement|alternative|substitute)\b.{0,80}\bSalesforce\b/iu.test(relationshipSurface)
+    || /\bSalesforce\b.{0,80}\b(?:complements?|replaces?|replacement|alternative|substitute)\b/iu.test(relationshipSurface)
+  ) {
     errors.push("unapproved Salesforce product-relationship claim");
+  }
+
+  if (route === "index.html") {
+    requiredOccurrence(errors, surface, issue32Contract.securityCenterHeading, 1, "approved Security Center heading");
+    requiredOccurrence(errors, surface, issue32Contract.securityCenterParagraph, 1, "approved Security Center paragraph");
+    const withoutApprovedSecurityCenterUse = surface
+      .replace(issue32Contract.securityCenterHeading, "")
+      .replace(issue32Contract.securityCenterParagraph, "");
+    if (/Security Center/iu.test(withoutApprovedSecurityCenterUse)) {
+      errors.push("Security Center may appear only in the approved neutral homepage section");
+    }
+  } else if (/Security Center/iu.test(surface)) {
+    errors.push("Security Center may appear only on the homepage");
   }
 
   if (route === "index.html") {
@@ -270,16 +323,32 @@ export function issue32PositioningErrors(html, route) {
     requiredOccurrence(errors, surface, issue32Contract.homepageSupport, 1, "approved homepage support copy");
     requiredOccurrence(errors, surface, issue32Contract.applicationGovernance, 1, "application-governance line");
     requiredOccurrence(errors, surface, issue32Contract.trustStrip, 1, "homepage trust strip");
-    requiredOccurrence(errors, surface, issue32Contract.neutralRelationship, 1, "neutral Salesforce relationship statement");
     for (const cta of ["Explore Security Observatory", "Request access when available"]) {
       if (!surface.includes(cta)) errors.push(`homepage missing ${cta} CTA`);
     }
     requiredOccurrence(errors, surface, issue32Contract.homepageSchemaDescription, 1, "homepage schema description");
-    for (const heading of ["Baseline visibility included", "Where Security Observatory goes deeper", "How your evidence is handled"]) {
+    const homepageHeadings = [
+      "Turn observed evidence into accountable application records",
+      "Review the credentials, endpoints and public surfaces that connect your org",
+      "See OAuth access in the context of the user and the application",
+      issue32Contract.securityCenterHeading,
+      "Review the exposure behind the headline count",
+      "Missing evidence must never become a clean result.",
+      "Why Security Observatory?",
+      "What a Security Observatory scan also reviews",
+      "Continue the Security Observatory review"
+    ];
+    for (const heading of homepageHeadings) {
       requiredOccurrence(errors, surface, heading, 1, `${heading} heading`);
     }
-    const headingPositions = ["Baseline visibility included", "Where Security Observatory goes deeper", "How your evidence is handled"].map((heading) => surface.indexOf(heading));
-    if (!(headingPositions[0] < headingPositions[1] && headingPositions[1] < headingPositions[2])) errors.push("outcome-led sections are not adjacent and ordered");
+    const headingPositions = homepageHeadings.map((heading) => surface.indexOf(heading));
+    if (!headingPositions.every((position, index) => index === 0 || position > headingPositions[index - 1])) {
+      errors.push("homepage positioning sections are not in the approved order");
+    }
+    if (!surface.includes("Security Benchmark for Salesforce (SBS)")) errors.push("homepage missing first-use SBS expansion");
+    for (const term of ["Named Credentials", "External Credentials", "Remote Site Settings", "CSP Trusted Sites", "CORS allowlist", "Salesforce Sites", "Experience Cloud"]) {
+      if (!surface.includes(term)) errors.push(`homepage missing differentiated integration term ${term}`);
+    }
     const title = /<title>(.*?)<\/title>/iu.exec(html)?.[1] || "";
     if (title !== issue32Contract.homepageTitle) errors.push("homepage title metadata does not match the approved positioning");
     for (const key of ["description", "og:description"]) {
@@ -307,13 +376,30 @@ export function issue32PositioningErrors(html, route) {
       "Salesforce User Licences",
       "External Client App inventory is not included in V1.",
       "subscriber to complete self-callout setup",
-      "SBS mapping is not promoted as release-complete",
+      "SBS control references remain evidence pointers",
       "The asset and governance CSV does not export the complete governance record.",
       "Unavailable or incomplete evidence is not presented as zero."
     ]) {
       if (!surface.includes(value)) errors.push(`Overview missing ${value}`);
     }
     if (!surface.includes("Request access when available")) errors.push("Overview missing request-access CTA");
+    const overviewHeadings = [
+      "Move from observed evidence to accountable review context",
+      "Review the outbound integration surface",
+      "See authorisation evidence with the user and application",
+      "Review Salesforce Sites and Experience Cloud surfaces",
+      "What a Security Benchmark for Salesforce control reference means",
+      "Missing evidence must never become a clean result.",
+      "Five focused review areas",
+      "Identity, privileged access and entitlement evidence",
+      "V1 limitations",
+      "Future direction",
+      "Continue the product review"
+    ];
+    const overviewPositions = overviewHeadings.map((heading) => surface.indexOf(heading));
+    if (overviewPositions.some((position) => position < 0) || !overviewPositions.every((position, index) => index === 0 || position > overviewPositions[index - 1])) {
+      errors.push("Overview sections are not complete and in the approved order");
+    }
     const limitationsPosition = surface.indexOf("V1 limitations");
     const futurePosition = surface.indexOf(issue32Contract.futureDirection);
     if (limitationsPosition < 0 || futurePosition <= limitationsPosition) errors.push("future direction must occur after V1 limitations");
@@ -328,8 +414,32 @@ export function issue32PositioningErrors(html, route) {
     requiredOccurrence(errors, surface, issue32Contract.packageLicenceBoundary, 1, "Entitlements PackageLicense boundary");
   }
 
-  if (route === "security-observatory/evidence.html" && !lowerSurface.includes("mapping work remains partial and open")) {
-    errors.push("SBS partial/open qualification is missing");
+  if (route === "security-observatory/external-connections.html") {
+    for (const term of ["Named Credentials", "External Credentials", "Remote Site Settings", "CSP Trusted Sites", "CORS allowlist", "outbound endpoints", "Salesforce Sites", "Experience Cloud"]) {
+      if (!surface.includes(term)) errors.push(`External Connections missing ${term}`);
+    }
+    for (const key of ["description", "og:description"]) {
+      if (metadataContent(html, key) !== issue32Contract.externalConnectionsDescription) errors.push(`External Connections ${key} metadata is stale`);
+    }
+  }
+
+  if (["security-observatory/index.html", "security-observatory/evidence.html"].includes(route)) {
+    for (const boundary of [
+      "not a Salesforce product",
+      "a Fortmilo benchmark",
+      "not endorsed or supported by Salesforce",
+      "version-bound",
+      "Manual Required",
+      "Not Covered",
+      "CC BY-SA 4.0"
+    ]) {
+      if (!lowerSurface.includes(boundary.toLowerCase())) errors.push(`${route}: missing SBS boundary ${boundary}`);
+    }
+  }
+
+  if (route === "security-observatory/evidence.html") {
+    if (/partial and open|not a release-complete/iu.test(surface)) errors.push("stale SBS development disclaimer remains");
+    if (!surface.includes("What a Security Benchmark for Salesforce control reference means")) errors.push("positive SBS evidence boundary is missing");
   }
 
   return errors;

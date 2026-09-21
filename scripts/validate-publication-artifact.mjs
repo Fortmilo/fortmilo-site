@@ -170,10 +170,10 @@ for (const obsoleteFile of obsoleteOperationalFiles) {
 const governedManifestPaths = governedAssets.map((asset) => asset.path).sort(lexicalCompare);
 const discoveredGovernedPaths = [
   ...(await readdir(repositoryRoot, { withFileTypes: true }))
-    .filter((entry) => entry.isFile() && /\.(?:png|jpe?g|ico|svg)$/iu.test(entry.name))
+    .filter((entry) => entry.isFile() && /\.(?:png|jpe?g|webp|ico|svg)$/iu.test(entry.name))
     .map((entry) => entry.name),
   ...(await readdir(path.join(repositoryRoot, "assets"), { withFileTypes: true }))
-    .filter((entry) => entry.isFile() && /\.(?:png|jpe?g|ico|svg)$/iu.test(entry.name))
+    .filter((entry) => entry.isFile() && /\.(?:png|jpe?g|webp|ico|svg)$/iu.test(entry.name))
     .map((entry) => `assets/${entry.name}`)
 ].sort(lexicalCompare);
 if (JSON.stringify(discoveredGovernedPaths) !== JSON.stringify(governedManifestPaths)) {

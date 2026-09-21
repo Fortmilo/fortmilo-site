@@ -159,9 +159,9 @@ h3 { margin: 0 0 .5rem; font-size: 1.14rem; line-height: 1.28; }
 .fact-list strong { display: block; color: #fff; font-size: .86rem; }
 .fact-list span { display: block; margin-top: .1rem; color: var(--muted); font-size: .84rem; }
 
-.actual-shot { margin: 1.2rem 0 0; padding: .9rem; border: 1px solid var(--border); border-radius: 14px; background: #fff; box-shadow: var(--shadow); }
-.actual-shot img { width: 100%; }
-.actual-shot figcaption { margin-top: .6rem; color: #526176; font-size: .8rem; }
+.product-screenshot { max-width: 100%; margin: 2rem 0 0; overflow: hidden; border: 1px solid var(--border); border-radius: 14px; background: #fff; }
+.product-screenshot img { width: 100%; height: auto; }
+.product-screenshot figcaption { padding: .75rem 1rem; border-top: 1px solid #d7dde6; color: #405067; font-size: .84rem; }
 
 .term-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1rem; }
 .term-grid-four { grid-template-columns: repeat(4, minmax(0, 1fr)); }

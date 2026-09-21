@@ -13,9 +13,14 @@ export const governedAssets = Object.freeze([
   freezeAsset({ path: "mstile-150x150.png", sha256: "4417d9367cad3ab2e9949d1bca38646115ef9bea3db4c8976b48752963d5929f", bytes: 20305, mediaType: "image/png", signature: "89504e470d0a1a0a", dimensions: { width: 150, height: 150 }, purpose: "Microsoft tile icon" }),
   freezeAsset({ path: "assets/android-chrome-192x192.png", sha256: "5af19460703089a8ff214413844aeafeb62920529b13ced37315dd56ccdf9661", bytes: 32631, mediaType: "image/png", signature: "89504e470d0a1a0a", dimensions: { width: 192, height: 192 }, purpose: "Android Chrome icon" }),
   freezeAsset({ path: "assets/android-chrome-512x512.png", sha256: "c194e9a1687190110b2bce2e2ceeefac97bb5c8ff050df53a9e0197c601502a8", bytes: 225569, mediaType: "image/png", signature: "89504e470d0a1a0a", dimensions: { width: 512, height: 512 }, purpose: "Android Chrome icon" }),
-  freezeAsset({ path: "assets/fortmilo-brand-banner-1200x675.png", sha256: "f01e55a44b8bdf309c41c4899a7917dd1982c1845d8a9c295bf0d8788e10fc13", bytes: 919547, mediaType: "image/png", signature: "89504e470d0a1a0a", dimensions: { width: 1200, height: 675 }, purpose: "Homepage header brand mark" }),
-  freezeAsset({ path: "assets/fortmilo-security-observatory-og-20260731.jpg", sha256: "e94aac3a839cf32183d1598d461db89724622612ea5299afcc00b1b9bccd8fd9", bytes: 90525, mediaType: "image/jpeg", signature: "ffd8-ffd9", dimensions: { width: 1200, height: 630 }, purpose: "Open Graph and Twitter social preview" }),
-  freezeAsset({ path: "assets/fortmilo-shield-512.png", sha256: "a39acef2c9e9dc76583ed60b4c4c1e59fe92c135a6295683edf080051d0fa980", bytes: 217630, mediaType: "image/png", signature: "89504e470d0a1a0a", dimensions: { width: 512, height: 512 }, purpose: "Shared header brand mark and organization logo" })
+  freezeAsset({ path: "assets/fortmilo-brand-banner-1200x675.png", sha256: "32b04b9285fd0399a9492a769a403485cf03ec20c1eb70949b8da55ffd6702e1", bytes: 1298517, mediaType: "image/png", signature: "89504e470d0a1a0a", dimensions: { width: 1200, height: 675 }, purpose: "Homepage header brand mark" }),
+  freezeAsset({ path: "assets/fortmilo-security-observatory-og-20260731.jpg", sha256: "613ed0583c4d9860252ec142dfcbe76201ef92bc63f3e60e514ca573019c743b", bytes: 93262, mediaType: "image/jpeg", signature: "ffd8-ffd9", dimensions: { width: 1200, height: 630 }, purpose: "Open Graph and Twitter social preview" }),
+  freezeAsset({ path: "assets/fortmilo-shield-512.png", sha256: "a39acef2c9e9dc76583ed60b4c4c1e59fe92c135a6295683edf080051d0fa980", bytes: 217630, mediaType: "image/png", signature: "89504e470d0a1a0a", dimensions: { width: 512, height: 512 }, purpose: "Shared header brand mark and organization logo" }),
+  freezeAsset({ path: "assets/security-observatory-external-connections-oauth.webp", sha256: "d2d261559009a946987cdc73e5b740ab6f1b3d89b9014ba224956bc785a4bdb9", bytes: 109902, mediaType: "image/webp", signature: "RIFF-WEBP-VP8", dimensions: { width: 1600, height: 1491 }, purpose: "External Connections product screenshot" }),
+  freezeAsset({ path: "assets/security-observatory-finding-review.webp", sha256: "f1e2b6a639a5aaf4ce46765ccead9c22282c3779eebdf56a9858d0f77f305f8f", bytes: 69210, mediaType: "image/webp", signature: "RIFF-WEBP-VP8", dimensions: { width: 1600, height: 1266 }, purpose: "Finding review product screenshot" }),
+  freezeAsset({ path: "assets/security-observatory-governance-context.webp", sha256: "680293b8af17a989ce40c0b4e5d1ad4792d17eb5ae75703295ab6175625018a0", bytes: 40070, mediaType: "image/webp", signature: "RIFF-WEBP-VP8", dimensions: { width: 1545, height: 1060 }, purpose: "Governed application context product screenshot" }),
+  freezeAsset({ path: "assets/security-observatory-overview.webp", sha256: "5525387104f4d50532bc2f4749636236c66b0855b183690c3d79cc2fe7a138d3", bytes: 52282, mediaType: "image/webp", signature: "RIFF-WEBP-VP8", dimensions: { width: 1600, height: 766 }, purpose: "Security Observatory overview product screenshot" }),
+  freezeAsset({ path: "assets/security-observatory-sbs-supporting-evidence.webp", sha256: "52e9d0b17b775e12f01bab347864447be816141c5e6b6d8eb12d9fd48cde9624", bytes: 143248, mediaType: "image/webp", signature: "RIFF-WEBP-VP8", dimensions: { width: 1420, height: 1585 }, purpose: "SBS supporting evidence product screenshot" })
 ]);
 
 export const socialPreviewAsset = governedAssets.find((asset) => asset.purpose.includes("social preview"));
@@ -192,6 +197,22 @@ export function parseJpeg(buffer, label = "JPEG") {
   return frame;
 }
 
+export function parseWebp(buffer, label = "WebP") {
+  if (buffer.length < 30 || buffer.toString("ascii", 0, 4) !== "RIFF" || buffer.toString("ascii", 8, 12) !== "WEBP") {
+    throw new Error(`${label}: invalid WebP RIFF signature`);
+  }
+  if (buffer.readUInt32LE(4) + 8 !== buffer.length) throw new Error(`${label}: invalid WebP RIFF length`);
+  if (buffer.toString("ascii", 12, 16) !== "VP8 ") throw new Error(`${label}: expected lossy VP8 WebP`);
+  const chunkLength = buffer.readUInt32LE(16);
+  const paddedChunkEnd = 20 + chunkLength + (chunkLength % 2);
+  if (chunkLength < 10 || paddedChunkEnd !== buffer.length) throw new Error(`${label}: invalid VP8 chunk length`);
+  if (buffer[23] !== 0x9d || buffer[24] !== 0x01 || buffer[25] !== 0x2a) throw new Error(`${label}: invalid VP8 frame signature`);
+  const width = buffer.readUInt16LE(26) & 0x3fff;
+  const height = buffer.readUInt16LE(28) & 0x3fff;
+  if (!width || !height) throw new Error(`${label}: invalid WebP dimensions`);
+  return { width, height };
+}
+
 function parseIco(buffer, label) {
   if (buffer.length < 6 || buffer.readUInt16LE(0) !== 0 || buffer.readUInt16LE(2) !== 1) throw new Error(`${label}: invalid ICO header`);
   const count = buffer.readUInt16LE(4);
@@ -227,6 +248,8 @@ export function governedAssetErrors(asset, buffer) {
       const parsed = parseJpeg(buffer, asset.path);
       dimensions = parsed;
       if (parsed.components !== 3) errors.push(`${asset.path}: expected three JPEG colour components`);
+    } else if (asset.mediaType === "image/webp") {
+      dimensions = parseWebp(buffer, asset.path);
     } else if (asset.mediaType === "image/x-icon") {
       parseIco(buffer, asset.path);
     } else if (asset.mediaType === "image/svg+xml") {
