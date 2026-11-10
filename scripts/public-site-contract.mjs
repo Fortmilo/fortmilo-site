@@ -21,7 +21,7 @@ export const issue32Contract = Object.freeze({
   overviewDescription: "Govern observed Salesforce applications and integrations, correlate OAuth access, and review credentials, endpoints and public exposure with traceable evidence.",
   externalConnectionsDescription: "Review governed applications, OAuth access, Named Credentials, External Credentials, Remote Site Settings, CSP Trusted Sites and public Salesforce surfaces.",
   v1Date: "V1 scope current as of 21 September 2026.",
-  futureDirection: "Paid extensions for continuous monitoring, longer evidence history and estate-wide governance are under consideration for a later release.",
+  retiredFutureDirection: "Paid extensions for continuous monitoring, longer evidence history and estate-wide governance are under consideration for a later release.",
   packageLicenceBoundary: "Package Licence capacity evidence is available for managed packages that expose a Salesforce PackageLicense record. This is not a complete installed-package inventory.",
   partnerFooter: "Fortmilo participates in the Salesforce Partner Program. Partner status does not imply Salesforce endorsement, AppExchange listing or completion of Salesforce Security Review. Security Observatory is independently developed and is not endorsed by Salesforce, Inc. Salesforce is a trademark of Salesforce, Inc.",
   visibleEmail: "info@fortmilo.co.uk"
@@ -237,8 +237,11 @@ export function issue32PositioningErrors(html, route) {
   const lowerSurface = surface.toLowerCase();
   const errors = [];
 
-  if (surface.includes(issue32Contract.futureDirection) && route !== "security-observatory/index.html") {
-    errors.push("future-direction statement is allowed only on the product Overview");
+  if (surface.includes(issue32Contract.retiredFutureDirection)) {
+    errors.push("retired paid-extension roadmap statement must be absent from public content");
+  }
+  if (route === "security-observatory/index.html" && /\bFuture direction\b/iu.test(surface)) {
+    errors.push("retired Future direction section must be absent");
   }
   const trustStripRoutes = new Set(["index.html", "security-observatory/index.html"]);
   if (surface.includes(issue32Contract.trustStrip) && !trustStripRoutes.has(route)) {
@@ -360,7 +363,6 @@ export function issue32PositioningErrors(html, route) {
     requiredOccurrence(errors, surface, issue32Contract.trustStrip, 1, "Overview trust strip");
     requiredOccurrence(errors, surface, "V1 limitations", 1, "V1 limitations heading");
     requiredOccurrence(errors, surface, issue32Contract.v1Date, 1, "dated V1 scope marker");
-    requiredOccurrence(errors, surface, issue32Contract.futureDirection, 1, "future-direction statement");
     requiredOccurrence(errors, surface, issue32Contract.packageLicenceBoundary, 1, "PackageLicense boundary");
     for (const value of [
       "Free V1 is single-org.",
@@ -393,16 +395,12 @@ export function issue32PositioningErrors(html, route) {
       "Five focused review areas",
       "Identity, privileged access and entitlement evidence",
       "V1 limitations",
-      "Future direction",
       "Continue the product review"
     ];
     const overviewPositions = overviewHeadings.map((heading) => surface.indexOf(heading));
     if (overviewPositions.some((position) => position < 0) || !overviewPositions.every((position, index) => index === 0 || position > overviewPositions[index - 1])) {
       errors.push("Overview sections are not complete and in the approved order");
     }
-    const limitationsPosition = surface.indexOf("V1 limitations");
-    const futurePosition = surface.indexOf(issue32Contract.futureDirection);
-    if (limitationsPosition < 0 || futurePosition <= limitationsPosition) errors.push("future direction must occur after V1 limitations");
     const title = /<title>(.*?)<\/title>/iu.exec(html)?.[1] || "";
     if (title !== issue32Contract.overviewTitle) errors.push("Overview title metadata does not match the approved positioning");
     for (const key of ["description", "og:description"]) {
