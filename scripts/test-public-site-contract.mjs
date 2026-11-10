@@ -153,6 +153,13 @@ assert.ok(
   "removing the Home trust strip must fail"
 );
 assert.deepEqual(issue32PositioningErrors(overviewFixture, "security-observatory/index.html"), [], "Overview trust strip must pass");
+assert.ok(!overviewFixture.includes(issue32Contract.retiredFutureDirection), "Overview must omit the retired paid-extension sentence");
+assert.ok(!overviewFixture.includes("Future direction"), "Overview must omit the retired Future direction section");
+assert.ok(
+  issue32PositioningErrors(overviewFixture.replace("</main>", `<section><h2>Future direction</h2><p>${issue32Contract.retiredFutureDirection}</p></section></main>`), "security-observatory/index.html")
+    .some((value) => value.includes("retired")),
+  "reintroducing the paid-roadmap section must fail"
+);
 assert.ok(
   issue32PositioningErrors(overviewFixture.replace(issue32Contract.trustStrip, ""), "security-observatory/index.html")
     .some((value) => value.includes("Overview trust strip")),
